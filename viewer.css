@@ -1,0 +1,236 @@
+html,body,div,h1,h2,h3,h4,h5,h6,ul,ol,dl,li,dt,dd,p,blockquote,pre,form,fieldset,table,th,td {
+margin:0;
+padding:0;
+}
+
+#viewer #markers .bubble {
+	cursor: pointer;
+	position: absolute;
+	top: -3em;
+	height: 3em;
+	width: 9em;
+	left: -4.5em;
+	z-Index:10000; 
+	display: block;
+	background: #fff;
+	background:	rgba(255,255,255,0.8);
+	border: solid 2px #999;
+	border: solid 2px rgba(0,0,0,0.5);
+	color: #000000;
+	-webkit-border-radius: 8px;
+	-moz-border-radius: 8px;
+	padding: 1em;
+
+}
+
+body {
+	background:#ddd;
+	color:#fff;
+	font-family:Helvetica, sans-serif;
+	font-size:0.7em;
+	width: 100%;
+	height: 100%;
+	overflow:hidden;
+	-webkit-text-size-adjust:none;
+	-webkit-user-select:none;
+}
+
+
+
+#card {
+	position:absolute;
+	bottom:0;
+	left:0;
+	right:0;
+	top:0;
+}
+
+body.witheffects #card{
+	-webkit-transform-style:preserve-3d;
+	-webkit-transition-duration:0.7s;
+	-webkit-transition-property:0;
+	-webkit-transition-timing-function:ease-in-out;
+}
+
+#container {
+	position:absolute;
+	top:0;
+	left:0;
+	bottom:0;
+	right:0;
+	background: #dddddd 
+}
+
+body.witheffects #container {
+	-webkit-perspective:780;
+}
+
+#viewer {
+	background: #dddddd url(../images/loading.gif) center no-repeat;
+	width: 100%;
+	height: 100%;
+	position: relative;
+	z-index: 100;
+	top: 0;
+	left: 0;
+}
+
+body.witheffects #viewer {
+	-webkit-backface-visibility:hidden;
+}
+
+#viewer * {
+	-webkit-user-select:ignore;
+}
+
+#viewer .controls {
+	position:absolute;
+	right:15px;
+	top:15px;
+	z-index:2000;
+	-webkit-user-select:none;
+}
+
+#viewer .controls span {
+	background-image:url(../images/buttons.png);
+	border:none;
+	display:block;
+	height:36px;
+	width:36px;
+	margin:0;
+	opacity:0.8;
+	padding:4px 2px 2px;
+	text-indent:-999em;
+	-webkit-border-radius:20px;
+
+}
+
+#viewer .controls span.findLocation {
+	background-position:0 -153px;
+}
+
+#viewer .controls span.info {
+	background-position:0 -203px;
+}
+
+#viewer .controls span.settings {
+	background-position:0 2px;
+}
+
+#viewer .controls span.zoomIn {
+	background-position:0 -102px;
+}
+
+#viewer .controls span.zoomOut {
+	background-position: 0px -50px;
+}
+
+
+#viewer .copyright {
+	position: absolute;
+	bottom:0;
+	left:0;
+	margin:0;
+	padding: 5px;
+	z-index:2000;
+	opacity: 0.5;
+}
+
+
+
+#viewer .well, #viewer .surface {
+	margin: 0;
+	padding: 0;
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	/* FIXME: let's apply this in GSV.js */
+	/*cursor: grab;*/
+	cursor: -moz-grab;
+}
+#viewer .surface {
+	z-index: 20;
+}
+#viewer .well {
+	overflow: hidden;
+	z-index: 10;
+}
+#viewer .well .tile
+{
+	border: 0;
+	margin: 0;
+	padding: 0;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	display: block;
+}
+
+
+
+#meta {
+	background:#eee;
+	border:1px solid #aaa;
+	bottom:15px;
+	color:#000;
+	left:15px;
+	padding:120px 20px 0;
+	position:absolute;
+	right:15px;
+	top:15px;
+	z-index:150;
+	-webkit-border-radius:10px;
+	display: none;
+}
+
+body.witheffects #meta {
+	display: block;
+	-webkit-backface-visibility:hidden;
+	-webkit-transform:rotateY(-180deg);
+	-webkit-transition-duration:0.4s;
+	-webkit-transition-property:opacity;
+
+}
+
+#meta.standalone .button.clear {
+	display: block;
+}
+
+.flipped {
+	-webkit-transform:rotateY(-180deg);
+}
+
+a {
+	color:#000;
+	font-weight:700;
+}
+
+p {
+	color:#000;
+	font-size:14px;
+	margin:0 0 1em;
+	text-align:left;
+}
+
+body.witheffects #meta p{
+	font-size: 16px;
+	line-height: 1.4em;
+}
+.marker {
+	z-index: 999;
+	position: absolute;
+}
+
+body .row a.dir  {
+    display: block;
+    margin: 0;
+    padding: 14px 32px 8px 16px;
+    text-decoration: none;
+    color: inherit;
+    background: url(../images/iui/listArrow.png) no-repeat right center;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: left;
+}
