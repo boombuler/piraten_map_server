@@ -49,21 +49,21 @@
 //<![CDATA[	
 <?php
 if ($_GET['lat'])
-	echo "var lat = ".$_GET['lat'].";";
+	echo "var lat = ".json_encode($_GET['lat']).";";
 else if ($_SESSION['deflat'])
-	echo "var lat = ".$_SESSION['deflat'].";";
+	echo "var lat = ".json_encode($_SESSION['deflat']).";";
 else
 	echo "var lat = 53.37;";
 if ($_GET['lon'])
-	echo "var lon = ".$_GET['lon'].";";
+	echo "var lon = ".json_encode($_GET['lon']).";";
 else if ($_SESSION['deflon'])
-	echo "var lon = ".$_SESSION['deflon'].";";
+	echo "var lon = ".json_encode($_SESSION['deflon']).";";
 else
 	echo "var lon = 10.39;";
 if ($_GET['zoom'])
-	echo "var zoom = ".$_GET['zoom'].";";
+	echo "var zoom = ".json_encode($_GET['zoom']).";";
 else if ($_SESSION['defzoom'])
-	echo "var zoom = ".$_SESSION['defzoom'].";";
+	echo "var zoom = ".json_encode($_SESSION['defzoom']).";";
 else
 	echo "var zoom = 6;";
 ?> 
