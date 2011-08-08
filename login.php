@@ -40,13 +40,13 @@ else
 {
 	$username = mysql_real_escape_string($_POST['username']);
 	$password = mysql_real_escape_string($_POST['password']);
-	$res = mysql_query("SELECT username FROM ".$tbl_prefix."users WHERE username='".$username."' AND password='".$password."'");
+	$res = mysql_query("SELECT username, password FROM ".$tbl_prefix."users WHERE username='".$username."' AND password='".$password."'");
 	$num = mysql_num_rows($res);
 
 	if ($num==1)
 	{
 		$_SESSION['siduser'] = mysql_result($res, 0, "username");
-		$_SESSION['sidpassword'] = $_POST['password'];
+		$_SESSION['sidpassword'] = mysql_result($res, 0, "password");
 		$_SESSION['sidip'] = $_SERVER["REMOTE_ADDR"];
 		header("Location: ./?message=Login%20OK");
 	}
