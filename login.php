@@ -38,7 +38,9 @@ if ($_GET['action'] == 'logout')
 }
 else
 {
-	$res = mysql_query("SELECT username FROM ".$tbl_prefix."users WHERE username='".$_POST['username']."' AND password='".$_POST['password']."'");
+	$username = mysql_real_escape_string($_POST['username']);
+	$password = mysql_real_escape_string($_POST['password']);
+	$res = mysql_query("SELECT username FROM ".$tbl_prefix."users WHERE username='".$username."' AND password='".$password."'");
 	$num = mysql_num_rows($res);
 
 	if ($num==1)
