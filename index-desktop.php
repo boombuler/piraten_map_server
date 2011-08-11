@@ -280,7 +280,7 @@ foreach ($options as $key=>$value)
 {
 	if ($value!="") {
 ?>
-		<img  style="vertical-align:text-top;" src="./images/marker/<?php echo $key?>.png" width="20" alt="<?php echo $key?>" />=<?php echo $value?>
+		<img  style="vertical-align:text-top;" src="./images/markers/<?php echo $key?>.png" width="20" alt="<?php echo $key?>" />=<?php echo $value?>
 <?php
 	}
 } ?>
