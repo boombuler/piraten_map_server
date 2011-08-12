@@ -111,9 +111,9 @@ else
 					}
 				}
 			}
-			$regionen = "'".$categories[0]."'";
+			$regionen = "'".mysql_real_escape_string($categories[0])."'";
 			for($i = 1; $i < count($categories); $i++)
-				$regionen .= ",'".$categories[$i]."'";
+				$regionen .= ",'".mysql_real_escape_string($categories[$i])."'";
 			$query = "SELECT lat, lon,zoom FROM ".$tbl_prefix."regions WHERE category in (".$regionen.") order by zoom desc limit 1";
 			$res = mysql_query($query);
 			$num = mysql_num_rows($res);
