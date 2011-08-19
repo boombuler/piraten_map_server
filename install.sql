@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS plakate_felder (
   `timestamp` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
   `comment` text collate utf8_unicode_ci NOT NULL,
   image varchar(150) collate utf8_unicode_ci default NULL,
-  PRIMARY KEY  (id)
+  PRIMARY KEY  (id, `timestamp`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
 
 CREATE TABLE IF NOT EXISTS plakate_regions (
