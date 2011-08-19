@@ -237,8 +237,8 @@ else
 	STRG+Mausklick: neuer Marker
 	<?php } ?>
 	</div>
-	<div style="text-align: right; float:right; width:50%; height:20px; top: 0px" id="login">
-	<div style="width:100%; height:50px; top: 0px" id="login">
+	<div style="text-align: right; float:right; width:50%; height:20px;" id="login">
+	<!--<div style="width:100%; height:50px; top: 0px" id="login">-->
 	<?php
 	if ($loginok==0)
 	{
@@ -255,9 +255,23 @@ else
 	else
 	{
 	?>
+		<table>
+                <tr>
+                <form enctype="multipart/form-data" method="post" action="image.php">
+                <td>
+                Image: <input type="file" name="image">
+                <input type="hidden" name="completed" value="1">
+                <input type="submit" value="Upload">
+                </td>
+                </form>
 		<form action="<?php echo $url?>login.php?action=logout" method="post">
-		<input type="submit" value="Logout" />
-		</form>
+		<td>
+		<input type="submit" value="Logout">
+                </td>
+                </form>
+                </tr>
+                </table>
+
 	<?php
 	}
 	?>
