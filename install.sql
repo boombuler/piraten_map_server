@@ -20,6 +20,15 @@ CREATE TABLE IF NOT EXISTS plakate_felder (
   PRIMARY KEY  (id, `timestamp`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
 
+CREATE TABLE IF NOT EXISTS plakate_log (
+  id int(11) NOT NULL,
+  `user` varchar(255) collate utf8_unicode_ci NOT NULL,
+  `timestamp` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  `subject` enum('add','del','change') NOT NULL,
+  `what` text collate utf8_unicode_ci NULL,
+  PRIMARY KEY  (id, `timestamp`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
 CREATE TABLE IF NOT EXISTS plakate_regions (
   id int(11) NOT NULL auto_increment,
   category varchar(50) character set latin1 NOT NULL,
