@@ -35,6 +35,10 @@ if ($_REQUEST[completed] == 1) {
 		$lat = preg_replace("/,/",".",$latlon[0]);
 		$lon = preg_replace("/,/",".",$latlon[1]);
 		$res = mysql_query("INSERT INTO ".$tbl_prefix."felder (lon,lat,type,user,image) VALUES ('".$lon."','".$lat."','plakat_ok','".$_SESSION['siduser']."','getimg.php?id=".$name."');") OR DIE("Database ERROR");
+		$id = mysql_insert_id($res);
+
+		$res = mysql_query("INSERT INTO ".$tbl_prefix."log (id, user, subject) VALUES('".$id."','".$_SESSION['siduser']."','add')") OR DIE("Database ERROR");
+	
 		$msg = "Plakat wurde komplett eingetragen!";
 		header("Location: ./?message=".$msg."&lat=".$lat."&lon=".$lon."&zoom=16");
 	}
