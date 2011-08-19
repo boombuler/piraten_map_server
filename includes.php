@@ -124,7 +124,8 @@ function map_del($id) {
 	
 	$id = mysql_real_escape_string($id);
 	
-	$res = mysql_query("UPDATE ".$tbl_prefix."felder SET del='1',user='".$_SESSION['siduser']."' WHERE id = '".$id."'") OR DIE("Database ERROR");
+	$res = mysql_query("INSERT ".$tbl_prefix."felder (id, lon,lat,user,type,comment,image,del) SELECT DISTINCT id, lon, lat, \"".$_SESSION['siduser']."\" as user, type, comment, image, \"1\" as del FROM (SELECT * FROM (SELECT * FROM ".$tbl_prefix."felder ORDER BY timestamp DESC) AS sort_felder GROUP BY id) as clean_felder WHERE id='".$id."' ORDER BY timestamp") OR DIE("Database ERROR");
+	//$res = mysql_query("UPDATE ".$tbl_prefix."felder SET del='1',user='".$_SESSION['siduser']."' WHERE id = '".$id."'") OR DIE("Database ERROR");
 	
 	return;
 }
@@ -137,7 +138,9 @@ function map_change($id, $type) {
 	
 	if (isset($options[$type]))
 	{
-		$res = mysql_query("UPDATE ".$tbl_prefix."felder SET type='".$type."',user='".$_SESSION['siduser']."' WHERE id = '".$id."'") OR DIE("Database ERROR");
+		$res = mysql_query("INSERT ".$tbl_prefix."felder (id, lon,lat,user,type,comment,image) SELECT DISTINCT id, lon, lat, \"".$_SESSION['siduser']."\" as user, \"".$type."\" as type, comment, image FROM (SELECT * FROM (SELECT * FROM ".$tbl_prefix."felder ORDER BY timestamp DESC) AS sort_felder GROUP BY id) as clean_felder WHERE id='".$id."' ORDER BY timestamp") OR DIE("Database ERROR");
+		
+		//$res = mysql_query("UPDATE ".$tbl_prefix."felder SET type='".$type."',user='".$_SESSION['siduser']."' WHERE id = '".$id."'") OR DIE("Database ERROR");
 	}
 	
 	return;
@@ -150,7 +153,8 @@ function map_addcomment($id, $comment, $image) {
 	$comment = mysql_real_escape_string(htmlentities($comment));
 	$image = mysql_real_escape_string(htmlentities($image));
 	
-	$res = mysql_query( "UPDATE ".$tbl_prefix."felder SET comment='".$comment."',user='".$_SESSION['siduser']."', image='".$image."' WHERE id = '".$id."'") OR DIE("Database ERROR");
+	$res = mysql_query("INSERT ".$tbl_prefix."felder (id, lon,lat,user,type,comment,image) SELECT DISTINCT id, lon, lat, \"".$_SESSION['siduser']."\" as user, type, \"$comment\" as comment, \"$image\" as image FROM (SELECT * FROM (SELECT * FROM ".$tbl_prefix."felder ORDER BY timestamp DESC) AS sort_felder GROUP BY id) as clean_felder WHERE id='".$id."' ORDER BY timestamp") OR DIE("Database ERROR");
+	//$res = mysql_query( "UPDATE ".$tbl_prefix."felder SET comment='".$comment."',user='".$_SESSION['siduser']."', image='".$image."' WHERE id = '".$id."'") OR DIE("Database ERROR");
 	
 	return;
 }

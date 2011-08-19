@@ -40,7 +40,8 @@ if ($loginok!=0)
 	}
 }
 
-$rs = mysql_query("SELECT id,lon,lat,type,user,timestamp,comment,image FROM ".$tbl_prefix."felder WHERE del!='1' ORDER BY timestamp ASC") OR DIE("Database ERROR");
+$rs = mysql_query("SELECT id,lon,lat,type,user,timestamp,comment,image FROM (SELECT * FROM (SELECT * FROM ".$tbl_prefix."felder ORDER BY timestamp DESC) AS sort_felder GROUP BY id) as clean_felder WHERE del!='1' ORDER BY timestamp ASC") OR DIE("Database ERROR");
+
 while($obj = mysql_fetch_object($rs))
 {
 $arr[] = $obj;

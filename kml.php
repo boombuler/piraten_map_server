@@ -74,7 +74,7 @@ $filterstr = "";
 if ($filter) {
   $filterstr = " AND type = '".mysql_real_escape_string($filter)."'";
 }
-$res = mysql_query("SELECT id,lon,lat,type,user,timestamp,comment,image FROM ".$tbl_prefix."felder WHERE del!='1' ".$filterstr." ORDER BY timestamp ASC") OR DIE("Database ERROR");
+$res = mysql_query("SELECT id,lon,lat,type,user,timestamp,comment,image FROM (SELECT * FROM (SELECT * FROM ".$tbl_prefix."felder ORDER BY timestamp DESC) AS sort_felder GROUP BY id) as clean_felder WHERE del!='1' ".$filterstr." ORDER BY timestamp ASC") OR DIE("Database ERROR");
 $num = mysql_num_rows($res);
 
 for ($i=0;$i<$num;$i++)
