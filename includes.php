@@ -104,4 +104,55 @@ if ($_SESSION['siduser'] || $_SESSION['sidip'])
  
 }
 
+function map_add($lon, $lat, $typ) {
+	global $tbl_prefix, $_SESSION;
+	
+	$lon = mysql_real_escape_string($lon);
+	$lat = mysql_real_escape_string($lat);
+	$typ = mysql_real_escape_string($typ);
+	
+	if ($typ != '')
+		$res = mysql_query("INSERT INTO ".$tbl_prefix."felder (lon,lat,user,type) VALUES ('".$lon."','".$lat."','".$_SESSION['siduser']."', '".$typ."');") OR DIE("Database ERROR");
+	else
+		$res = mysql_query("INSERT INTO ".$tbl_prefix."felder (lon,lat,user) VALUES ('".$lon."','".$lat."','".$_SESSION['siduser']."');") OR DIE("Database ERROR");
+
+	return;
+}
+
+function map_del($id) {
+	global $tbl_prefix, $_SESSION;
+	
+	$id = mysql_real_escape_string($id);
+	
+	$res = mysql_query("UPDATE ".$tbl_prefix."felder SET del='1',user='".$_SESSION['siduser']."' WHERE id = '".$id."'") OR DIE("Database ERROR");
+	
+	return;
+}
+
+function map_change($id, $type) {
+	global $tbl_prefix, $_SESSION, $options;
+	
+	$id = mysql_real_escape_string($id);
+	$type = mysql_real_escape_string($type);
+	
+	if (isset($options[$type]))
+	{
+		$res = mysql_query("UPDATE ".$tbl_prefix."felder SET type='".$type."',user='".$_SESSION['siduser']."' WHERE id = '".$id."'") OR DIE("Database ERROR");
+	}
+	
+	return;
+}
+
+function map_addcomment($id, $comment, $image) {
+	global $tbl_prefix, $_SESSION;
+	
+	$id = mysql_real_escape_string($id);
+	$comment = mysql_real_escape_string(htmlentities($comment));
+	$image = mysql_real_escape_string(htmlentities($image));
+	
+	$res = mysql_query( "UPDATE ".$tbl_prefix."felder SET comment='".$comment."',user='".$_SESSION['siduser']."', image='".$image."' WHERE id = '".$id."'") OR DIE("Database ERROR");
+	
+	return;
+}
+
 ?>
