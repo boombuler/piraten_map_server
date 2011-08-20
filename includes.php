@@ -91,6 +91,7 @@ function get_int($name) {
   return filter_input(INPUT_GET, $name, FILTER_VALIDATE_INT);
 }
 function get_typ($typ) {
+	global $options;
 	$t = $_GET[$typ];
 	if (!($t))
 		return null;

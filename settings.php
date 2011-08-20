@@ -25,6 +25,8 @@ $url = 'http://piraten.boombuler.de/';
 $use_ssl = true;
 $curl_path="/usr/bin/curl";
 $allow_view_public = true;
+// Die letzten Änderungen anzeigen
+$show_last_x_changes = 10;
 
 // MySQL Verbindung:
 // =================
