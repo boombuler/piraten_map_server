@@ -25,15 +25,15 @@ if ($loginok==0)
 	echo "Please Login!";
 	exit();
 }
-
-if (!$_GET[id])
+$id = get_int("id");
+if (!$id)
 {
 	echo "Please provide ID!";
 	exit();
 }
 
 header("Content-type: image/jpg");
-$img = imagecreatefromjpeg ("uploads/plakat_".$_GET[id].".jpg");
+$img = imagecreatefromjpeg ("uploads/plakat_".$id.".jpg");
 $img = resizeToWidth("480", $img);
 imagejpeg($img);
 

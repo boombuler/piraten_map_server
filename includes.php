@@ -51,58 +51,54 @@ mysql_query("SET character_set_results = utf8");
 mysql_query("SET character_set_client = utf8");
 setlocale(LC_ALL, 'de_DE.UTF-8');
 
-if ($_SESSION['siduser'] || $_SESSION['sidip'])
-{
-       if ($_SESSION['wikisession'])
-       {
-	$snoopy->cookies = $_SESSION['wikisession'];
+if ($_SESSION['siduser'] || $_SESSION['sidip']) {
+	// Check if the session is still valid.
+	if ($_SESSION['wikisession']) {
+		$snoopy->cookies = $_SESSION['wikisession'];
 
-	$request_vars = array('action' => 'query', 'meta' => 'userinfo', 
-		'format' => 'php');
-	if(!$snoopy->submit($apiPath, $request_vars))
-		die("Snoopy error: {$snoopy->error}");
-	$array = unserialize($snoopy->results);
+		$request_vars = array('action' => 'query', 'meta' => 'userinfo',  'format' => 'php');
+		if(!$snoopy->submit($apiPath, $request_vars))
+			die("Snoopy error: {$snoopy->error}");
+		$array = unserialize($snoopy->results);
 
-	if ($_SESSION['siduser'] == $array[query][userinfo][name] && $_SESSION['sidip']==$_SERVER["REMOTE_ADDR"])
-	{
-		$loginok=1;
-	}
-	else
-	{
-		$loginok=0;
-		unset($_SESSION['siduser']);
-		unset($_SESSION['wikisession']);
-//		unset($_SESSION['sidpassword']);
-		unset($_SESSION['sidip']);
-	}
+		if ($_SESSION['siduser'] == $array[query][userinfo][name] && $_SESSION['sidip']==$_SERVER["REMOTE_ADDR"])
+			$loginok=1;
+		else
+		{
+			$loginok=0;
+			unset($_SESSION['siduser']);
+			unset($_SESSION['wikisession']);
+			unset($_SESSION['sidip']);
+		}
+	} else {
+		if ($_SESSION['sidip']==$_SERVER["REMOTE_ADDR"])
+			$loginok=1;
+		else
+		{
+			$loginok=0;
+			unset($_SESSION['siduser']);
+			unset($_SESSION['wikisession']);
+			unset($_SESSION['sidip']);
+		}
        }
-       else if ($_SESSION['sidpassword'])
-       {
-	$res = mysql_query("SELECT password FROM ".$tbl_prefix."users WHERE username='".$_SESSION['siduser']."' AND password='".$_SESSION['sidpassword']."'");
-	$num = mysql_num_rows($res);
-	if ($num==1 && $_SESSION['sidip']==$_SERVER["REMOTE_ADDR"])
-	{
-		$loginok=1;
-	}
-	else
-	{
-		$loginok=0;
-		unset($_SESSION['siduser']);
-//		unset($_SESSION['wikisession']);
-		unset($_SESSION['sidpassword']);
-		unset($_SESSION['sidip']);
-	}
+}
 
-       }
-       else
-       {
-		$loginok=0;
-		unset($_SESSION['siduser']);
-		unset($_SESSION['wikisession']);
-		unset($_SESSION['sidpassword']);
-		unset($_SESSION['sidip']);
-       }
- 
+function get_float($name) {
+  return filter_input(INPUT_GET, $name, FILTER_VALIDATE_FLOAT);
+}
+
+function get_int($name) {
+  return filter_input(INPUT_GET, $name, FILTER_VALIDATE_INT);
+}
+function get_typ($typ) {
+	$t = $_GET[$typ];
+	if (!($t))
+		return null;
+	foreach($options as $key=>$value) {
+		if ($t == $key) {
+			return $t;
+		}
+	}
 }
 
 function map_add($lon, $lat, $typ) {

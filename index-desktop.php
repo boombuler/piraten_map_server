@@ -48,20 +48,24 @@
 	<script type="text/javascript">
 //<![CDATA[	
 <?php
-if ($_GET['lat'])
-	echo "var lat = ".json_encode($_GET['lat']).";";
+$lat = get_float('lat');
+$lon = get_float('lon');
+$zoom = get_int('zoom');
+
+if ($lat)
+	echo "var lat = ".json_encode($lat).";";
 else if ($_SESSION['deflat'])
 	echo "var lat = ".json_encode($_SESSION['deflat']).";";
 else
 	echo "var lat = 53.37;";
-if ($_GET['lon'])
-	echo "var lon = ".json_encode($_GET['lon']).";";
+if ($lon)
+	echo "var lon = ".json_encode($lon).";";
 else if ($_SESSION['deflon'])
 	echo "var lon = ".json_encode($_SESSION['deflon']).";";
 else
 	echo "var lon = 10.39;";
-if ($_GET['zoom'])
-	echo "var zoom = ".json_encode($_GET['zoom']).";";
+if ($zoom)
+	echo "var zoom = ".json_encode($zoom).";";
 else if ($_SESSION['defzoom'])
 	echo "var zoom = ".json_encode($_SESSION['defzoom']).";";
 else

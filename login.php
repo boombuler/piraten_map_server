@@ -31,7 +31,6 @@ if ($_GET['action'] == 'logout')
 	$loginok=0;
 	unset($_SESSION['siduser']);
 	unset($_SESSION['wikisession']);
-	unset($_SESSION['sidpassword']);
 	unset($_SESSION['sidip']);
 	
 	header("Location: ./?message=Logout%20OK");
@@ -45,8 +44,7 @@ else
 
 	if ($num==1)
 	{
-		$_SESSION['siduser'] = mysql_result($res, 0, "username");
-		$_SESSION['sidpassword'] = mysql_result($res, 0, "password");
+		$_SESSION['siduser'] = mysql_real_escape_string(mysql_result($res, 0, "username"));;
 		$_SESSION['sidip'] = $_SERVER["REMOTE_ADDR"];
 		header("Location: ./?message=Login%20OK");
 	}
@@ -78,7 +76,7 @@ else
 	
 	if ($array[login][result] == "Success")
 	{
-		$_SESSION['siduser'] = $username;
+		$_SESSION['siduser'] = mysql_real_escape_string($username);
 		$_SESSION['wikisession'] = $snoopy->cookies;
 		$_SESSION['sidip'] = $_SERVER["REMOTE_ADDR"];
 	}
