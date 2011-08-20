@@ -20,30 +20,34 @@
 
 require("includes.php");
 
-if (($loginok==0) and !$allow_view_public)
+if ($loginok==0)
+{
+	echo "Please Login!";
 	exit();
-
-if ($loginok!=0) 
-{
-	switch ($_GET['action'])
-	{
-	case 'add':
-		map_add(preg_replace("/,/",".",$_GET['lon']),
-			preg_replace("/,/",".",$_GET['lat']),
-			preg_replace("/,/",".",$_GET['typ']));
-	case 'del':
-		map_del($_GET['id']);
-	case 'change':
-		map_change($_GET['id'], $_GET['type']);
-	case 'addcomment':
-		map_addcomment($_GET['id'], $_GET['comment'], $_GET['image']);
-	}
 }
 
-$rs = mysql_query("SELECT id,lon,lat,type,user,timestamp,comment,image FROM (SELECT * FROM (SELECT * FROM ".$tbl_prefix."felder ORDER BY timestamp DESC) AS sort_felder GROUP BY id) as clean_felder WHERE del!='1' ORDER BY timestamp ASC") OR DIE("Database ERROR");
-
-while($obj = mysql_fetch_object($rs))
+if (!$_GET[id])
 {
-$arr[] = $obj;
+	echo "Please provide ID!";
+	exit();
 }
-print json_encode($arr);
+
+header("Content-type: image/jpg");
+$img = imagecreatefromjpeg ("uploads/plakat_".$_GET[id].".jpg");
+$img = resizeToWidth("480", $img);
+imagejpeg($img);
+
+function resizeToWidth($width, $img) {
+	$ratio = $width / imagesx($img);
+	$height = imagesy($img) * $ratio;
+	return resize($width,$height,$img);
+}
+
+function resize($width,$height,$img) {
+	$new_image = imagecreatetruecolor($width, $height);
+	imagecopyresampled($new_image, $img, 0, 0, 0, 0, $width, $height, imagesx($img), imagesy($img));
+	return $new_image;   
+}
+
+
+?>

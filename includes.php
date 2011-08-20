@@ -105,4 +105,65 @@ if ($_SESSION['siduser'] || $_SESSION['sidip'])
  
 }
 
+function map_add($lon, $lat, $typ) {
+	global $tbl_prefix, $_SESSION;
+	
+	$lon = mysql_real_escape_string($lon);
+	$lat = mysql_real_escape_string($lat);
+	$typ = mysql_real_escape_string($typ);
+	
+	if ($typ != '')
+		$res = mysql_query("INSERT INTO ".$tbl_prefix."felder (lon,lat,user,type) VALUES ('".$lon."','".$lat."','".$_SESSION['siduser']."', '".$typ."');") OR DIE("Database ERROR");
+	else
+		$res = mysql_query("INSERT INTO ".$tbl_prefix."felder (lon,lat,user) VALUES ('".$lon."','".$lat."','".$_SESSION['siduser']."');") OR DIE("Database ERROR");
+	
+	$id = mysql_insert_id($res);
+
+	$res = mysql_query("INSERT INTO ".$tbl_prefix."log (id, user, subject) VALUES('".$id."','".$_SESSION['siduser']."','add')") OR DIE("Database ERROR");
+	
+	return;
+}
+
+function map_del($id) {
+	global $tbl_prefix, $_SESSION;
+	
+	$id = mysql_real_escape_string($id);
+	
+	$res = mysql_query("INSERT ".$tbl_prefix."felder (id, lon,lat,user,type,comment,image,del) SELECT DISTINCT id, lon, lat, \"".$_SESSION['siduser']."\" as user, type, comment, image, \"1\" as del FROM (SELECT * FROM (SELECT * FROM ".$tbl_prefix."felder ORDER BY timestamp DESC) AS sort_felder GROUP BY id) as clean_felder WHERE id='".$id."' ORDER BY timestamp") OR DIE("Database ERROR");
+	
+	$res = mysql_query("INSERT INTO ".$tbl_prefix."log (id, user, subject) VALUES('".$id."','".$_SESSION['siduser']."','del')") OR DIE("Database ERROR");
+	return;
+}
+
+function map_change($id, $type) {
+	global $tbl_prefix, $_SESSION, $options;
+	
+	$id = mysql_real_escape_string($id);
+	$type = mysql_real_escape_string($type);
+	
+	if (isset($options[$type]))
+	{
+		$res = mysql_query("INSERT ".$tbl_prefix."felder (id, lon,lat,user,type,comment,image) SELECT DISTINCT id, lon, lat, \"".$_SESSION['siduser']."\" as user, \"".$type."\" as type, comment, image FROM (SELECT * FROM (SELECT * FROM ".$tbl_prefix."felder ORDER BY timestamp DESC) AS sort_felder GROUP BY id) as clean_felder WHERE id='".$id."' ORDER BY timestamp") OR DIE("Database ERROR");
+		
+		
+		$res = mysql_query("INSERT INTO ".$tbl_prefix."log (id, user, subject, what) VALUES('".$id."','".$_SESSION['siduser']."','change', 'Type: ".$type."')") OR DIE("Database ERROR");
+	}
+	
+	return;
+}
+
+function map_addcomment($id, $comment, $image) {
+	global $tbl_prefix, $_SESSION;
+	
+	$id = mysql_real_escape_string($id);
+	$comment = mysql_real_escape_string(htmlentities($comment));
+	$image = mysql_real_escape_string(htmlentities($image));
+	
+	$res = mysql_query("INSERT ".$tbl_prefix."felder (id, lon,lat,user,type,comment,image) SELECT DISTINCT id, lon, lat, \"".$_SESSION['siduser']."\" as user, type, \"$comment\" as comment, \"$image\" as image FROM (SELECT * FROM (SELECT * FROM ".$tbl_prefix."felder ORDER BY timestamp DESC) AS sort_felder GROUP BY id) as clean_felder WHERE id='".$id."' ORDER BY timestamp") OR DIE("Database ERROR");
+	
+	$res = mysql_query("INSERT INTO ".$tbl_prefix."log (id, user, subject, what) VALUES('".$id."','".$_SESSION['siduser']."','change', 'Kommentar/Bild')") OR DIE("Database ERROR");
+	
+	return;
+}
+
 ?>

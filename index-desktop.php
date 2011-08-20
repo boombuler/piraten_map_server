@@ -237,8 +237,8 @@ else
 	STRG+Mausklick: neuer Marker
 	<?php } ?>
 	</div>
-	<div style="text-align: right; float:right; width:50%; height:20px; top: 0px" id="login">
-	<div style="width:100%; height:50px; top: 0px" id="login">
+	<div style="text-align: right; float:right; width:50%; height:20px;" id="login">
+	<!--<div style="width:100%; height:50px; top: 0px" id="login">-->
 	<?php
 	if ($loginok==0)
 	{
@@ -255,9 +255,23 @@ else
 	else
 	{
 	?>
-		<form action="<?php echo $url?>login.php?action=logout" method="post">
-		<input type="submit" value="Logout" />
-		</form>
+		<table>
+			<tr>
+				<form enctype="multipart/form-data" method="post" action="image.php">
+				<td>
+					Image: <input type="file" name="image">
+					<input type="hidden" name="completed" value="1">
+					<input type="submit" value="Upload">
+				</td>
+				</form>
+				<form action="<?php echo $url?>login.php?action=logout" method="post">
+				<td>
+					<input type="submit" value="Logout">
+				</td>
+				</form>
+			</tr>
+		</table>
+
 	<?php
 	}
 	?>
@@ -273,7 +287,25 @@ else
 	}
 	?>
 	</div>
-	<div style="position:absolute; top:50px; bottom:30px; left:0px; right:0px;" id="map" ></div>
+	<div style="position:absolute; top:50px; bottom:30px; width:150px; right:0px;" id="log" >
+		<?if ($loginok) {
+			$res = mysql_query("SELECT id,user,timestamp,subject,what FROM ".$tbl_prefix."log ORDER BY timestamp DESC LIMIT 10") OR DIE("Database ERROR");
+			$num = mysql_num_rows($res);
+
+			for ($i=0;$i<$num;$i++)
+			{
+				echo mysql_result($res, $i, "timestamp")." (".mysql_result($res, $i, "user")."):<br>";
+				if (mysql_result($res, $i, "subject")=='add') echo "Neuer Token: ".mysql_result($res, $i, "id");
+				if (mysql_result($res, $i, "subject")=='del') echo "Token ".mysql_result($res, $i, "id")." gelöscht.";
+				if (mysql_result($res, $i, "subject")=='change') {
+					echo "Token ".mysql_result($res, $i, "id")." geändert: ".mysql_result($res, $i, "what");
+				}
+				
+				echo "<br>";
+			}
+		}?>
+		</div>
+	<div style="position:absolute; top:50px; bottom:30px; left:0px; right:150px;" id="map" ></div>
 	<div style="position:absolute; bottom:0px; left:0px; right0px; height:30px" id="example">
 <?php
 foreach ($options as $key=>$value)

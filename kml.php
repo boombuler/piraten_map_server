@@ -23,38 +23,22 @@ require("includes.php");
 if (($loginok==0) and !$allow_view_public)
 	exit();
 
-if ($loginok!=0) 
-{
-	switch ($_GET['action'])
-	{
-	case 'add':
-		$lon = mysql_real_escape_string(preg_replace("/,/",".",$_GET['lon']));
-		$lat = mysql_real_escape_string(preg_replace("/,/",".",$_GET['lat']));
-		$typ = mysql_real_escape_string(preg_replace("/,/",".",$_GET['typ']));
-		if ($typ != '')
-		  $res = mysql_query("INSERT INTO ".$tbl_prefix."felder (lon,lat,user,type) VALUES ('".$lon."','".$lat."','".$_SESSION['siduser']."', '".$typ."');") OR DIE("Database ERROR");
-		else
-		  $res = mysql_query("INSERT INTO ".$tbl_prefix."felder (lon,lat,user) VALUES ('".$lon."','".$lat."','".$_SESSION['siduser']."');") OR DIE("Database ERROR");
-		return;
-	case 'del':
-		$res = mysql_query("UPDATE ".$tbl_prefix."felder SET del='1',user='".$_SESSION['siduser']."' WHERE id = '".mysql_real_escape_string($_GET['id'])."'") OR DIE("Database ERROR");
-		return;
-	case 'change':
-		$type = mysql_real_escape_string($_GET['type']);
-		if (isset($options[$type]))
-		{
-			$res = mysql_query("UPDATE ".$tbl_prefix."felder SET type='".$type."',user='".$_SESSION['siduser']."' WHERE id = '".mysql_real_escape_string($_GET['id'])."'") OR DIE("Database ERROR");
-		}
-		return;
-	case 'addcomment':
-		$comment = $_GET['comment'];
-		$comment = mysql_real_escape_string(htmlentities($comment));
-		$image   = $_GET['image'];
-		$image   = mysql_real_escape_string(htmlentities($image));
-		//print $comment;	
-		$res = mysql_query( "UPDATE ".$tbl_prefix."felder SET comment='".$comment."',user='".$_SESSION['siduser']."', image='".$image."' WHERE id = '".mysql_real_escape_string($_GET['id'])."'") OR DIE("Database ERROR");
-
-		return;
+if ($loginok!=0) {
+	switch ($_GET['action']) {
+		case 'add':
+			map_add(preg_replace("/,/",".",$_GET['lon']),
+				preg_replace("/,/",".",$_GET['lat']),
+				preg_replace("/,/",".",$_GET['typ']));
+			return;
+		case 'del':
+			map_del($_GET['id']);
+			return;
+		case 'change':
+			map_change($_GET['id'], $_GET['type']);
+			return;
+		case 'addcomment':
+			map_addcomment($_GET['id'], $_GET['comment'], $_GET['image']);
+			return;
 	}
 }
 
@@ -90,7 +74,7 @@ $filterstr = "";
 if ($filter) {
   $filterstr = " AND type = '".mysql_real_escape_string($filter)."'";
 }
-$res = mysql_query("SELECT id,lon,lat,type,user,timestamp,comment,image FROM ".$tbl_prefix."felder WHERE del!='1' ".$filterstr." ORDER BY timestamp ASC") OR DIE("Database ERROR");
+$res = mysql_query("SELECT id,lon,lat,type,user,timestamp,comment,image FROM (SELECT * FROM (SELECT * FROM ".$tbl_prefix."felder ORDER BY timestamp DESC) AS sort_felder GROUP BY id) as clean_felder WHERE del!='1' ".$filterstr." ORDER BY timestamp ASC") OR DIE("Database ERROR");
 $num = mysql_num_rows($res);
 
 for ($i=0;$i<$num;$i++)
