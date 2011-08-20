@@ -48,20 +48,24 @@
 	<script type="text/javascript">
 //<![CDATA[	
 <?php
-if ($_GET['lat'])
-	echo "var lat = ".json_encode($_GET['lat']).";";
+$lat = get_float('lat');
+$lon = get_float('lon');
+$zoom = get_int('zoom');
+
+if ($lat)
+	echo "var lat = ".json_encode($lat).";";
 else if ($_SESSION['deflat'])
 	echo "var lat = ".json_encode($_SESSION['deflat']).";";
 else
 	echo "var lat = 53.37;";
-if ($_GET['lon'])
-	echo "var lon = ".json_encode($_GET['lon']).";";
+if ($lon)
+	echo "var lon = ".json_encode($lon).";";
 else if ($_SESSION['deflon'])
 	echo "var lon = ".json_encode($_SESSION['deflon']).";";
 else
 	echo "var lon = 10.39;";
-if ($_GET['zoom'])
-	echo "var zoom = ".json_encode($_GET['zoom']).";";
+if ($zoom)
+	echo "var zoom = ".json_encode($zoom).";";
 else if ($_SESSION['defzoom'])
 	echo "var zoom = ".json_encode($_SESSION['defzoom']).";";
 else
@@ -287,24 +291,26 @@ else
 	}
 	?>
 	</div>
+        <?php if ($show_last_x_changes > 0) {?>
 	<div style="position:absolute; top:50px; bottom:30px; width:150px; right:0px;" id="log" >
-		<?if ($loginok) {
-			$res = mysql_query("SELECT id,user,timestamp,subject,what FROM ".$tbl_prefix."log ORDER BY timestamp DESC LIMIT 10") OR DIE("Database ERROR");
+		<?php if ($loginok) {
+			$res = mysql_query("SELECT id,user,timestamp,subject,what FROM ".$tbl_prefix."log ORDER BY timestamp DESC LIMIT ".$show_last_x_changes) OR DIE("Database ERROR");
 			$num = mysql_num_rows($res);
 
 			for ($i=0;$i<$num;$i++)
 			{
 				echo mysql_result($res, $i, "timestamp")." (".mysql_result($res, $i, "user")."):<br>";
-				if (mysql_result($res, $i, "subject")=='add') echo "Neuer Token: ".mysql_result($res, $i, "id");
-				if (mysql_result($res, $i, "subject")=='del') echo "Token ".mysql_result($res, $i, "id")." gelöscht.";
+				if (mysql_result($res, $i, "subject")=='add') echo "Neues Plakat: ".mysql_result($res, $i, "id");
+				if (mysql_result($res, $i, "subject")=='del') echo "Plakat ".mysql_result($res, $i, "id")." gelöscht.";
 				if (mysql_result($res, $i, "subject")=='change') {
-					echo "Token ".mysql_result($res, $i, "id")." geändert: ".mysql_result($res, $i, "what");
+					echo "Plakat ".mysql_result($res, $i, "id")." geändert: ".mysql_result($res, $i, "what");
 				}
 				
 				echo "<br>";
 			}
 		}?>
-		</div>
+	</div>
+	<?php } ?>
 	<div style="position:absolute; top:50px; bottom:30px; left:0px; right:150px;" id="map" ></div>
 	<div style="position:absolute; bottom:0px; left:0px; right0px; height:30px" id="example">
 <?php

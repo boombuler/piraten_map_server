@@ -28,15 +28,15 @@ if ($loginok!=0)
 	switch ($_GET['action'])
 	{
 	case 'add':
-		map_add(preg_replace("/,/",".",$_GET['lon']),
-			preg_replace("/,/",".",$_GET['lat']),
-			preg_replace("/,/",".",$_GET['typ']));
+		map_add(preg_replace("/,/",".",get_float('lon')),
+			preg_replace("/,/",".",get_float('lat')),
+			get_typ('typ'));
 	case 'del':
-		map_del($_GET['id']);
+		map_del(get_int('id'));
 	case 'change':
-		map_change($_GET['id'], $_GET['type']);
+		map_change(get_int('id'), get_typ('type'));
 	case 'addcomment':
-		map_addcomment($_GET['id'], $_GET['comment'], $_GET['image']);
+		map_addcomment(get_int('id'), $_GET['comment'], $_GET['image']);
 	}
 }
 

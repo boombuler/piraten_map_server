@@ -113,20 +113,23 @@ foreach ($options as $key=>$value)
 		EventUtils.addEventListener(window, 'load', function(){
 			touchMap = new touchMapLite("viewer");
 <?php
-if ($_GET['lat'])
-	echo "touchMap.lat = ".json_encode($_GET['lat']).";";
+$lat = get_float('lat');
+$lon = get_float('lon');
+$zoom = get_int('zoom');
+if ($lat)
+	echo "touchMap.lat = ".json_encode($lat).";";
 else if ($_SESSION['deflat'])
 	echo "touchMap.lat = ".json_encode($_SESSION['deflat']).";";
 else
 	echo "touchMap.lat = 53.37;";
-if ($_GET['lon'])
-	echo "touchMap.lon = ".json_encode($_GET['lon']).";";
+if ($lon)
+	echo "touchMap.lon = ".json_encode($lon).";";
 else if ($_SESSION['deflon'])
 	echo "touchMap.lon = ".json_encode($_SESSION['deflon']).";";
 else
 	echo "touchMap.lon = 10.39;";
-if ($_GET['zoom'])
-	echo "touchMap.zoom = ".json_encode($_GET['zoom']).";";
+if ($zoom)
+	echo "touchMap.zoom = ".json_encode($zoom).";";
 else if ($_SESSION['defzoom'])
 	echo "touchMap.zoom = ".json_encode($_SESSION['defzoom']).";";
 else
