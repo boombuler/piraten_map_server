@@ -39,6 +39,7 @@ $options = array("default"=>"",
 	"plakat_ok"=>'Plakat hängt',
 	"plakat_dieb"=>'Plakat wurde gestohlen',
 	"plakat_niceplace"=>'Gute Stelle für ein Plakat',
+	"plakat_wrecked"=>'Plakat beschädigt',
 	"wand"=>'Plakatwand der Gemeinde',
 	"wand_ok"=>'Plakat an der Plakatwand');
 
