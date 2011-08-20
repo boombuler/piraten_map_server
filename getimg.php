@@ -25,7 +25,7 @@ if ($loginok==0)
 	echo "Please Login!";
 	exit();
 }
-$id = get_int("id");
+$id = preg_replace("/[^a-zA-Z0-9]+/","",$_GET[id]);
 if (!$id)
 {
 	echo "Please provide ID!";
