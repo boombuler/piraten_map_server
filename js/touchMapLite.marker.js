@@ -105,19 +105,7 @@ touchMapLite.prototype.marker.prototype = {
 		this.map.MARKERS[this.id] = null;
 	},
 	onClick: function(event){
-		this.marker.hideBubbles();
-		var bubble = document.createElement("div");
-		this.appendChild(bubble);
-		bubble.setAttribute("class","bubble");
-		this.marker.setupBubble(bubble, this.marker);			
 		return false;
-	},
-	setupBubble: function(bubble, marker) {
-		bubble.innerHTML = "#"+this.marker.id+": "+this.marker.title+"<br />"+this.marker.lat+",<br />"+this.marker.lon;
-		bubble.onmouseup = function(e){
-			this.parentNode.marker.hideBubbles();
-			return false;
-		}	
 	},
 	updateMarker: function(e){	
 		var top = (e.y+this.y+this.divy);
@@ -142,20 +130,6 @@ touchMapLite.prototype.marker.prototype = {
 	viewerZoomed: function(e){
 		this.placeMarker();
 		this.updateMarker(e);
-		this.hideBubbles();
-	},
-
-	
-	hideBubbles: function(){
-		for (var mm = document.getElementById('markers').firstChild; mm; mm = mm.nextSibling) {
-			if (mm.className == 'marker'){
-				for (var bb = mm.firstChild; bb; bb = bb.nextSibling) {
-					if (bb.className == 'bubble'){
-						mm.removeChild(bb);
-					}
-				}
-			}
-		}	
 	}
 
 }

@@ -157,7 +157,7 @@ else
 		toggleWatchLocation = function(node) {
 			if(!touchMap.watchLocationHandler()){
 				var myswitch = $("#slider");
-				myswitch[0].selectedIndex = 0;
+				myswitch[0].selectedIndex = myswitch[0].selectedIndex == 0 ? 1 : 0;
 				myswitch.slider("refresh");
 			}
 		}
