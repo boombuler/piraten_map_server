@@ -374,7 +374,7 @@ else
     <?php if ($show_last_x_changes > 0) {?>
 	<div style="position:absolute; top:50px; bottom:30px; width:150px; right:0px;" id="log" >
 		<?php if ($loginok) {
-			$res = mysql_query("SELECT plakat_id,user,timestamp,subject,what FROM ".$tbl_prefix."log ORDER BY timestamp DESC LIMIT ".$show_last_x_changes) OR dieDB();
+			$res = mysql_query("SELECT plakat_id as id,user,timestamp,subject,what FROM ".$tbl_prefix."log ORDER BY timestamp DESC LIMIT ".$show_last_x_changes) OR dieDB();
 			$num = mysql_num_rows($res);
 
 			for ($i=0;$i<$num;$i++)
