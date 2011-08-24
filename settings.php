@@ -28,6 +28,8 @@ $allow_view_public = true;
 // Die letzten Änderungen anzeigen
 $show_last_x_changes = 10;
 
+$debug = false;
+
 // MySQL Verbindung:
 // =================
 // Server

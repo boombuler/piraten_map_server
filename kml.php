@@ -34,8 +34,7 @@ if ($loginok!=0) {
 			map_del(get_int('id'));
 			return;
 		case 'change':
-			map_change(get_int('id'), get_typ('type'));
-			map_addcomment(get_int('id'), $_GET['comment'], $_GET['image']);
+			map_change(get_int('id'), get_typ('type'), $_GET['comment'], $_GET['image']);
 			return;
 	}
 }
@@ -72,7 +71,12 @@ $filterstr = "";
 if ($filter) {
   $filterstr = " AND type = '".mysql_real_escape_string($filter)."'";
 }
-$res = mysql_query("SELECT id,lon,lat,type,user,timestamp,comment,image FROM (SELECT * FROM (SELECT * FROM ".$tbl_prefix."felder ORDER BY timestamp DESC) AS sort_felder GROUP BY id) as clean_felder WHERE del!='1' ".$filterstr." ORDER BY timestamp ASC") OR DIE("Database ERROR");
+
+$query = "SELECT p.id, f.lon, f.lat, f.type, f.user, f.timestamp, f.comment, f.image "
+      . " FROM ".$tbl_prefix."felder f JOIN ".$tbl_prefix."plakat p on p.actual_id = f.id"
+      . " WHERE p.del != true".$filterstr;
+
+$res = mysql_query($query) OR dieDB();
 $num = mysql_num_rows($res);
 
 for ($i=0;$i<$num;$i++)

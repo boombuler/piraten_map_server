@@ -34,13 +34,17 @@ if ($loginok!=0)
 	case 'del':
 		map_del(get_int('id'));
 	case 'change':
-		map_change(get_int('id'), get_typ('type'));
+		map_change(get_int('id'), get_typ('type'), null, null);
 	case 'addcomment':
-		map_addcomment(get_int('id'), $_GET['comment'], $_GET['image']);
+		map_change(get_int('id'), null, $_GET['comment'], $_GET['image']);
 	}
 }
 
-$rs = mysql_query("SELECT id,lon,lat,type,user,timestamp,comment,image FROM (SELECT * FROM (SELECT * FROM ".$tbl_prefix."felder ORDER BY timestamp DESC) AS sort_felder GROUP BY id) as clean_felder WHERE del!='1' ORDER BY timestamp ASC") OR DIE("Database ERROR");
+$query = "SELECT p.id, f.lon, f.lat, f.type, f.user, f.timestamp, f.comment, f.image "
+      . " FROM ".$tbl_prefix."felder f JOIN ".$tbl_prefix."plakat p on p.actual_id = f.id"
+      . " WHERE p.del != true";
+
+$rs = mysql_query($query) OR dieDB();
 
 while($obj = mysql_fetch_object($rs))
 {

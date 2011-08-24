@@ -19,7 +19,6 @@
 */
 
 require("includes.php");
-
 if ($_GET['action'] == 'logout')
 {
 	if ($_SESSION['wikisession']) {

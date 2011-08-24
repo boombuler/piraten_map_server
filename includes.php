@@ -44,6 +44,8 @@ $options = array("default"=>"",
 	"wand"=>'Plakatwand der Gemeinde',
 	"wand_ok"=>'Plakat an der Plakatwand');
 
+$image_upload_typ = 'plakat_ok';
+
 
 $db = mysql_connect($mysql_server, $mysql_user, $mysql_password);
 mysql_selectdb($mysql_database);
@@ -84,6 +86,14 @@ if ($_SESSION['siduser'] || $_SESSION['sidip']) {
        }
 }
 
+function dieDB() {
+    global $debug;
+    if ($debug)
+      DIE(mysql_error());
+    else
+      DIE("Error!");
+}
+
 function get_float($name) {
   return filter_input(INPUT_GET, $name, FILTER_VALIDATE_FLOAT);
 }
@@ -111,15 +121,17 @@ function map_add($lon, $lat, $typ) {
 	$typ = mysql_real_escape_string($typ);
 	
 	if ($typ != '')
-		$res = mysql_query("INSERT INTO ".$tbl_prefix."felder (lon,lat,user,type) VALUES ('".$lon."','".$lat."','".$_SESSION['siduser']."', '".$typ."');") OR DIE("Database ERROR");
+		$res = mysql_query("INSERT INTO ".$tbl_prefix."felder (lon,lat,user,type) VALUES ('".$lon."','".$lat."','".$_SESSION['siduser']."', '".$typ."');") OR dieDB();
 	else
-		$res = mysql_query("INSERT INTO ".$tbl_prefix."felder (lon,lat,user) VALUES ('".$lon."','".$lat."','".$_SESSION['siduser']."');") OR DIE("Database ERROR");
+		$res = mysql_query("INSERT INTO ".$tbl_prefix."felder (lon,lat,user) VALUES ('".$lon."','".$lat."','".$_SESSION['siduser']."');") OR dieDB();
 	
-	$id = mysql_insert_id($res);
-
-	$res = mysql_query("INSERT INTO ".$tbl_prefix."log (id, user, subject) VALUES('".$id."','".$_SESSION['siduser']."','add')") OR DIE("Database ERROR");
-	
-	return;
+	$id = mysql_insert_id();
+echo "ID ".$id;
+	$res = mysql_query("INSERT INTO ".$tbl_prefix."plakat (actual_id, del) VALUES('".$id."',false)") OR dieDB();
+	$pid = mysql_insert_id();
+	mysql_query("UPDATE ".$tbl_prefix."felder SET plakat_id = $pid WHERE id = $id") or dieDB();
+	$res = mysql_query("INSERT INTO ".$tbl_prefix."log (plakat_id, user, subject) VALUES('".$pid."','".$_SESSION['siduser']."','add')") OR dieDB();
+	return $pid;
 }
 
 function map_del($id) {
@@ -127,39 +139,39 @@ function map_del($id) {
 	
 	$id = mysql_real_escape_string($id);
 	
-	$res = mysql_query("INSERT ".$tbl_prefix."felder (id, lon,lat,user,type,comment,image,del) SELECT DISTINCT id, lon, lat, \"".$_SESSION['siduser']."\" as user, type, comment, image, \"1\" as del FROM (SELECT * FROM (SELECT * FROM ".$tbl_prefix."felder ORDER BY timestamp DESC) AS sort_felder GROUP BY id) as clean_felder WHERE id='".$id."' ORDER BY timestamp") OR DIE("Database ERROR");
+	$res = mysql_query("UPDATE ".$tbl_prefix."plakat SET del = true where id = $id") OR dieDB();
 	
-	$res = mysql_query("INSERT INTO ".$tbl_prefix."log (id, user, subject) VALUES('".$id."','".$_SESSION['siduser']."','del')") OR DIE("Database ERROR");
+	$res = mysql_query("INSERT INTO ".$tbl_prefix."log (plakat_id, user, subject) VALUES('".$id."','".$_SESSION['siduser']."','del')") OR dieDB();
 	return;
 }
 
-function map_change($id, $type) {
+function map_change($id, $type, $comment, $imageurl) {
 	global $tbl_prefix, $_SESSION, $options;
 	
 	$id = mysql_real_escape_string($id);
-	$type = mysql_real_escape_string($type);
-	
-	if (isset($options[$type]))
-	{
-		$res = mysql_query("INSERT ".$tbl_prefix."felder (id, lon,lat,user,type,comment,image) SELECT DISTINCT id, lon, lat, \"".$_SESSION['siduser']."\" as user, \"".$type."\" as type, comment, image FROM (SELECT * FROM (SELECT * FROM ".$tbl_prefix."felder ORDER BY timestamp DESC) AS sort_felder GROUP BY id) as clean_felder WHERE id='".$id."' ORDER BY timestamp") OR DIE("Database ERROR");
-		
-		
-		$res = mysql_query("INSERT INTO ".$tbl_prefix."log (id, user, subject, what) VALUES('".$id."','".$_SESSION['siduser']."','change', 'Type: ".$type."')") OR DIE("Database ERROR");
-	}
-	
-	return;
-}
+	$query = "INSERT INTO ".$tbl_prefix."felder (plakat_id, lon, lat, user, type, comment, image) "
+               . "SELECT plakat_id, lon, lat, '".$_SESSION['siduser']."' as user, ";
+	if(isset($options[$type])) {
+		$type = mysql_real_escape_string($type);
+		$query .= "'$type' as type, ";
+	} else $query .= "type, ";
+	if ($comment != null) {
+		$comment = mysql_real_escape_string($comment);
+		$query .= "'$comment' as comment, ";
+	} else $query .= "comment, ";
+	if($imageurl != null) {	  
+		$imageurl = mysql_real_escape_string($imageurl);
+		$query .= "'$imageurl' as image ";
+	} else $query .= "image ";
 
-function map_addcomment($id, $comment, $image) {
-	global $tbl_prefix, $_SESSION;
-	
-	$id = mysql_real_escape_string($id);
-	$comment = mysql_real_escape_string(htmlentities($comment));
-	$image = mysql_real_escape_string(htmlentities($image));
-	
-	$res = mysql_query("INSERT ".$tbl_prefix."felder (id, lon,lat,user,type,comment,image) SELECT DISTINCT id, lon, lat, \"".$_SESSION['siduser']."\" as user, type, \"$comment\" as comment, \"$image\" as image FROM (SELECT * FROM (SELECT * FROM ".$tbl_prefix."felder ORDER BY timestamp DESC) AS sort_felder GROUP BY id) as clean_felder WHERE id='".$id."' ORDER BY timestamp") OR DIE("Database ERROR");
-	
-	$res = mysql_query("INSERT INTO ".$tbl_prefix."log (id, user, subject, what) VALUES('".$id."','".$_SESSION['siduser']."','change', 'Kommentar/Bild')") OR DIE("Database ERROR");
+	$query .= " FROM ".$tbl_prefix."felder WHERE id in (SELECT actual_id from ".$tbl_prefix."plakat where id = $id)";
+
+	$res = mysql_query($query) OR dieDB();
+	$newid = mysql_insert_id();
+
+	$res = mysql_query("INSERT INTO ".$tbl_prefix."log (plakat_id, user, subject, what) VALUES('".$id."','".$_SESSION['siduser']."','change', 'Type: ".$type."')") OR dieDB();
+
+	mysql_query("UPDATE ".$tbl_prefix."plakat SET actual_id = $newid where id = $id");
 	
 	return;
 }
