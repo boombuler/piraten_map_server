@@ -37,6 +37,7 @@ session_start();
 
 $options = array("default"=>"",
 	"plakat_ok"=>'Plakat hängt',
+	"plakat_a0"=>'A0-Plakat steht',
 	"plakat_dieb"=>'Plakat wurde gestohlen',
 	"plakat_niceplace"=>'Gute Stelle für ein Plakat',
 	"plakat_wrecked"=>'Plakat beschädigt',
