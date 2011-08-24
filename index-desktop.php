@@ -108,10 +108,9 @@ else
 		function closeModalDlg(shouldRemove) {
 			$('#mask').fadeTo("fast",0, function() {$(this).css('display', 'none')});  
 			$('body > .modal').fadeOut(function() { 
-				if (shouldRemove) 
-					$(this).remove(); 
-				else
-					$(this).css('z-index', '1');
+				$(this).remove(); 
+				if(!shouldRemove)
+					$('#dlgBag').append($(this));
 			}); 
 		}
 		
@@ -305,7 +304,7 @@ else
         </div>
       </div> <!-- /fill -->
     </div> <!-- /topbar -->
-	<div style="display:none;">
+	<div style="display:none;" id="dlgBag">
 	<?php if ($loginok == 0) { ?>
 		<div class="modal" style="position: relative; top: auto; left: auto; margin: 0 auto; display:none;"
 			 id="loginform">
