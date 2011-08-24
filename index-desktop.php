@@ -32,8 +32,15 @@
 	}
 	#mask {
 		position:absolute;
-		z-index:9000;
-		background-color:#000;
+		z-index:10100;
+		background-color:#888;
+		display:none;
+	}
+	#mapkey {
+		position:absolute;
+		z-index:3000;
+		bottom:0px; 
+		left:0px; 
 		display:none;
 	}
 	-->
@@ -93,14 +100,23 @@ else
 			if (selectedFeature != null) {
 				sf = selectedFeature;
 				selectedFeature = null;
-				$('#mask').fadeTo("fast",0, function() {$(this).css('display', 'none')});  
-				$('.modal').fadeOut(function() { $(this).remove(); }); 
+				closeModalDlg(true);
 				selectControl.unselect(sf);
 			}
 		}
 		
+		function closeModalDlg(shouldRemove) {
+			$('#mask').fadeTo("fast",0, function() {$(this).css('display', 'none')});  
+			$('body > .modal').fadeOut(function() { 
+				if (shouldRemove) 
+					$(this).remove(); 
+				else
+					$(this).css('z-index', '1');
+			}); 
+		}
+		
 		function showModal(content) {
-			var maskHeight = $(document).height();
+			var maskHeight = $(window).height();
 			var maskWidth = $(window).width();
 		 
 			//Set height and width to mask to fill up the whole screen
@@ -113,12 +129,15 @@ else
 				   
 			$('body').append(content);
 			//Set the popup window to center
-			$('.modal').css('top',  maskHeight/2-$('.modal').height()/2);
-			
-			//transition effect
-			$('.modal').fadeIn(); 
+			$('body > .modal')
+				.css('z-index', '10101')
+				.css('top',  maskHeight/2-$('body > .modal').height()/2)
+				.fadeIn();
 		}
 		
+		function showModalId(id) {
+			showModal($('#'+id));
+		}
  
 		function getGML(filter, display) {
 			if (!display)
@@ -237,14 +256,29 @@ else
 		}
 	}
 	
+	function togglemapkey() {
+		show = $('#mapkey').css('display') == 'none';
+		if (show)
+		   $('#mapkey').fadeIn();
+		else
+		   $('#mapkey').fadeOut(function() { $('#mapkey').css('display', 'none') });
+	}
+	
+	function closeMsg() {
+	   $('#message').fadeOut(function() { $(this).remove() });
+	   $('#map').animate({top: '40px'});
+	}
+	
 	$(document).ready(function(e) {
 		init();
 		$(window).resize(function() {
-			var maskHeight = $(document).height();
+			var maskHeight = $(window).height();
 			var maskWidth = $(window).width();
 			$('#mask').css({'width':maskWidth,'height':maskHeight});
-			$('.modal').css('top',  $(window).height()/2-$('.modal').height()/2);
-		});
+			$('body > .modal').css('top',  maskHeight/2-$('body > .modal').height()/2);
+		});<?php if ($_GET['message']) { ?>
+		setTimeout("closeMsg()", 2500);
+		<?php } ?>
 	});
 //]]>
   </script>
@@ -252,64 +286,92 @@ else
  
 <body>
 	<div id="mask"></div>
-	<div style="float:left; width:50%; height:20px" id="desc">
-		<?php if ($loginok==0) { ?>
-	Plakate werden erst nachdem Login editierbar.<br />
-	Lokaler oder Wiki Login möglich!
-	<? } else {	?>
-	STRG+Mausklick: neuer Marker
+	
+	
+	<div class="topbar">
+      <div class="fill">
+        <div class="container">
+          <h3><a href="#">Plakat Karte</a></h3>
+          <ul>
+		<?php if ($loginok != 0) { ?>
+			<form id="formLogout" action="<?php echo $url?>login.php?action=logout" method="post"></form>
+			<li><a href="#" onclick="javascript:document.forms['formLogout'].submit()">Abmelden</a></li>
+			<li><a href="#" onclick="javascript:showModalId('uploadimg');">Bild hochladen</a></li>
+		<?php } else { ?>
+			<li><a href="#" onclick="javascript:showModalId('loginform');">Anmelden</a></li>		
+		<?php } ?>
+			<li><a href="#" onclick="javascript:togglemapkey();">Legende / Hilfe</a></li>
+          </ul>
+        </div>
+      </div> <!-- /fill -->
+    </div> <!-- /topbar -->
+	<div style="display:none;">
+	<?php if ($loginok == 0) { ?>
+		<div class="modal" style="position: relative; top: auto; left: auto; margin: 0 auto; display:none;"
+			 id="loginform">
+          <div class="modal-header">
+            <h3>Anmelden</h3>
+			<a href="#" class="close" onclick="javascript:closeModalDlg(false);">&times;</a>
+          </div>
+          <div class="modal-body">
+			<form id="formlogin" action="<?php echo $url?>login.php" method="post">
+
+				<div class="clearfix">
+					<label for="username">Benutzer</label>
+					<div class="input">
+						<input type="text" size="30" class="xlarge" name="username" id="username" />
+					</div>
+				</div>
+
+				<div class="clearfix">
+					<label for="password">Passwort</label>
+					<div class="input">
+						<input type="password" size="30" class="xlarge" name="password" id="password" />
+					</div>
+				</div>
+			</form>
+          </div>
+          <div class="modal-footer">
+			<a href="#" class="btn primary" onclick="javascript:document.forms['formlogin'].submit();">Anmelden</a>
+			<a href="#" class="btn secondary" onclick="javascript:closeModalDlg(false);">Abbrechen</a>
+          </div>
+        </div>
+	<?php } else {?>
+		<div class="modal" style="position: relative; top: auto; left: auto; margin: 0 auto; display:none;"
+			 id="uploadimg">
+          <div class="modal-header">
+			<h3>Bild hochladen</h3>
+			<a href="#" class="close" onclick="javascript:closeModalDlg(false);">&times;</a>
+          </div>
+          <div class="modal-body">
+			<form enctype="multipart/form-data" method="post" id="formimgup" action="image.php">
+				<div class="clearfix">
+					<label for="image">Bild hochladen</label>
+					<div class="input">
+						<input type="file" id="image" name="image" class="xlarge">
+					</div>
+				</div>
+				<input type="hidden" name="completed" value="1">
+			</form>
+          </div>
+          <div class="modal-footer">
+			<a href="#" class="btn primary" onclick="javascript:document.forms['formimgup'].submit();">Hochladen</a>
+			<a href="#" class="btn secondary" onclick="javascript:closeModalDlg(false);">Abbrechen</a>
+          </div>
+        </div>
 	<?php } ?>
 	</div>
-	<div style="text-align: right; float:right; width:50%; height:20px;" id="login">
-	<!--<div style="width:100%; height:50px; top: 0px" id="login">-->
-	<?php
-	if ($loginok==0)
-	{
-	?>
-		<form action="<?php echo $url?>login.php" method="post">
-		<div>
-		User: <input type="text" name="username" />
-		Pass: <input type="password" name="password" />
-		<input type="submit" value="Login" />
-		</div>
-		</form>
-	<?php
-	}
-	else
-	{
-	?>
-		<table>
-			<tr>
-				<form enctype="multipart/form-data" method="post" action="image.php">
-				<td>
-					Image: <input type="file" name="image">
-					<input type="hidden" name="completed" value="1">
-					<input type="submit" value="Upload">
-				</td>
-				</form>
-				<form action="<?php echo $url?>login.php?action=logout" method="post">
-				<td>
-					<input type="submit" value="Logout">
-				</td>
-				</form>
-			</tr>
-		</table>
-
-	<?php
-	}
-	?>
-	</div>
-	<p style="clear: both;" />
-	<div style="position:absolute; top:20px; width:200px; left:40%; height:20px" id="message">
 	<?php
 	if ($_GET['message'])
 	{
 	?>
-		<b style="color: red;"><?php echo $_GET['message']?></b>
+	  <div class="alert-message info" id="message" style="margin-top:43px">
+		<a class="close" href="#" onclick="javascript:closeMsg();">&times;</a>
+        <p><?php echo $_GET['message']?></p>
+      </div>
 	<?php
 	}
 	?>
-	</div>
     <?php if ($show_last_x_changes > 0) {?>
 	<div style="position:absolute; top:50px; bottom:30px; width:150px; right:0px;" id="log" >
 		<?php if ($loginok) {
@@ -333,17 +395,37 @@ else
 	$mapmarginright = 0;
 	if ($show_last_x_changes > 0)
 		$mapmarginright = 150;
+	$mapmargintop = 40;
+	if ($_GET['message'])
+		$mapmargintop = 81;
 	?>
-	<div style="position:absolute; top:50px; bottom:30px; left:0px; right:<?php echo $mapmarginright?>px;" id="map" ></div>
-	<div style="position:absolute; bottom:0px; left:0px; right0px; height:30px" id="example">
-<?php
-foreach ($options as $key=>$value)
+	<div style="position:absolute; top:<?php echo $mapmargintop?>px; bottom:0px; left:0px; right:<?php echo $mapmarginright?>px;" id="map" ></div>
+	<div id="mapkey">
+	
+		<div class="modal" style="position: relative; top: auto; left: auto; margin: 0 auto; width: 256px;">
+          <div class="modal-header">
+            <h3>Legende</h3>
+			<a href="#" onclick="javascript:togglemapkey();" class="close">&times;</a>
+          </div>
+          <div class="modal-body">
+			<ul class="unstyled">
+			  <?php if ($loginok==0) { ?>
+				<li>Plakate werden erst nachdem Login editierbar.</li>
+				<li>Lokaler oder Wiki Login möglich!</li>
+			  <? } else {	?>
+				<li>STRG+Mausklick: neuer Marker</li>
+			  <?php } ?>
+			  <ul>
+<?php foreach ($options as $key=>$value)
 {
 	if ($value!="") {
 ?>
-		<img  style="vertical-align:text-top;" src="./images/markers/<?php echo $key?>.png" width="20" alt="<?php echo $key?>" />=<?php echo $value?>
+		<li><img  style="vertical-align:text-top;" src="./images/markers/<?php echo $key?>.png" width="20" alt="<?php echo $key?>" />=<?php echo $value?></li>
 <?php
 	}
-} ?>
+} ?></ul>
+			</ul>
+          </div>
+        </div>
 	</body>
 </html>
