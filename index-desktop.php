@@ -23,24 +23,31 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" >
 <head>
 	<meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
-	<?php if ($mobile) { ?>
-	<meta name="viewport" content="initial-scale=1.0, user-scalable=no">		
-	<?php } ?>
 	<title>OpenStreetMap Piraten Karte</title>
- 
+	<link rel="stylesheet" href="http://twitter.github.com/bootstrap/assets/css/bootstrap-1.1.0.min.css">
 	<style type="text/css">
 	<!--
 	.photo {
-		width: 259px;
+		height: 120px;
 	}
-	.phototxt {
-		width: 175px;
-	}	
+	#mask {
+		position:absolute;
+		z-index:10100;
+		background-color:#888;
+		display:none;
+	}
+	#mapkey {
+		position:absolute;
+		z-index:3000;
+		bottom:0px; 
+		left:0px; 
+		display:none;
+	}
 	-->
 	
 	
 	</style>
-
+	<script src="http://code.jquery.com/jquery-1.5.2.min.js"></script>
 	<script type="text/javascript" src="<?php echo $openlayers_path ?>OpenLayers.js"></script>
 	<script type="text/javascript" src="<?php echo $openstreetmap_path ?>OpenStreetMap.js"></script>
 	<script type="text/javascript" src="./js/urlencode.js"></script>
@@ -88,6 +95,49 @@ else
 			};
 			xhReq.send(null);		
 		}
+		
+		function closeModal() {
+			if (selectedFeature != null) {
+				sf = selectedFeature;
+				selectedFeature = null;
+				closeModalDlg(true);
+				selectControl.unselect(sf);
+			}
+		}
+		
+		function closeModalDlg(shouldRemove) {
+			$('#mask').fadeTo("fast",0, function() {$(this).css('display', 'none')});  
+			$('body > .modal').fadeOut(function() { 
+				if (shouldRemove) 
+					$(this).remove(); 
+				else
+					$(this).css('z-index', '1');
+			}); 
+		}
+		
+		function showModal(content) {
+			var maskHeight = $(window).height();
+			var maskWidth = $(window).width();
+		 
+			//Set height and width to mask to fill up the whole screen
+			$('#mask').css({'width':maskWidth,'height':maskHeight});
+			 
+			//transition effect         
+			$('#mask').fadeTo("fast",0.8);  
+			//Get the window height and width
+			var winH = $(window).height();
+				   
+			$('body').append(content);
+			//Set the popup window to center
+			$('body > .modal')
+				.css('z-index', '10101')
+				.css('top',  maskHeight/2-$('body > .modal').height()/2)
+				.fadeIn();
+		}
+		
+		function showModalId(id) {
+			showModal($('#'+id));
+		}
  
 		function getGML(filter, display) {
 			if (!display)
@@ -111,7 +161,7 @@ else
 
 		//Initialise the 'map' object
 		function init() {
-		  var options = {
+			var options = {
 				controls:[
 					new OpenLayers.Control.Navigation(),
 					new OpenLayers.Control.PanZoomBar(),
@@ -177,49 +227,26 @@ else
 			icon = new OpenLayers.Icon('http://www.openstreetmap.org/openlayers/img/marker.png',markerSize,markerOffset);
 			map.setCenter (lonLat, zoom); 			
 		}
-
-		function onPopupClose(evt) {
-			selectControl.unselect(selectedFeature);
-		}
-		function onFeatureSelect(feature) {
-		selectedFeature = feature;
 		
-		if (feature.pirattype === 'R')
-		{
-			popup = new OpenLayers.Popup.FramedCloud("chicken", 
-								feature.geometry.getBounds().getCenterLonLat(),
-								 new OpenLayers.Size(100,100),
-				 "<h2><a href='http://wiki.piratenpartei.de/Benutzer:"+feature.attributes.name+"' target='_blank'>"+feature.attributes.name+"</a></h2>"+feature.attributes.description + "<br><br>", null, true, onPopupClose);			
-		}
-		else
-		{			
-			popup = new OpenLayers.Popup.FramedCloud("chicken", 
-								 feature.geometry.getBounds().getCenterLonLat(),
-								 new OpenLayers.Size(100,100),
-				 "<h2>"+feature.attributes.name+"</h2>"+feature.attributes.description + "<br><br>", null, true, onPopupClose);
-		}
-		feature.popup = popup;
-		map.addPopup(popup);
-	}
 	function onFeatureUnselect(feature) {
-		map.removePopup(feature.popup);
-		feature.popup.destroy();
-		feature.popup = null;
+		closeModal();
 	}
-
+		
+	function onFeatureSelect(feature) {
+		selectedFeature = feature;
+		showModal(feature.attributes.description);
+	}
+	
 	function delid(id){
 		selectControl.unselect(selectedFeature);
 		makeAJAXrequest("./kml.php?action=del&id="+id);
 	}
 
-	function chanteTyp(id, type){
-		selectControl.unselect(selectedFeature);
-		makeAJAXrequest("./kml.php?action=change&id="+id+"&type="+type);
-	}
-	function addcomment(id){
+	function change(id){
 		comment = urlencode(document.getElementById('comment['+id+']').value);
 		image   = urlencode(document.getElementById('image['+id+']').value);
-		makeAJAXrequest("./kml.php?action=addcomment&id="+id+"&comment="+comment+"&image="+image);
+		typ     = urlencode(document.getElementById('typ['+id+']').value);
+		makeAJAXrequest("./kml.php?action=change&id="+id+"&type="+typ+"&comment="+comment+"&image="+image);
 		selectControl.unselect(selectedFeature);
 	}
 	function gmlreload(){
@@ -228,70 +255,124 @@ else
 			val.gml.setUrl(val.url);
 		}
 	}
+	
+	function togglemapkey() {
+		show = $('#mapkey').css('display') == 'none';
+		if (show)
+		   $('#mapkey').fadeIn();
+		else
+		   $('#mapkey').fadeOut(function() { $('#mapkey').css('display', 'none') });
+	}
+	
+	function closeMsg() {
+	   $('#message').fadeOut(function() { $(this).remove() });
+	   $('#map').animate({top: '40px'});
+	}
+	
+	$(document).ready(function(e) {
+		init();
+		$(window).resize(function() {
+			var maskHeight = $(window).height();
+			var maskWidth = $(window).width();
+			$('#mask').css({'width':maskWidth,'height':maskHeight});
+			$('body > .modal').css('top',  maskHeight/2-$('body > .modal').height()/2);
+		});<?php if ($_GET['message']) { ?>
+		setTimeout("closeMsg()", 2500);
+		<?php } ?>
+	});
 //]]>
   </script>
 </head>
  
 <body>
-	<div style="float:left; width:50%; height:20px" id="desc">
-		<?php if ($loginok==0) { ?>
-	Plakate werden erst nachdem Login editierbar.<br />
-	Lokaler oder Wiki Login möglich!
-	<? } else {	?>
-	STRG+Mausklick: neuer Marker
+	<div id="mask"></div>
+	
+	
+	<div class="topbar">
+      <div class="fill">
+        <div class="container">
+          <h3><a href="#">Plakat Karte</a></h3>
+          <ul>
+		<?php if ($loginok != 0) { ?>
+			<form id="formLogout" action="<?php echo $url?>login.php?action=logout" method="post"></form>
+			<li><a href="#" onclick="javascript:document.forms['formLogout'].submit()">Abmelden</a></li>
+			<li><a href="#" onclick="javascript:showModalId('uploadimg');">Bild hochladen</a></li>
+		<?php } else { ?>
+			<li><a href="#" onclick="javascript:showModalId('loginform');">Anmelden</a></li>		
+		<?php } ?>
+			<li><a href="#" onclick="javascript:togglemapkey();">Legende / Hilfe</a></li>
+          </ul>
+        </div>
+      </div> <!-- /fill -->
+    </div> <!-- /topbar -->
+	<div style="display:none;">
+	<?php if ($loginok == 0) { ?>
+		<div class="modal" style="position: relative; top: auto; left: auto; margin: 0 auto; display:none;"
+			 id="loginform">
+          <div class="modal-header">
+            <h3>Anmelden</h3>
+			<a href="#" class="close" onclick="javascript:closeModalDlg(false);">&times;</a>
+          </div>
+          <div class="modal-body">
+			<form id="formlogin" action="<?php echo $url?>login.php" method="post">
+
+				<div class="clearfix">
+					<label for="username">Benutzer</label>
+					<div class="input">
+						<input type="text" size="30" class="xlarge" name="username" id="username" />
+					</div>
+				</div>
+
+				<div class="clearfix">
+					<label for="password">Passwort</label>
+					<div class="input">
+						<input type="password" size="30" class="xlarge" name="password" id="password" />
+					</div>
+				</div>
+			</form>
+          </div>
+          <div class="modal-footer">
+			<a href="#" class="btn primary" onclick="javascript:document.forms['formlogin'].submit();">Anmelden</a>
+			<a href="#" class="btn secondary" onclick="javascript:closeModalDlg(false);">Abbrechen</a>
+          </div>
+        </div>
+	<?php } else {?>
+		<div class="modal" style="position: relative; top: auto; left: auto; margin: 0 auto; display:none;"
+			 id="uploadimg">
+          <div class="modal-header">
+			<h3>Bild hochladen</h3>
+			<a href="#" class="close" onclick="javascript:closeModalDlg(false);">&times;</a>
+          </div>
+          <div class="modal-body">
+			<form enctype="multipart/form-data" method="post" id="formimgup" action="image.php">
+				<div class="clearfix">
+					<label for="image">Bild hochladen</label>
+					<div class="input">
+						<input type="file" id="image" name="image" class="xlarge">
+					</div>
+				</div>
+				<input type="hidden" name="completed" value="1">
+			</form>
+          </div>
+          <div class="modal-footer">
+			<a href="#" class="btn primary" onclick="javascript:document.forms['formimgup'].submit();">Hochladen</a>
+			<a href="#" class="btn secondary" onclick="javascript:closeModalDlg(false);">Abbrechen</a>
+          </div>
+        </div>
 	<?php } ?>
 	</div>
-	<div style="text-align: right; float:right; width:50%; height:20px;" id="login">
-	<!--<div style="width:100%; height:50px; top: 0px" id="login">-->
-	<?php
-	if ($loginok==0)
-	{
-	?>
-		<form action="<?php echo $url?>login.php" method="post">
-		<div>
-		User: <input type="text" name="username" />
-		Pass: <input type="password" name="password" />
-		<input type="submit" value="Login" />
-		</div>
-		</form>
-	<?php
-	}
-	else
-	{
-	?>
-		<table>
-			<tr>
-				<form enctype="multipart/form-data" method="post" action="image.php">
-				<td>
-					Image: <input type="file" name="image">
-					<input type="hidden" name="completed" value="1">
-					<input type="submit" value="Upload">
-				</td>
-				</form>
-				<form action="<?php echo $url?>login.php?action=logout" method="post">
-				<td>
-					<input type="submit" value="Logout">
-				</td>
-				</form>
-			</tr>
-		</table>
-
-	<?php
-	}
-	?>
-	</div>
-	<p style="clear: both;" />
-	<div style="position:absolute; top:20px; width:200px; left:40%; height:20px" id="message">
 	<?php
 	if ($_GET['message'])
 	{
 	?>
-		<b style="color: red;"><?php echo $_GET['message']?></b>
+	  <div class="alert-message info" id="message" style="margin-top:43px">
+		<a class="close" href="#" onclick="javascript:closeMsg();">&times;</a>
+        <p><?php echo $_GET['message']?></p>
+      </div>
 	<?php
 	}
 	?>
-	</div>
-        <?php if ($show_last_x_changes > 0) {?>
+    <?php if ($show_last_x_changes > 0) {?>
 	<div style="position:absolute; top:50px; bottom:30px; width:150px; right:0px;" id="log" >
 		<?php if ($loginok) {
 			$res = mysql_query("SELECT id,user,timestamp,subject,what FROM ".$tbl_prefix."log ORDER BY timestamp DESC LIMIT ".$show_last_x_changes) OR DIE("Database ERROR");
@@ -310,23 +391,41 @@ else
 			}
 		}?>
 	</div>
-	<?php } ?>
-	<div style="position:absolute; top:50px; bottom:30px; left:0px; right:150px;" id="map" ></div>
-	<div style="position:absolute; bottom:0px; left:0px; right0px; height:30px" id="example">
-<?php
-foreach ($options as $key=>$value)
+	<?php } 
+	$mapmarginright = 0;
+	if ($show_last_x_changes > 0)
+		$mapmarginright = 150;
+	$mapmargintop = 40;
+	if ($_GET['message'])
+		$mapmargintop = 81;
+	?>
+	<div style="position:absolute; top:<?php echo $mapmargintop?>px; bottom:0px; left:0px; right:<?php echo $mapmarginright?>px;" id="map" ></div>
+	<div id="mapkey">
+	
+		<div class="modal" style="position: relative; top: auto; left: auto; margin: 0 auto; width: 256px;">
+          <div class="modal-header">
+            <h3>Legende</h3>
+			<a href="#" onclick="javascript:togglemapkey();" class="close">&times;</a>
+          </div>
+          <div class="modal-body">
+			<ul class="unstyled">
+			  <?php if ($loginok==0) { ?>
+				<li>Plakate werden erst nachdem Login editierbar.</li>
+				<li>Lokaler oder Wiki Login möglich!</li>
+			  <? } else {	?>
+				<li>STRG+Mausklick: neuer Marker</li>
+			  <?php } ?>
+			  <ul>
+<?php foreach ($options as $key=>$value)
 {
 	if ($value!="") {
 ?>
-		<img  style="vertical-align:text-top;" src="./images/markers/<?php echo $key?>.png" width="20" alt="<?php echo $key?>" />=<?php echo $value?>
+		<li><img  style="vertical-align:text-top;" src="./images/markers/<?php echo $key?>.png" width="20" alt="<?php echo $key?>" />=<?php echo $value?></li>
 <?php
 	}
-} ?>
-	<script type="text/javascript">
-//<![CDATA[	
-		init();
-//]]>
-	</script>
-
+} ?></ul>
+			</ul>
+          </div>
+        </div>
 	</body>
 </html>
