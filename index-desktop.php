@@ -23,24 +23,24 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" >
 <head>
 	<meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
-	<?php if ($mobile) { ?>
-	<meta name="viewport" content="initial-scale=1.0, user-scalable=no">		
-	<?php } ?>
 	<title>OpenStreetMap Piraten Karte</title>
- 
+	<link rel="stylesheet" href="http://twitter.github.com/bootstrap/assets/css/bootstrap-1.1.0.min.css">
 	<style type="text/css">
 	<!--
 	.photo {
-		width: 259px;
+		height: 120px;
 	}
-	.phototxt {
-		width: 175px;
-	}	
+	#mask {
+		position:absolute;
+		z-index:9000;
+		background-color:#000;
+		display:none;
+	}
 	-->
 	
 	
 	</style>
-
+	<script src="http://code.jquery.com/jquery-1.5.2.min.js"></script>
 	<script type="text/javascript" src="<?php echo $openlayers_path ?>OpenLayers.js"></script>
 	<script type="text/javascript" src="<?php echo $openstreetmap_path ?>OpenStreetMap.js"></script>
 	<script type="text/javascript" src="./js/urlencode.js"></script>
@@ -88,6 +88,37 @@ else
 			};
 			xhReq.send(null);		
 		}
+		
+		function closeModal() {
+			if (selectedFeature != null) {
+				sf = selectedFeature;
+				selectedFeature = null;
+				$('#mask').fadeTo("fast",0, function() {$(this).css('display', 'none')});  
+				$('.modal').fadeOut(function() { $(this).remove(); }); 
+				selectControl.unselect(sf);
+			}
+		}
+		
+		function showModal(content) {
+			var maskHeight = $(document).height();
+			var maskWidth = $(window).width();
+		 
+			//Set height and width to mask to fill up the whole screen
+			$('#mask').css({'width':maskWidth,'height':maskHeight});
+			 
+			//transition effect         
+			$('#mask').fadeTo("fast",0.8);  
+			//Get the window height and width
+			var winH = $(window).height();
+				   
+			$('body').append(content);
+			//Set the popup window to center
+			$('.modal').css('top',  maskHeight/2-$('.modal').height()/2);
+			
+			//transition effect
+			$('.modal').fadeIn(); 
+		}
+		
  
 		function getGML(filter, display) {
 			if (!display)
@@ -111,7 +142,7 @@ else
 
 		//Initialise the 'map' object
 		function init() {
-		  var options = {
+			var options = {
 				controls:[
 					new OpenLayers.Control.Navigation(),
 					new OpenLayers.Control.PanZoomBar(),
@@ -177,49 +208,26 @@ else
 			icon = new OpenLayers.Icon('http://www.openstreetmap.org/openlayers/img/marker.png',markerSize,markerOffset);
 			map.setCenter (lonLat, zoom); 			
 		}
-
-		function onPopupClose(evt) {
-			selectControl.unselect(selectedFeature);
-		}
-		function onFeatureSelect(feature) {
-		selectedFeature = feature;
 		
-		if (feature.pirattype === 'R')
-		{
-			popup = new OpenLayers.Popup.FramedCloud("chicken", 
-								feature.geometry.getBounds().getCenterLonLat(),
-								 new OpenLayers.Size(100,100),
-				 "<h2><a href='http://wiki.piratenpartei.de/Benutzer:"+feature.attributes.name+"' target='_blank'>"+feature.attributes.name+"</a></h2>"+feature.attributes.description + "<br><br>", null, true, onPopupClose);			
-		}
-		else
-		{			
-			popup = new OpenLayers.Popup.FramedCloud("chicken", 
-								 feature.geometry.getBounds().getCenterLonLat(),
-								 new OpenLayers.Size(100,100),
-				 "<h2>"+feature.attributes.name+"</h2>"+feature.attributes.description + "<br><br>", null, true, onPopupClose);
-		}
-		feature.popup = popup;
-		map.addPopup(popup);
-	}
 	function onFeatureUnselect(feature) {
-		map.removePopup(feature.popup);
-		feature.popup.destroy();
-		feature.popup = null;
+		closeModal();
 	}
-
+		
+	function onFeatureSelect(feature) {
+		selectedFeature = feature;
+		showModal(feature.attributes.description);
+	}
+	
 	function delid(id){
 		selectControl.unselect(selectedFeature);
 		makeAJAXrequest("./kml.php?action=del&id="+id);
 	}
 
-	function chanteTyp(id, type){
-		selectControl.unselect(selectedFeature);
-		makeAJAXrequest("./kml.php?action=change&id="+id+"&type="+type);
-	}
-	function addcomment(id){
+	function change(id){
 		comment = urlencode(document.getElementById('comment['+id+']').value);
 		image   = urlencode(document.getElementById('image['+id+']').value);
-		makeAJAXrequest("./kml.php?action=addcomment&id="+id+"&comment="+comment+"&image="+image);
+		typ     = urlencode(document.getElementById('typ['+id+']').value);
+		makeAJAXrequest("./kml.php?action=change&id="+id+"&type="+typ+"&comment="+comment+"&image="+image);
 		selectControl.unselect(selectedFeature);
 	}
 	function gmlreload(){
@@ -228,11 +236,22 @@ else
 			val.gml.setUrl(val.url);
 		}
 	}
+	
+	$(document).ready(function(e) {
+		init();
+		$(window).resize(function() {
+			var maskHeight = $(document).height();
+			var maskWidth = $(window).width();
+			$('#mask').css({'width':maskWidth,'height':maskHeight});
+			$('.modal').css('top',  $(window).height()/2-$('.modal').height()/2);
+		});
+	});
 //]]>
   </script>
 </head>
  
 <body>
+	<div id="mask"></div>
 	<div style="float:left; width:50%; height:20px" id="desc">
 		<?php if ($loginok==0) { ?>
 	Plakate werden erst nachdem Login editierbar.<br />
@@ -291,7 +310,7 @@ else
 	}
 	?>
 	</div>
-        <?php if ($show_last_x_changes > 0) {?>
+    <?php if ($show_last_x_changes > 0) {?>
 	<div style="position:absolute; top:50px; bottom:30px; width:150px; right:0px;" id="log" >
 		<?php if ($loginok) {
 			$res = mysql_query("SELECT id,user,timestamp,subject,what FROM ".$tbl_prefix."log ORDER BY timestamp DESC LIMIT ".$show_last_x_changes) OR DIE("Database ERROR");
@@ -310,8 +329,12 @@ else
 			}
 		}?>
 	</div>
-	<?php } ?>
-	<div style="position:absolute; top:50px; bottom:30px; left:0px; right:150px;" id="map" ></div>
+	<?php } 
+	$mapmarginright = 0;
+	if ($show_last_x_changes > 0)
+		$mapmarginright = 150;
+	?>
+	<div style="position:absolute; top:50px; bottom:30px; left:0px; right:<?php echo $mapmarginright?>px;" id="map" ></div>
 	<div style="position:absolute; bottom:0px; left:0px; right0px; height:30px" id="example">
 <?php
 foreach ($options as $key=>$value)
@@ -322,11 +345,5 @@ foreach ($options as $key=>$value)
 <?php
 	}
 } ?>
-	<script type="text/javascript">
-//<![CDATA[	
-		init();
-//]]>
-	</script>
-
 	</body>
 </html>
