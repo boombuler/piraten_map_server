@@ -22,12 +22,14 @@ require("includes.php");
 
 if ($_GET['action'] == 'logout')
 {
-	$snoopy->cookies = $_SESSION['wikisession'];
+	if ($_SESSION['wikisession']) {
+		$snoopy->cookies = $_SESSION['wikisession'];
 
-	$request_vars = array('action' => 'logout',
-			'format' => 'php');
-	if(!$snoopy->submit($apiPath, $request_vars))
-			die("Snoopy error: {$snoopy->error}");
+		$request_vars = array('action' => 'logout',
+				'format' => 'php');
+		if(!$snoopy->submit($apiPath, $request_vars))
+				die("Snoopy error: {$snoopy->error}");
+	}
 	$loginok=0;
 	unset($_SESSION['siduser']);
 	unset($_SESSION['wikisession']);

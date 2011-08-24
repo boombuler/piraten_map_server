@@ -35,9 +35,12 @@
 	
 	<script type="text/javascript" src="js/touchMapLite.marker.js"></script>
 	<script type="text/javascript" src="js/htmlEncode.js"></script>
-	<script type="application/x-javascript" src="iui/iui.js"></script> 
 	<link rel="stylesheet" type="text/css" href="viewer.css" />
-	<link rel="stylesheet" type="text/css" href="iui/iui.css" />
+
+	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.0b2/jquery.mobile-1.0b2.min.css" />
+	<script src="http://code.jquery.com/jquery-1.6.2.min.js"></script>
+	<script src="http://code.jquery.com/mobile/1.0b2/jquery.mobile-1.0b2.min.js"></script>	
+	
 	<script type="text/javascript">
 		
 		var touchMap = null;
@@ -70,7 +73,7 @@ foreach ($options as $key=>$value)
 					document.getElementById('delMark').onclick = function() {
 					    makeAJAXrequest("./json.php?action=del&id="+data.id);
 					}
-<?php } ?>				window.iui.showPageById('editfrm');
+<?php } ?>				$.mobile.changePage($("#editfrm"));
 					return false;
 				}
 			} , findOnMap, false);
@@ -106,8 +109,10 @@ foreach ($options as $key=>$value)
 				touchMap.MARKERS[i].drop()
 			}
 			var new_markers = JSON.parse( result );	
-			for(var i = 0; i < new_markers.length; i++)
-				createMarker(new_markers[i]);
+			if (new_markers != null) {
+				for(var i = 0; i < new_markers.length; i++)
+					createMarker(new_markers[i]);
+			}
 		}
 
 		EventUtils.addEventListener(window, 'load', function(){
@@ -117,21 +122,21 @@ $lat = get_float('lat');
 $lon = get_float('lon');
 $zoom = get_int('zoom');
 if ($lat)
-	echo "touchMap.lat = ".json_encode($lat).";";
+	echo "touchMap.lat = ".$lat.";";
 else if ($_SESSION['deflat'])
-	echo "touchMap.lat = ".json_encode($_SESSION['deflat']).";";
+	echo "touchMap.lat = ".$_SESSION['deflat'].";";
 else
 	echo "touchMap.lat = 53.37;";
 if ($lon)
-	echo "touchMap.lon = ".json_encode($lon).";";
+	echo "touchMap.lon = ".$lon.";";
 else if ($_SESSION['deflon'])
-	echo "touchMap.lon = ".json_encode($_SESSION['deflon']).";";
+	echo "touchMap.lon = ".$_SESSION['deflon'].";";
 else
 	echo "touchMap.lon = 10.39;";
 if ($zoom)
-	echo "touchMap.zoom = ".json_encode($zoom).";";
+	echo "touchMap.zoom = ".$zoom.";";
 else if ($_SESSION['defzoom'])
-	echo "touchMap.zoom = ".json_encode($_SESSION['defzoom']).";";
+	echo "touchMap.zoom = ".$_SESSION['defzoom'].";";
 else
 	echo "touchMap.zoom = 6;";
 ?>		
@@ -144,30 +149,26 @@ else
 			touchMap.reinitializeGraphic();
 		}, false);
 
-		PanoJS.settingsHandler = function(e) {
-			window.iui.showPageById('settings');
-			return false;
-		};
 		PanoJS.optionsHandler = function(e) {
-			window.iui.showPageById('settings');
+			$.mobile.changePage($("#settings"));
 			return false;
 		}
 
 		toggleWatchLocation = function(node) {
 			if(!touchMap.watchLocationHandler()){
-				node.setAttribute("toggled", node.getAttribute("toggled") != "true")
+				var myswitch = $("#slider");
+				myswitch[0].selectedIndex = myswitch[0].selectedIndex == 0 ? 1 : 0;
+				myswitch.slider("refresh");
 			}
 		}
-
-		iui.animOn = true;
 	</script>	
 </head>
 <body>
-	<div class="toolbar" id="toolbar">
-	  <h1 id="pageTitle"></h1>
-	  <a id="backButton" class="button" href="#"></a>
-	</div>    
-	<ul id="home" title="Karte" selected="true">
+	
+	<div id="home" data-role="page">
+		<div data-role="header">			
+			<h1>Karte</h1>
+		</div>
 		<div id="viewer">
 			<div class="well"><!-- --></div>
 			<div class="surface" id="touchArea"><!-- --></div>
@@ -178,70 +179,91 @@ else
 				<span class="options" title="Show Options">Options</span>
 			</p>
 		</div>
-	</ul>
-	<div id="settings" title="Menu" class="panel">
-		<h2>Zugang</h2>
-		<fieldset>
-		  <div class="row">
-<?php if ($loginok==0) { ?>
-                <a class="dir" href="#loginfrm">Login</a>
-<?php } else { ?>
-		<a class="dir" href="#home" onclick="document.forms['logout'].submit();">Logout</a>
-		</div><div class="row">
-		<a class="dir" href="#setmarker">Marker auf aktueller Position</a>
-<?php } ?>
-		  </div>		
-		</fieldset>
-		
-        <h2>Position</h2>
-        <fieldset>
-            <div class="row">
-                <a class="dir" onclick="touchMap.findLocationHandler();" href="#home">Position suchen</a>
-            </div>
-            <div class="row">
-              <label>Positionsverfolgung</label>
-                <div class="toggle" onclick="toggleWatchLocation(this);"><span class="thumb"></span><span class="toggleOn">ON</span><span class="toggleOff">OFF</span></div>
-            </div>
-	</fieldset>
-    </div>
-<?php if ($loginok==0) { ?>
-	<form action="<?php echo $url?>login.php" method="post" class="dialog" id="loginfrm" name="loginfrm">
-		<fieldset>
-			<h1>Login</h1>
-			<a class="button leftButton" type="cancel">Settings</a>
-			<a class="button blueButton" onclick="document.forms['loginfrm'].submit();">Login</a>
-			<label>User:</label>
-			<input type="text" name="username" />
-			<label>Pass:</label>
-			<input type="password" name="password" />
-		</fieldset>
-	</form>
-<?php } else { ?>
-	<form name="logout" id="logout" action="<?php echo $url?>login.php?action=logout" method="post"></form>
-<?php } ?>
-
-  <div id="editfrm" title="Details" class="panel">
-	<fieldset>
-	    <div class="row"><label id="info_typ" class="plaintxt" >&nbsp;</label></div>
-	    <div class="row"><label id="info_memo" class="plaintxt" >&nbsp;</label></div>
-	    <div class="row"><img src="images/noimg.png" id="info_image" width="250" class="centerimg" /></div>
-	</fieldset>
-<?php if ($loginok!=0) { ?>
-    <a class="whiteButton" href="#home">Marker editieren</a>
-    <a class="whiteButton" href="#home" id="delMark">Marker löschen</a>
-<?php } ?>
-  </div>
-
-  <div id="setmarker" title="Marker setzten" class="panel">
-    <fieldset><?php
+	</div>
+	
+  <div id="setmarker" data-role="page">
+	<div data-role="header">
+		<a href="#" data-role="button" data-rel="back" data-icon="back" data-iconpos="notext"></a>
+		<h1>Marker setzten</h1>
+	</div>
+	<ul data-role="listview" data-inset="true" data-theme="c" data-dividertheme="b">
+	<?php
 foreach ($options as $key=>$value)
 {
     if ($value != '') { ?>
-      <div class="row"><a class="dir" href="#home" onclick="setMarker('<?php echo $key; ?>');"><?php echo $value; ?></a></div>
+      <li><a href="#home" onclick="setMarker('<?php echo $key; ?>');"><?php echo $value; ?></a></li>
     <?php }
 }
-    ?></fieldset>
+    ?></ul>
   </div>
+	
+	
+	
+	<div id="settings" data-role="page">
+		<div data-role="header">
+			<a href="#" data-role="button" data-rel="back" data-icon="back" data-iconpos="notext"></a>
+			<h1>Menu</h1>
+		</div>
+		<div data-role="content">
+		
+<?php if ($loginok==0) { ?>
+			<form action="<?php echo $url?>login.php" method="post" class="dialog" id="loginfrm" name="loginfrm">
+<?php } else { ?>
+			<form name="logout" id="logout" action="<?php echo $url?>login.php?action=logout" method="post">
+<?php } ?>
+				<ul data-role="listview" data-theme="c" data-dividertheme="b">
+					<li data-role="list-divider">Zugang</li>
+						
+<?php if ($loginok==0) { ?>
+					<li data-role="fieldcontain">
+						<label for="username">Benutzername:</label>
+						<input type="text" name="username" id="username" />
+					</li>
+					<li data-role="fieldcontain">
+						<label for="password">Passwort:</label>
+						<input type="password" name="password" id="password" />
+					</li>
+					<li><a href="#home" onclick="document.forms['loginfrm'].submit();">Login</a></li>
+<?php } else { ?>
+					<li><a href="#home" onclick="document.forms['logout'].submit();">Logout</a></li>
+					<li><a href="#setmarker" >Marker auf aktueller Position</a></li>
+<?php } ?>
+					<li data-role="list-divider">Position</li>
+
+					<li><a onclick="touchMap.findLocationHandler();" href="#home">Position suchen</a></li>
+					<li data-role="fieldcontain">
+						<label for="slider">Positionsverfolgung</label>
+						<select name="slider" id="slider" data-role="slider" onchange="toggleWatchLocation(this);">
+							<option value="off">Off</option>
+							<option value="on">On</option>
+						</select> 
+					</li>
+				</ul>
+			</form>
+		</div>
+    </div>
+
+
+  <div id="editfrm" title="Details" data-role="page">
+  	<div data-role="header">
+		<a href="#" data-role="button" data-rel="back" data-icon="back" data-iconpos="notext"></a>
+		<h1>Details</h1>
+	</div>
+	<div data-role="content">
+		<ul data-role="listview" data-inset="true" data-theme="c" data-dividertheme="b">
+			<li><label id="info_typ" class="plaintxt" >&nbsp;</label></li>
+			<li><label id="info_memo" class="plaintxt" >&nbsp;</label></li>
+			<li><img src="images/noimg.png" id="info_image" width="250" /></li>
+		</ul>
+<?php if ($loginok!=0) { ?>
+    <!--a class="whiteButton" href="#home">Marker editieren</a-->
+		<a href="#home" data-role="button" id="delMark" data-icon="delete">Marker löschen</a>
+<?php } ?>
+		
+	</div>
+  </div>
+
+
 
 
   <script type="text/javascript" src="js/touchMapLite.event.touch.js"></script>
