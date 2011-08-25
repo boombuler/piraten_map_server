@@ -113,9 +113,9 @@ echo json_encode(array(
 	'id'=>$id,
 	't'=>$type, 
 	'tb'=>$options[$type],
-	'i'=>$image,
-	'c'=>$comment,
-	'u'=>$user,
+	'i'=>htmlspecialchars($image),
+	'c'=>htmlspecialchars($comment),
+	'u'=>htmlspecialchars($user),
 	'd'=>date('d.m.y H:i', strtotime($time))
 ));
 ?>]]></description>

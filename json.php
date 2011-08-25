@@ -48,6 +48,9 @@ $rs = mysql_query($query) OR dieDB();
 
 while($obj = mysql_fetch_object($rs))
 {
-$arr[] = $obj;
+	$obj->user    = htmlspecialchars($obj->user);
+	$obj->comment = htmlspecialchars($obj->comment);
+	$obj->image   = htmlspecialchars($obj->image);
+	$arr[] = $obj;
 }
 print json_encode($arr);

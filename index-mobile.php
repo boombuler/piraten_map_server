@@ -67,7 +67,7 @@ foreach ($options as $key=>$value)
 				onClick: function(event) {
 
 					document.getElementById('info_typ').innerHTML = typLookup[data.type];
-					document.getElementById('info_memo').innerHTML = htmlEncode(data.comment, true, 0);
+					document.getElementById('info_memo').innerHTML = data.comment;
 					document.getElementById('info_image').src = data.image ? data.image : 'images/noimg.png'
 <?php if ($loginok != 0) { ?>
 					document.getElementById('delMark').onclick = function() {
