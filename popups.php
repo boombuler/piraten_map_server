@@ -7,7 +7,7 @@ function createPopup(infos) {
 	result += '		</div>';
 	result += '		<div class="modal-body">';
 	result += '			<form>';
-	if (infos.i != null) {
+	if (infos.i != null && infos.i != "") {
 		result += '			<div class="clearfix">';
 		result += '				<label>Bild</label>';
 		result += '				<div class="input">';

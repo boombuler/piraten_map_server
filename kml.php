@@ -34,7 +34,10 @@ if ($loginok!=0) {
 			map_del(get_int('id'));
 			return;
 		case 'change':
-			map_change(get_int('id'), get_typ('type'), $_GET['comment'], $_GET['image']);
+			$id = get_int('id');
+			$comment = "".$_GET['comment'];
+			$image = "".$_GET['image'];
+			map_change($id, get_typ('type'), $comment , $image);
 			return;
 	}
 }
@@ -69,7 +72,7 @@ foreach($options as $key=>$value)
 
 $filterstr = "";
 if ($filter) {
-  $filterstr = " AND type = '".mysql_real_escape_string($filter)."'";
+  $filterstr = " AND type = '".mysql_escape($filter)."'";
 }
 
 $query = "SELECT p.id, f.lon, f.lat, f.type, f.user, f.timestamp, f.comment, f.image "

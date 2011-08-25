@@ -94,6 +94,12 @@ function dieDB() {
       DIE("Error!");
 }
 
+function mysql_escape($value) {
+	if (get_magic_quotes_gpc())
+		$value = stripslashes($value);
+	return mysql_real_escape_string($value);
+}
+
 function get_float($name) {
   return filter_input(INPUT_GET, $name, FILTER_VALIDATE_FLOAT);
 }
@@ -116,9 +122,9 @@ function get_typ($typ) {
 function map_add($lon, $lat, $typ) {
 	global $tbl_prefix, $_SESSION;
 	
-	$lon = mysql_real_escape_string($lon);
-	$lat = mysql_real_escape_string($lat);
-	$typ = mysql_real_escape_string($typ);
+	$lon = mysql_escape($lon);
+	$lat = mysql_escape($lat);
+	$typ = mysql_escape($typ);
 	
 	if ($typ != '')
 		$res = mysql_query("INSERT INTO ".$tbl_prefix."felder (lon,lat,user,type) VALUES ('".$lon."','".$lat."','".$_SESSION['siduser']."', '".$typ."');") OR dieDB();
@@ -137,7 +143,7 @@ echo "ID ".$id;
 function map_del($id) {
 	global $tbl_prefix, $_SESSION;
 	
-	$id = mysql_real_escape_string($id);
+	$id = mysql_escape($id);
 	
 	$res = mysql_query("UPDATE ".$tbl_prefix."plakat SET del = true where id = $id") OR dieDB();
 	
@@ -148,19 +154,19 @@ function map_del($id) {
 function map_change($id, $type, $comment, $imageurl) {
 	global $tbl_prefix, $_SESSION, $options;
 	
-	$id = mysql_real_escape_string($id);
+	$id = mysql_escape($id);
 	$query = "INSERT INTO ".$tbl_prefix."felder (plakat_id, lon, lat, user, type, comment, image) "
                . "SELECT plakat_id, lon, lat, '".$_SESSION['siduser']."' as user, ";
 	if(isset($options[$type])) {
-		$type = mysql_real_escape_string($type);
+		$type = mysql_escape($type);
 		$query .= "'$type' as type, ";
 	} else $query .= "type, ";
-	if ($comment != null) {
-		$comment = mysql_real_escape_string($comment);
+	if ($comment !== null) {
+		$comment = mysql_escape($comment);
 		$query .= "'$comment' as comment, ";
 	} else $query .= "comment, ";
-	if($imageurl != null) {	  
-		$imageurl = mysql_real_escape_string($imageurl);
+	if($imageurl !== null) {	  
+		$imageurl = mysql_escape($imageurl);
 		$query .= "'$imageurl' as image ";
 	} else $query .= "image ";
 
