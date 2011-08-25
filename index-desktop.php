@@ -82,18 +82,14 @@ else
 		var map;
 		var gmlLayers = new Array();
  
-		function makeAJAXrequest(url) {
-			var createXMLHttpRequest = function() {
-				try { return new XMLHttpRequest(); } catch(e) {}
-				return null;
-			}
-			var xhReq = createXMLHttpRequest();
-			xhReq.open("get", url, true);
-			xhReq.onreadystatechange = function() {
-			if (xhReq.readyState != 4)  { return; }
-				gmlreload();	
-			};
-			xhReq.send(null);		
+		function makeAJAXrequest(url, data) {
+			$.ajax({
+				url: url,
+				data: data,
+				success: function(msg){
+					gmlreload();
+				}
+			});
 		}
 		
 		function closeModal() {
@@ -197,7 +193,11 @@ else
 					lonlat = point.transform(
 						map.getProjectionObject(),new OpenLayers.Projection("EPSG:4326"));
 
-					makeAJAXrequest("./kml.php?action=add&lon="+lonlat.x+"&lat="+lonlat.y);
+					makeAJAXrequest("./kml.php", {
+						"action": "add",
+						"lon": lonlat.x,
+						"lat" :lonlat.y 
+					});
 				}
 			});
 			map.addControl(control);
@@ -240,14 +240,17 @@ else
 	
 	function delid(id){
 		selectControl.unselect(selectedFeature);
-		makeAJAXrequest("./kml.php?action=del&id="+id);
+		makeAJAXrequest("./kml.php", {"action":"del", "id":id});
 	}
 
 	function change(id){
-		comment = urlencode(document.getElementById('comment['+id+']').value);
-		image   = urlencode(document.getElementById('image['+id+']').value);
-		typ     = urlencode(document.getElementById('typ['+id+']').value);
-		makeAJAXrequest("./kml.php?action=change&id="+id+"&type="+typ+"&comment="+comment+"&image="+image);
+		makeAJAXrequest("./kml.php", {
+			"id"      : id,
+			"action"  : "change",
+			"type"    : document.getElementById('typ['+id+']').value,
+			"comment" : document.getElementById('comment['+id+']').value,
+			"image"   : document.getElementById('image['+id+']').value
+		});
 		selectControl.unselect(selectedFeature);
 	}
 	function gmlreload(){
