@@ -138,6 +138,8 @@ else
 			showModal($('#'+id));
 		}
  
+		<?php include "popups.php" ?>
+ 
 		function getGML(filter, display) {
 			if (!display)
 				display = "Unbearbeitet";
@@ -233,7 +235,7 @@ else
 		
 	function onFeatureSelect(feature) {
 		selectedFeature = feature;
-		showModal(feature.attributes.description);
+		showModal(createPopup(feature.attributes.description));
 	}
 	
 	function delid(id){

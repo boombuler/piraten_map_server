@@ -100,75 +100,25 @@ for ($i=0;$i<$num;$i++)
 	$time= mysql_result($res, $i, "timestamp");
 
 	$comment = mysql_result($res, $i, "comment");
+	if ($comment == null)
+		$comment = "";
 	$image   = mysql_result($res, $i, "image");
+	if ($image == "")
+		$image = null;
 ?>
   <Placemark>
-    <name><?php if ($type) {echo $options[$type]." - ";} echo $id?></name>
-<description><![CDATA[
-
-
-<div class="modal" style="position: relative; top: auto; left: auto; margin: 0 auto; z-index: 9001">
-	<div class="modal-header">
-		<h3><?php echo $options[$type] ?></h3>
-		<a href="#" onclick="javascript:closeModal();" class="close">&times;</a>
-	</div>
-	<div class="modal-body">
-		<form>
-			<?php if ($image) { ?>
-			<div class="clearfix">
-				<label>Bild</label>
-				<div class="input">
-					<a target="_blank" href="<?php echo $image?>"><img class="photo" src="<?php echo $image?>"></a>
-				</div>
-			</div>
-			<?php } if ($loginok!=0) { ?>
-			<div class="clearfix">
-				<label for="image[<?php echo $id?>]">Marker</label>
-				<div class="input">
-					<select class="xlarge" id="typ[<?php echo $id?>]" name="typ[<?php echo $id?>]"><?php
-						foreach ($options as $key=>$value) {
-							if ($key != 'default') { 
-								$sel = "";
-								if ($key == $type)
-									$sel = " selected=\"selected\"";?>
-						<option value="<?php echo $key?>"<?php echo $sel?>><?php echo $value?></option><?php
-							}
-						}?>
-					</select>
-				</div>
-			</div>
-			<?php } ?>			
-			<div class="clearfix">
-				<label for="comment[<?php echo $id?>]">Beschreibung</label>
-				<div class="input">
-					<textarea rows="3" cols="30" class="xlarge" name="comment[<?php echo $id?>]" id="comment[<?php echo $id?>]"><?php echo $comment?></textarea>
-				</div>
-			</div>
-			<?php if ($loginok!=0) { ?>
-			<div class="clearfix">
-				<label for="image[<?php echo $id?>]">Bild URL</label>
-				<div class="input">
-					<input type="text" size="30" class="xlarge" name="image[<?php echo $id?>]" id="image[<?php echo $id?>]" value="<?php echo $image?>" />
-				</div>
-			</div>
-			<?php } ?>
-			<div class="clearfix">
-				<div class="input">
-					<small>Zuletzt geändert von <b><?php echo $user?></b><br />am <b><?php echo date('d.m.y H:i', strtotime($time))?></b></small>
-				</div>
-			</div>
-		</form>
-	</div>
-	<?php if ($loginok!=0) { ?>
-	<div class="modal-footer">
-		<input type="button" value="Speichern" class="btn primary" onclick="javascript:change(<?php echo $id?>)">
-		<input type="button" value="Löschen" class="btn danger" onclick="javascript:delid(<?php echo $id?>)">
-	</div>
-	<?php } ?>
-</div>
-
-
-]]></description>
+    <name><?php echo $id?></name>
+<description><![CDATA[<?php 
+echo json_encode(array(
+	'id'=>$id,
+	't'=>$type, 
+	'tb'=>$options[$type],
+	'i'=>$image,
+	'c'=>$comment,
+	'u'=>$user,
+	'd'=>date('d.m.y H:i', strtotime($time))
+));
+?>]]></description>
 <?php
 if (isset($options[$type]))
 {
