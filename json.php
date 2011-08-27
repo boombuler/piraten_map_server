@@ -17,7 +17,7 @@
        specific language governing permissions and limitations
        under the License.
 */
-
+ob_start("ob_gzhandler");
 require("includes.php");
 
 if (($loginok==0) and !$allow_view_public)
