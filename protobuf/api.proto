@@ -1,0 +1,53 @@
+package piratemap;
+
+option java_package = "com.boombuler.piraten.map.proto";
+
+message Plakat {
+	required int32 Id                = 1;
+	required double Lon              = 2;
+	required double Lat              = 3;
+	required string Type             = 4;
+	optional string LastModifiedUser = 5;
+	optional int32 LastModifiedTime  = 6;
+	optional string Comment          = 7;
+	optional string ImageUrl         = 8;
+}
+
+message ViewRequest {
+	optional string Filter_Type = 1;
+}
+
+message ChangeRequest {
+	required int32 Id        = 1;
+	optional string Type     = 2;
+	optional string Comment  = 3;
+	optional string ImageUrl = 4;
+}
+
+message DeleteRequest {
+	required int32 Id = 1;
+}
+
+message AddRequest {
+	required double Lon      = 1;
+	required double Lat      = 2;
+	required string Type     = 3;
+	optional string Comment  = 4;
+	optional string ImageUrl = 5;
+}
+
+message Request {
+	required string Username         = 1;
+	required string Password         = 2;
+	optional ViewRequest ViewRequest = 3;
+	repeated AddRequest Add          = 4;
+	repeated ChangeRequest Change    = 5;
+	repeated DeleteRequest Delete    = 6;
+}
+
+message Response {
+	repeated Plakat Plakate     = 1;
+	optional int32 AddedCount   = 2;
+	optional int32 ChangedCount = 3;
+	optional int32 DeletedCount = 4;
+}
