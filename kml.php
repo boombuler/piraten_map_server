@@ -44,27 +44,17 @@ if ($loginok!=0) {
 
 $filter    = get_typ('filter');
 
-echo '<?xml version="1.0" encoding="UTF-8"?>'?>
-
-<kml xmlns="http://www.opengis.net/kml/2.2">
- <Document>
-  <name>PIRATEN</name>
-  <description><![CDATA[PIRATEN Wahlkampf Hilfe]]></description>
-<?php
+echo '<?xml version="1.0" encoding="UTF-8"?>';?>
+<kml xmlns="http://www.opengis.net/kml/2.2"><Document><name>PIRATEN</name><description><![CDATA[PIRATEN Wahlkampf Hilfe]]></description><?php
+$styles = array();
+$i = 0;
 foreach($options as $key=>$value)
 {
+  $styleKey = "s$i";
+  $i++;
+  $styles[$key] = $styleKey;
   if (!($filter) || ($filter == $key)) {
-?>
-  <Style id="<?php echo $key?>">
-    <IconStyle>
-	  <hotSpot x="0.5" y="0.5" xunits="fraction" yunits="fraction" />
-	  <scale>0.6</scale>
-      <Icon>
-      <href>./images/markers/<?php echo $key?>.png</href>
-      </Icon>
-    </IconStyle>
-  </Style>
-<?php
+?><Style id="<?php echo $styleKey?>"><IconStyle><hotSpot x="0.5" y="0.5" xunits="fraction" yunits="fraction" /><scale>0.6</scale><Icon><href>./images/markers/<?php echo $key?>.png</href></Icon></IconStyle></Style><?php
   }
 }
 ?>
@@ -108,10 +98,7 @@ for ($i=0;$i<$num;$i++)
 	$image   = mysql_result($res, $i, "image");
 	if ($image == "")
 		$image = null;
-?>
-  <Placemark>
-    <name><?php echo $id?></name>
-<description><![CDATA[<?php 
+?><Placemark><name><?php echo $id?></name><description><![CDATA[<?php 
 echo json_encode(array(
 	'id'=>$id,
 	't'=>$type, 
@@ -121,20 +108,11 @@ echo json_encode(array(
 	'u'=>htmlspecialchars($user),
 	'd'=>date('d.m.y H:i', strtotime($time))
 ));
-?>]]></description>
-<?php
+?>]]></description><?php
 if (isset($options[$type]))
 {
-	echo "<styleUrl>#".$type."</styleUrl>\r\n";
+	echo "<styleUrl>#".$styles[$type]."</styleUrl>";
 }
-?>
-    <Point>
-      <coordinates><?php echo $lon?>,<?php echo $lat?>,0.000000</coordinates>
-    </Point>
-  </Placemark>
-
-<?php
+?><Point><coordinates><?php echo $lon?>,<?php echo $lat?>,0.000000</coordinates></Point></Placemark><?php
 }
-?>
- </Document>
-</kml>
+?></Document></kml>
