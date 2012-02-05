@@ -24,7 +24,7 @@
 <head>
 	<meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
 	<title>OpenStreetMap Piraten Karte</title>
-	<link rel="stylesheet" href="http://twitter.github.com/bootstrap/assets/css/bootstrap-1.1.0.min.css">
+	<link rel="stylesheet" href="bootstrap-1.1.0.min.css">
 	<style type="text/css">
 	<!--
 	.photo {
