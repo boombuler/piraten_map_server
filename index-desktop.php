@@ -17,6 +17,7 @@
        specific language governing permissions and limitations
        under the License.
 */
+$layerswitchercolor = "black";
 ?><!DOCTYPE html 
 	 PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
 	 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -43,6 +44,9 @@
 		left:0px; 
 		display:none;
 	}
+	.olControlLayerSwitcher .layersDiv {
+		background-color: <?php echo $layerswitchercolor;?> !important;
+	}
 	-->
 	
 	
@@ -50,7 +54,6 @@
 	<script src="http://code.jquery.com/jquery-1.5.2.min.js"></script>
 	<script type="text/javascript" src="<?php echo $openlayers_path ?>OpenLayers.js"></script>
 	<script type="text/javascript" src="<?php echo $openstreetmap_path ?>OpenStreetMap.js"></script>
-	<script type="text/javascript" src="./js/urlencode.js"></script>
  
 	<script type="text/javascript">
 //<![CDATA[	
@@ -158,12 +161,15 @@ else
 
 		//Initialise the 'map' object
 		function init() {
+			OpenLayers.ImgPath = "./images/layer/";
 			var options = {
 				controls:[
 					new OpenLayers.Control.Navigation(),
 					new OpenLayers.Control.PanZoomBar(),
 					new OpenLayers.Control.Attribution(),
-					new OpenLayers.Control.LayerSwitcher(),
+					new OpenLayers.Control.LayerSwitcher({
+						roundedCornerColor: '<?php echo $layerswitchercolor;?>'
+					}),
 					new OpenLayers.Control.Permalink()],
 				maxResolution: 156543.0399,
 				maxExtent: new OpenLayers.Bounds(-2037508.34,-2037508.34,2037508.34,2037508.34),
