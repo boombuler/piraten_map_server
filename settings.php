@@ -43,9 +43,3 @@ $mysql_database="";
 
 // Tabellen Prefix
 $tbl_prefix = "plakate_";
-
-
-// OpenLayers Pfad
-$openlayers_path = "http://www.openlayers.org/api/";
-// OpenStreetMap Pfad
-$openstreetmap_path="http://www.openstreetmap.org/openlayers/";
