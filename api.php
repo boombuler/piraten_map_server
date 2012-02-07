@@ -83,7 +83,12 @@
   $filterstr = "";
   $filter = $request->ViewRequest();
   if ($filter) {
-      $filterstr = " AND type = '".mysql_escape($filter->Filter_Type())."'";
+      if ($filter->Filter_Type())
+          $filterstr = " AND type = '".mysql_escape($filter->Filter_Type())."'";
+      $vb = $filter->ViewBox();
+      if ($vb) { 
+	  $filterstr .= " AND (f.lon >= ".$vb->East().") && (f.lon <= ".$vb->West().") && (f.lat >= ".$vb->North().") && (f.lat <= ".$vb->South().")";
+      }
   }
 
   $query = "SELECT p.id, f.lon, f.lat, f.type, f.user, f.timestamp, f.comment, f.image "

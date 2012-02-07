@@ -13,8 +13,16 @@ message Plakat {
 	optional string ImageUrl         = 8;
 }
 
+message BoundingBox {
+	required double North		= 1;
+	required double East		= 2;
+	required double South		= 3;
+	required double West		= 4;
+}
+
 message ViewRequest {
-	optional string Filter_Type = 1;
+	optional string Filter_Type 	= 1;
+	optional BoundingBox ViewBox	= 2;
 }
 
 message ChangeRequest {

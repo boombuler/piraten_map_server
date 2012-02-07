@@ -96,6 +96,58 @@ class Plakat extends PBMessage
     return $this->_set_value("8", $value);
   }
 }
+class BoundingBox extends PBMessage
+{
+  var $wired_type = PBMessage::WIRED_LENGTH_DELIMITED;
+  public function __construct($reader=null)
+  {
+    parent::__construct($reader);
+    self::$fields["BoundingBox"]["1"] = "PB64Bit";
+    $this->values["1"] = "";
+    self::$fieldNames["BoundingBox"]["1"] = "North";
+    self::$fields["BoundingBox"]["2"] = "PB64Bit";
+    $this->values["2"] = "";
+    self::$fieldNames["BoundingBox"]["2"] = "East";
+    self::$fields["BoundingBox"]["3"] = "PB64Bit";
+    $this->values["3"] = "";
+    self::$fieldNames["BoundingBox"]["3"] = "South";
+    self::$fields["BoundingBox"]["4"] = "PB64Bit";
+    $this->values["4"] = "";
+    self::$fieldNames["BoundingBox"]["4"] = "West";
+  }
+  function North()
+  {
+    return $this->_get_value("1");
+  }
+  function set_North($value)
+  {
+    return $this->_set_value("1", $value);
+  }
+  function East()
+  {
+    return $this->_get_value("2");
+  }
+  function set_East($value)
+  {
+    return $this->_set_value("2", $value);
+  }
+  function South()
+  {
+    return $this->_get_value("3");
+  }
+  function set_South($value)
+  {
+    return $this->_set_value("3", $value);
+  }
+  function West()
+  {
+    return $this->_get_value("4");
+  }
+  function set_West($value)
+  {
+    return $this->_set_value("4", $value);
+  }
+}
 class ViewRequest extends PBMessage
 {
   var $wired_type = PBMessage::WIRED_LENGTH_DELIMITED;
@@ -105,6 +157,9 @@ class ViewRequest extends PBMessage
     self::$fields["ViewRequest"]["1"] = "PBString";
     $this->values["1"] = "";
     self::$fieldNames["ViewRequest"]["1"] = "Filter_Type";
+    self::$fields["ViewRequest"]["2"] = "BoundingBox";
+    $this->values["2"] = "";
+    self::$fieldNames["ViewRequest"]["2"] = "ViewBox";
   }
   function Filter_Type()
   {
@@ -113,6 +168,14 @@ class ViewRequest extends PBMessage
   function set_Filter_Type($value)
   {
     return $this->_set_value("1", $value);
+  }
+  function ViewBox()
+  {
+    return $this->_get_value("2");
+  }
+  function set_ViewBox($value)
+  {
+    return $this->_set_value("2", $value);
   }
 }
 class ChangeRequest extends PBMessage
