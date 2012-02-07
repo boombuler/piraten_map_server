@@ -139,19 +139,24 @@ else
 				display = "Unbearbeitet";
 
 			var filterurl = "./kml.php?filter="+filter;
-			var mygml = new OpenLayers.Layer.GML(display, filterurl, {
-				format: OpenLayers.Format.KML,
+			
+			var mygml = new OpenLayers.Layer.Vector(display, {
 				projection: map.displayProjection,
-				formatOptions: {
-					extractStyles: true,
-					extractAttributes: true
-				}
+				strategies: [
+					new OpenLayers.Strategy.BBOX()
+				],
+				protocol: new OpenLayers.Protocol.HTTP({
+					url: filterurl,
+					format: new OpenLayers.Format.KML({
+                        extractStyles: true, 
+                        extractAttributes: true
+                    }),
+				})
 			});
+
 			map.addLayer(mygml);
-			return {
-				url: filterurl,
-				gml: mygml
-			}
+
+			return mygml;
 		}
 
 		//Initialise the 'map' object
@@ -212,21 +217,13 @@ else
 			}
 			?>
 
-			var gmls = new Array();
-			for(var i = 0; i < gmlLayers.length; i++)
-				gmls.push(gmlLayers[i].gml);
-
-			selectControl = new OpenLayers.Control.SelectFeature(gmls,
+			selectControl = new OpenLayers.Control.SelectFeature(gmlLayers,
 						{onSelect: onFeatureSelect, onUnselect: onFeatureUnselect});
 		  
 			map.addControl(selectControl);
 			selectControl.activate();
 
 			var lonLat = new OpenLayers.LonLat(lon, lat).transform(new OpenLayers.Projection("EPSG:4326"), map.getProjectionObject());
- 
-			var markerSize = new OpenLayers.Size(21,25);
-			var markerOffset = new OpenLayers.Pixel(-(markerSize.w/2), -markerSize.h);				
-			icon = new OpenLayers.Icon('http://www.openstreetmap.org/openlayers/img/marker.png',markerSize,markerOffset);
 			map.setCenter (lonLat, zoom); 			
 		}
 		
@@ -257,7 +254,12 @@ else
 	function gmlreload(){
 		for(var i = 0; i < gmlLayers.length; i++) {
 			var val = gmlLayers[i];
-			val.gml.setUrl(val.url);
+			//setting loaded to false unloads the layer//
+			val.loaded = false;
+			//setting visibility to true forces a reload of the layer//
+			val.setVisibility(true);
+			//the refresh will force it to get the new KML data//
+			val.refresh({ force: true, params: { 'random': Math.random()} });
 		}
 	}
 	

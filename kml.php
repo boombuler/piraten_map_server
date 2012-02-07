@@ -44,26 +44,45 @@ if ($loginok!=0) {
 
 $filter    = get_typ('filter');
 
-echo '<?xml version="1.0" encoding="UTF-8"?>';?>
-<kml xmlns="http://www.opengis.net/kml/2.2"><Document><name>PIRATEN</name><description><![CDATA[PIRATEN Wahlkampf Hilfe]]></description><?php
+$dom = new DOMDocument('1.0', 'UTF-8');
+$nodeKml = $dom->appendChild($dom->createElementNS('http://www.opengis.net/kml/2.2', 'kml'));
+
+$nodeDoc = $nodeKml->appendChild($dom->createElement('Document'));
+$nodeDoc->appendChild($dom->createElement('name', 'PIRATEN'));
+
+$nodeDoc->appendChild($dom->createElement('description'))->appendChild($dom->createCDATASection('Piraten Plakate'));
+
+// Define the styles
 $styles = array();
 $i = 0;
-foreach($options as $key=>$value)
-{
-  $styleKey = "s$i";
-  $i++;
-  $styles[$key] = $styleKey;
-  if (!($filter) || ($filter == $key)) {
-?><Style id="<?php echo $styleKey?>"><IconStyle><hotSpot x="0.5" y="0.5" xunits="fraction" yunits="fraction" /><scale>0.6</scale><Icon><href>./images/markers/<?php echo $key?>.png</href></Icon></IconStyle></Style><?php
-  }
+foreach($options as $key=>$value) {
+	$styleKey = "s$i";
+	$i++;
+	$styles[$key] = $styleKey;
+	if (!($filter) || ($filter == $key)) {
+		$nStyle = $nodeDoc->appendChild($dom->createElement('Style'));
+		$nStyle->setAttribute('id', $styleKey);
+		$nIconS = $nStyle->appendChild($dom->createElement('IconStyle'));
+		$nHotSpot = $nIconS->appendChild($dom->createElement('hotSpot'));
+		$nHotSpot->setAttribute('x', '0.5');
+		$nHotSpot->setAttribute('y', '0.5');
+		$nHotSpot->setAttribute('xunits', 'fraction');
+		$nHotSpot->setAttribute('yunits', 'fraction');
+		$nIconS->appendChild($dom->createElement('scale', '0.6'));
+		$nIconS->appendChild($dom->createElement('Icon'))->appendChild($dom->createElement('href', "./images/markers/$key.png"));
+	}
 }
-?>
-<?php
 
 $filterstr = "";
 if ($filter) {
   $filterstr = " AND type = '".mysql_escape($filter)."'";
 }
+$bbox = mysql_escape($_GET['bbox']);
+if ($bbox) {
+	list($bbe, $bbn, $bbw, $bbs) = split(",", $bbox);
+	$filterstr .= " AND (f.lon >= $bbe) && (f.lon <= $bbw) && (f.lat >= $bbn) && (f.lat <= $bbs)";
+}
+
 
 $query = "SELECT p.id, f.lon, f.lat, f.type, f.user, f.timestamp, f.comment, f.image "
       . " FROM ".$tbl_prefix."felder f JOIN ".$tbl_prefix."plakat p on p.actual_id = f.id"
@@ -72,47 +91,47 @@ $query = "SELECT p.id, f.lon, f.lat, f.type, f.user, f.timestamp, f.comment, f.i
 $res = mysql_query($query) OR dieDB();
 $num = mysql_num_rows($res);
 
-for ($i=0;$i<$num;$i++)
-{
+for ($i=0;$i<$num;$i++) {
 	$id  = mysql_result($res, $i, "id");
-
+	
 	$lon = mysql_result($res, $i, "lon");
 	$arr = preg_split("/\./", $lon);
 	$ar2 = str_split($arr[1],6);
 	$lon = $arr[0].".".$ar2[0];
-
+	
 	$lat = mysql_result($res, $i, "lat");
 	$arr = preg_split("/\./", $lat);
 	$ar2 = str_split($arr[1],6);
 	$lat = $arr[0].".".$ar2[0];
-
+	
 	$type= mysql_result($res, $i, "type");
-
+	
 	$user= mysql_result($res, $i, "user");
-
+	
 	$time= mysql_result($res, $i, "timestamp");
-
+	
 	$comment = mysql_result($res, $i, "comment");
 	if ($comment == null)
 		$comment = "";
 	$image   = mysql_result($res, $i, "image");
 	if ($image == "")
 		$image = null;
-?><Placemark><name><?php echo $id?></name><description><![CDATA[<?php 
-echo json_encode(array(
-	'id'=>$id,
-	't'=>$type, 
-	'tb'=>$options[$type],
-	'i'=>htmlspecialchars($image),
-	'c'=>htmlspecialchars($comment),
-	'u'=>htmlspecialchars($user),
-	'd'=>date('d.m.y H:i', strtotime($time))
-));
-?>]]></description><?php
-if (isset($options[$type]))
-{
-	echo "<styleUrl>#".$styles[$type]."</styleUrl>";
+	
+	$place = $nodeDoc->appendChild($dom->createElement('Placemark'));
+	$place->appendChild($dom->createElement('name', $id));
+	$place->appendChild($dom->createElement('description'))->appendChild(
+		$dom->createCDATASection(json_encode(array(
+			'id'=>$id,
+			't'=>$type, 
+			'tb'=>$options[$type],
+			'i'=>htmlspecialchars($image),
+			'c'=>htmlspecialchars($comment),
+			'u'=>htmlspecialchars($user),
+			'd'=>date('d.m.y H:i', strtotime($time))
+		))));
+	if (isset($options[$type]))
+		$place->appendChild($dom->createElement('styleUrl', '#'.$styles[$type]));
+	$place->appendChild($dom->createElement('Point'))->appendChild($dom->createElement('coordinates', "$lon,$lat"));
 }
-?><Point><coordinates><?php echo $lon?>,<?php echo $lat?>,0.000000</coordinates></Point></Placemark><?php
-}
-?></Document></kml>
+echo $dom->saveXML();	
+?>
