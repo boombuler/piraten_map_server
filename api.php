@@ -87,7 +87,7 @@
           $filterstr = " AND type = '".mysql_escape($filter->Filter_Type())."'";
       $vb = $filter->ViewBox();
       if ($vb) { 
-	  $filterstr .= " AND (f.lon >= ".$vb->East().") && (f.lon <= ".$vb->West().") && (f.lat >= ".$vb->North().") && (f.lat <= ".$vb->South().")";
+	  $filterstr .= " AND (f.lon <= ".$vb->East().") && (f.lon >= ".$vb->West().") && (f.lat <= ".$vb->North().") && (f.lat >= ".$vb->South().")";
       }
   }
 
