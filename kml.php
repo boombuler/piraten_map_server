@@ -80,7 +80,7 @@ if ($filter) {
 $bbox = mysql_escape($_GET['bbox']);
 if ($bbox) {
 	list($bbe, $bbn, $bbw, $bbs) = split(",", $bbox);
-	$filterstr .= " AND (f.lon >= $bbe) && (f.lon <= $bbw) && (f.lat >= $bbn) && (f.lat <= $bbs)";
+	$filterstr .= " AND (f.lon >= $bbe) AND (f.lon <= $bbw) AND (f.lat >= $bbn) AND (f.lat <= $bbs)";
 }
 
 
