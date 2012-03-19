@@ -22,6 +22,7 @@
 // Url zur Seite
 $url = 'http://piraten.boombuler.de/';
 $send_mail_adr = "no-reply@piratenpartei.de";
+
 // SSL Wiki Verbindung benutzen?
 $use_ssl = true;
 $curl_path="/usr/bin/curl";
@@ -29,7 +30,7 @@ $allow_view_public = true;
 // Die letzten Änderungen anzeigen
 $show_last_x_changes = 10;
 
-$debug = false;
+$debug = true;
 
 // MySQL Verbindung:
 // =================
