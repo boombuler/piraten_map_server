@@ -36,8 +36,10 @@ if ($loginok!=0) {
 		case 'change':
 			$id = get_int('id');
 			$comment = "".$_GET['comment'];
+			$city = "".$_GET['city'];
+			$street = "".$_GET['street'];
 			$image = "".$_GET['image'];
-			map_change($id, get_typ('type'), $comment , $image);
+			map_change($id, get_typ('type'), $comment, $city, $street, $image);
 			return;
 	}
 }
@@ -84,7 +86,7 @@ if ($bbox) {
 }
 
 
-$query = "SELECT p.id, f.lon, f.lat, f.type, f.user, f.timestamp, f.comment, f.image "
+$query = "SELECT p.id, f.lon, f.lat, f.type, f.user, f.timestamp, f.comment, f.city, f.street, f.image "
       . " FROM ".$tbl_prefix."felder f JOIN ".$tbl_prefix."plakat p on p.actual_id = f.id"
       . " WHERE p.del != true".$filterstr;
 
@@ -111,8 +113,15 @@ for ($i=0;$i<$num;$i++) {
 	$time= mysql_result($res, $i, "timestamp");
 	
 	$comment = mysql_result($res, $i, "comment");
+	
 	if ($comment == null)
 		$comment = "";
+	$city = mysql_result($res, $i, "city");
+	if ($city == null)
+		$city = "";
+	$street = mysql_result($res, $i, "street");
+	if ($street == null)
+		$street = "";
 	$image   = mysql_result($res, $i, "image");
 	if ($image == "")
 		$image = null;
@@ -126,6 +135,8 @@ for ($i=0;$i<$num;$i++) {
 			'tb'=>$options[$type],
 			'i'=>htmlspecialchars($image),
 			'c'=>htmlspecialchars($comment),
+			'ci'=>htmlspecialchars($city),
+			's'=>htmlspecialchars($street),
 			'u'=>htmlspecialchars($user),
 			'd'=>date('d.m.y H:i', strtotime($time))
 		))));

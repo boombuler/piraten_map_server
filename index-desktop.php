@@ -247,6 +247,8 @@ else
 			"action"  : "change",
 			"type"    : document.getElementById('typ['+id+']').value,
 			"comment" : document.getElementById('comment['+id+']').value,
+			"city"    : document.getElementById('city['+id+']').value,
+			"street"  : document.getElementById('street['+id+']').value,
 			"image"   : document.getElementById('image['+id+']').value
 		});
 		selectControl.unselect(selectedFeature);

@@ -31,25 +31,29 @@ if ($loginok!=0)
 		map_add(preg_replace("/,/",".",get_float('lon')),
 			preg_replace("/,/",".",get_float('lat')),
 			get_typ('typ'));
+		break;
 	case 'del':
 		map_del(get_int('id'));
+		break;
 	case 'change':
 		map_change(get_int('id'), get_typ('type'), null, null);
+		break;
 	case 'addcomment':
 		map_change(get_int('id'), null, $_GET['comment'], $_GET['image']);
 	}
 }
 
-$query = "SELECT p.id, f.lon, f.lat, f.type, f.user, f.timestamp, f.comment, f.image "
+$query = "SELECT p.id, f.lon, f.lat, f.type, f.user, f.timestamp, f.comment, f.city, f.street, f.image "
       . " FROM ".$tbl_prefix."felder f JOIN ".$tbl_prefix."plakat p on p.actual_id = f.id"
       . " WHERE p.del != true";
 
 $rs = mysql_query($query) OR dieDB();
-
 while($obj = mysql_fetch_object($rs))
 {
 	$obj->user    = htmlspecialchars($obj->user);
 	$obj->comment = htmlspecialchars($obj->comment);
+	$obj->city    = htmlspecialchars($obj->city);
+	$obj->street  = htmlspecialchars($obj->street);
 	$obj->image   = htmlspecialchars($obj->image);
 	$arr[] = $obj;
 }
