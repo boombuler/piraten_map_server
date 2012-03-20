@@ -20,6 +20,17 @@
 
 include "Snoopy.class.php";
 include "settings.php";
+
+function get_inner_html( $node ) { 
+    $innerHTML= ''; 
+    $children = $node->childNodes; 
+    foreach ($children as $child) { 
+        $innerHTML .= $child->ownerDocument->saveXML( $child ); 
+    } 
+
+    return $innerHTML; 
+} 
+
 $snoopy = new Snoopy;
 
 if ($use_ssl) {
@@ -126,13 +137,21 @@ function map_add($lon, $lat, $typ) {
 	$lat = mysql_escape($lat);
 	$typ = mysql_escape($typ);
 	
+	$src = new DOMDocument('1.0', 'utf-8');
+	$src->formatOutput = true;
+	$src->preserveWhiteSpace = false;
+	$src->load("http://nominatim.openstreetmap.org/reverse?format=xml&zoom=18&addressdetails=1&lon=".$lon."&lat=".$lat);
+	$city = get_inner_html($src->getElementsByTagName('city')->item(0));
+	$street = get_inner_html($src->getElementsByTagName('road')->item(0));
+	$city = mysql_escape($city);
+	$street = mysql_escape($street);
+	
 	if ($typ != '')
-		$res = mysql_query("INSERT INTO ".$tbl_prefix."felder (lon,lat,user,type) VALUES ('".$lon."','".$lat."','".$_SESSION['siduser']."', '".$typ."');") OR dieDB();
+		$res = mysql_query("INSERT INTO ".$tbl_prefix."felder (lon,lat,user,type,city,street) VALUES ('".$lon."','".$lat."','".$_SESSION['siduser']."','".$typ."','".$city."','".$street."');") OR dieDB();
 	else
-		$res = mysql_query("INSERT INTO ".$tbl_prefix."felder (lon,lat,user) VALUES ('".$lon."','".$lat."','".$_SESSION['siduser']."');") OR dieDB();
+		$res = mysql_query("INSERT INTO ".$tbl_prefix."felder (lon,lat,user,city,street) VALUES ('".$lon."','".$lat."','".$_SESSION['siduser']."','".$city."','".$street."');") OR dieDB();
 	
 	$id = mysql_insert_id();
-echo "ID ".$id;
 	$res = mysql_query("INSERT INTO ".$tbl_prefix."plakat (actual_id, del) VALUES('".$id."',false)") OR dieDB();
 	$pid = mysql_insert_id();
 	mysql_query("UPDATE ".$tbl_prefix."felder SET plakat_id = $pid WHERE id = $id") or dieDB();
@@ -151,11 +170,11 @@ function map_del($id) {
 	return;
 }
 
-function map_change($id, $type, $comment, $imageurl) {
+function map_change($id, $type, $comment, $city, $street, $imageurl) {
 	global $tbl_prefix, $_SESSION, $options;
 	
 	$id = mysql_escape($id);
-	$query = "INSERT INTO ".$tbl_prefix."felder (plakat_id, lon, lat, user, type, comment, image) "
+	$query = "INSERT INTO ".$tbl_prefix."felder (plakat_id, lon, lat, user, type, comment, city, street, image) "
                . "SELECT plakat_id, lon, lat, '".$_SESSION['siduser']."' as user, ";
 	if(isset($options[$type])) {
 		$type = mysql_escape($type);
@@ -165,6 +184,14 @@ function map_change($id, $type, $comment, $imageurl) {
 		$comment = mysql_escape($comment);
 		$query .= "'$comment' as comment, ";
 	} else $query .= "comment, ";
+	if($city !== null) {	  
+		$city = mysql_escape($city);
+		$query .= "'$city' as city, ";
+	} else $query .= "city, ";
+	if($street !== null) {	  
+		$street = mysql_escape($street);
+		$query .= "'$street' as street, ";
+	} else $query .= "street, ";
 	if($imageurl !== null) {	  
 		$imageurl = mysql_escape($imageurl);
 		$query .= "'$imageurl' as image ";

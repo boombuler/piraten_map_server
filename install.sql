@@ -6,7 +6,6 @@ SET time_zone = "+00:00";
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8 */;
 
-
 CREATE TABLE IF NOT EXISTS `plakate_felder` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `plakat_id` int(11) DEFAULT NULL,
@@ -16,6 +15,8 @@ CREATE TABLE IF NOT EXISTS `plakate_felder` (
   `user` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `comment` text COLLATE utf8_unicode_ci NOT NULL,
+  `city` varchar(150) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `street` varchar(150) COLLATE utf8_unicode_ci DEFAULT NULL,
   `image` varchar(150) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -50,6 +51,8 @@ CREATE TABLE IF NOT EXISTS `plakate_users` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `password` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `active` bool DEFAULT FALSE,
+  `hash` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 

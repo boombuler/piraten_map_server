@@ -223,7 +223,11 @@ foreach ($options as $key=>$value)
 						<label for="password">Passwort:</label>
 						<input type="password" name="password" id="password" />
 					</li>
-					<li><a href="#home" onclick="document.forms['loginfrm'].submit();">Login</a></li>
+					<li data-role="fieldcontain">
+						<label for="mail">Mail:</label>
+						<input type="text" name="mail" id="mail" />
+					</li>
+					<li><a href="#home" onclick="document.forms['loginfrm'].submit();">Login/Create Account</a></li>
 <?php } else { ?>
 					<li><a href="#home" onclick="document.forms['logout'].submit();">Logout</a></li>
 					<li><a href="#setmarker" >Marker auf aktueller Position</a></li>

@@ -31,6 +31,18 @@ function createPopup(infos) {
 	result += '						</select>';
 	result += '					</div>';
 	result += '				</div>';
+	result += '				<div class="clearfix">';
+	result += '					<label for="city['+infos.id+']">Stadt</label>';
+	result += '					<div class="input">';
+	result += '						<input type="text" size="30" class="xlarge" name="city['+infos.id+']" id="city['+infos.id+']" value="'+infos.ci+'" />';
+	result += '					</div>';
+	result += '				</div>';
+	result += '				<div class="clearfix">';
+	result += '					<label for="street['+infos.id+']">Straße</label>';
+	result += '					<div class="input">';
+	result += '						<input type="text" size="30" class="xlarge" name="street['+infos.id+']" id="street['+infos.id+']" value="'+infos.s+'" />';
+	result += '					</div>';
+	result += '				</div>';
 	<?php } ?>
 	result += '				<div class="clearfix">';
 	result += '					<label for="comment['+infos.id+']">Beschreibung</label>';
