@@ -34,7 +34,7 @@ body {
 }
 
 #viewer {
-	background: #dddddd url(../images/loading.gif) center no-repeat;
+	background: #dddddd url(images/loading.gif) center no-repeat;
 	width: 100%;
 	height: 100%;
 	position: relative;
@@ -60,7 +60,7 @@ body.witheffects #viewer {
 }
 
 #viewer .controls span {
-	background-image:url(../images/buttons.png);
+	background-image:url(images/buttons.png);
 	border:none;
 	display:block;
 	height:36px;

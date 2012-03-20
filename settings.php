@@ -24,11 +24,11 @@ $url = '';
 // SSL Wiki Verbindung benutzen?
 $use_ssl = true;
 $curl_path="/usr/bin/curl";
-$allow_view_public = true;
+$allow_view_public = false;
 // Die letzten Änderungen anzeigen
-$show_last_x_changes = 10;
+$show_last_x_changes = 0;
 
-$debug = true;
+$debug = false;
 
 // MySQL Verbindung:
 // =================

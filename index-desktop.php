@@ -338,10 +338,17 @@ else
 						<input type="password" size="30" class="xlarge" name="password" id="password" />
 					</div>
 				</div>
+				
+				<div class="clearfix">
+					<label for="mail">Mail</label>
+					<div class="input">
+						<input type="text" size="30" class="xlarge" name="mail" id="mail" value="Piraten-Adresse zur Registrierung eingeben"/>
+					</div>
+				</div>
 			</form>
           </div>
           <div class="modal-footer">
-			<a href="#" class="btn primary" onclick="javascript:document.forms['formlogin'].submit();">Anmelden</a>
+			<a href="#" class="btn primary" onclick="javascript:document.forms['formlogin'].submit();">Anmelden/Account erstellen</a>
 			<a href="#" class="btn secondary" onclick="javascript:closeModalDlg(false);">Abbrechen</a>
           </div>
         </div>

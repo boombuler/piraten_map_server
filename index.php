@@ -17,6 +17,8 @@
        specific language governing permissions and limitations
        under the License.
 */
+include("Mobile_Detect.php");
+
 ob_start("ob_gzhandler");
 function detect_ie()
 {
@@ -33,7 +35,7 @@ if (detect_ie()) {
 else {
   require("includes.php");
 
-  $mobile = strpos($_SERVER['HTTP_USER_AGENT'],"iPhone") || strpos($_SERVER['HTTP_USER_AGENT'],"Android") || strpos($_SERVER['HTTP_USER_AGENT'],"iPod") || strpos($_SERVER['HTTP_USER_AGENT'],"iPad");
+  $mobile = strpos($_SERVER['HTTP_USER_AGENT'],"iPhone") || strpos($_SERVER['HTTP_USER_AGENT'],"Android") || strpos($_SERVER['HTTP_USER_AGENT'],"iPod") || strpos($_SERVER['HTTP_USER_AGENT'],"iPad") ||  strpos($_SERVER['HTTP_USER_AGENT'],"webOS");
   if ($mobile)
 	require('index-mobile.php');
   else

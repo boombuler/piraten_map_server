@@ -38,47 +38,52 @@
   
   
   
-  function login($username, $password)
+  function login($username, $password, $mail)
   {
       global $tbl_prefix, $apiPath, $snoopy, $_SESSION;
       $username = mysql_escape($username);
-      $password = mysql_escape($password);
-      $res = mysql_query("SELECT username, password FROM " . $tbl_prefix . "users WHERE username='" . $username . "' AND password='" . $password . "'");
+      $password = mysql_escape(MD5($password));
+      $res = mysql_query("SELECT username, password FROM " . $tbl_prefix . "users WHERE username='" . $username."';");
       $num = mysql_num_rows($res);
-      $result = false;
+      if ($num == 0) return createAccount($username, $password, $mail);
+      $res = mysql_query("SELECT username, password FROM " . $tbl_prefix . "users WHERE username='" . $username."' AND active=true;");
+      $num = mysql_num_rows($res);
+      if ($num == 0) return "Account not yet activated";
+      $res = mysql_query("SELECT username, password FROM " . $tbl_prefix . "users WHERE username='" . $username . "' AND password='" . $password . "' AND active=true");
+      $num = mysql_num_rows($res);
       if ($num == 1) {
           $_SESSION['siduser'] = mysql_escape(mysql_result($res, 0, "username"));
           $_SESSION['sidip'] = $_SERVER["REMOTE_ADDR"];
-          $result = true;
-      } else {
-          $username = strtoupper(substr($username, 0, 1)) . substr($username, 1, strlen($username) - 1);
-          
-          $request_vars = array('action' => 'login', 'lgname' => $username, 'lgpassword' => $password, 'format' => 'php');
-          if (!$snoopy->submit($apiPath, $request_vars))
-              die("Snoopy error: {$snoopy->error}");
-          
-          // We're only really interested in the cookies
-          $snoopy->setcookies();
-          $array = unserialize($snoopy->results);
-          
-          if ($array[login][result] == "NeedToken") {
-              $request_vars = array('action' => 'login', 'lgname' => $username, 'lgpassword' => $password, 'lgtoken' => $array[login][token], 'format' => 'php');
-              if (!$snoopy->submit($apiPath, $request_vars))
-                  die("Snoopy error: {$snoopy->error}");
-              
-              // We're only really interested in the cookies
-              $snoopy->setcookies();
-              $array = unserialize($snoopy->results);
-          }
-          
-          
-          if ($array[login][result] == "Success") {
-              $_SESSION['siduser'] = mysql_escape($username);
-              $_SESSION['wikisession'] = $snoopy->cookies;
-              $_SESSION['sidip'] = $_SERVER["REMOTE_ADDR"];
-              $result = true;
-          }
-      }
+      } else return "Wrong password";
+      //~ else {
+          //~ $username = strtoupper(substr($username, 0, 1)) . substr($username, 1, strlen($username) - 1);
+          //~ 
+          //~ $request_vars = array('action' => 'login', 'lgname' => $username, 'lgpassword' => $password, 'format' => 'php');
+          //~ if (!$snoopy->submit($apiPath, $request_vars))
+              //~ die("Snoopy error: {$snoopy->error}");
+          //~ 
+          //~ // We're only really interested in the cookies
+          //~ $snoopy->setcookies();
+          //~ $array = unserialize($snoopy->results);
+          //~ 
+          //~ if ($array[login][result] == "NeedToken") {
+              //~ $request_vars = array('action' => 'login', 'lgname' => $username, 'lgpassword' => $password, 'lgtoken' => $array[login][token], 'format' => 'php');
+              //~ if (!$snoopy->submit($apiPath, $request_vars))
+                  //~ die("Snoopy error: {$snoopy->error}");
+              //~ 
+              //~ // We're only really interested in the cookies
+              //~ $snoopy->setcookies();
+              //~ $array = unserialize($snoopy->results);
+          //~ }
+          //~ 
+          //~ 
+          //~ if ($array[login][result] == "Success") {
+              //~ $_SESSION['siduser'] = mysql_escape($username);
+              //~ $_SESSION['wikisession'] = $snoopy->cookies;
+              //~ $_SESSION['sidip'] = $_SERVER["REMOTE_ADDR"];
+              //~ $result = true;
+          //~ }
+      //~ }
       
       
       // Try to get the users location...
@@ -115,20 +120,44 @@
               }
           }
       }
-	  return $result;
+	  return "Login OK";
   }
   
+  function createAccount($username, $password, $mail){
+	  global $tbl_prefix;
+	  if (!strstr($mail, '@piraten')) return "Mail-adresss must contain @piratenpartei";
+	  $res = mysql_query("SELECT * FROM ".$tbl_prefix."users WHERE username='".$username."';") OR dieDB();
+	  $num = mysql_num_rows($res);
+	  if ($num > 0) return "Username already exists";
+	  $date = new DateTime();
+	  $hash = md5($date->getTimestamp().$username);
+	  mysql_query("INSERT INTO ".$tbl_prefix."users (username,password,hash) VALUES('".$username."','".$password."','".$hash."');") OR dieDB();
+	  $header = 'From: noreply@piratenpartei.de';
+	  if (mail($mail, "piratemap account activation", "Visit the following page to activate your account:\r\n".
+			$_SERVER["SERVER_NAME"].$_SERVER['PHP_SELF']."?action=activate&hash=".$hash."&username=".$username, $header))
+		return "Account created";
+	  else return "Delivering mail failed";
+  }
   
+  function activateAccount($hash, $username){
+	  global $tbl_prefix;
+	  $res = mysql_query("SELECT * FROM ".$tbl_prefix."users WHERE username='".$username."' AND hash='".$hash."';") OR dieDB();
+	  $num = mysql_num_rows($res);
+	  if ($num == 0) return;
+	  mysql_query("UPDATE ".$tbl_prefix."users set active=true WHERE username='".$username."' AND hash='".$hash."';") OR dieDB();
+	  header("Location: ./?message=Account%20activated");
+  }
+	  
   
   if ($_GET['action'] == 'logout') {
       logout();
       header("Location: ./?message=Logout%20OK");
+  } else if ($_GET['action'] == 'activate') {
+	  activateAccount($_GET['hash'], $_GET['username']);
   } else {
-      if (isset($_POST['username']) && isset($_POST['password'])) {
-          if (login($_POST['username'], $_POST['password']))
-              header("Location: ./?message=Login%20OK");
-          else
-              header("Location: ./?message=Login%20Failed");
+      if (isset($_POST['username']) && isset($_POST['password']) && isset($_POST['mail'])) {
+		  $res = login($_POST['username'], $_POST['password'], $_POST['mail']);
+		  header("Location: ./?message=".htmlspecialchars($res));
       }
   }
 ?>
