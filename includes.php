@@ -182,4 +182,16 @@ function map_change($id, $type, $comment, $imageurl) {
 	return;
 }
 
+function getPWHash($user, $pass) {
+    return md5(strtolower($user).":".$pass);
+}
+
+function errorMsgHeader($msg) {
+	return "Location: ./?error=".urlencode($msg);
+}
+
+function infoMsgHeader($msg) {
+	return "Location: ./?message=".urlencode($msg);
+}
+
 ?>

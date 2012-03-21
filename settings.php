@@ -21,6 +21,7 @@
 
 // Url zur Seite
 $url = 'http://piraten.boombuler.de/';
+$send_mail_adr = "no-reply@piratenpartei.de";
 // SSL Wiki Verbindung benutzen?
 $use_ssl = true;
 $curl_path="/usr/bin/curl";
@@ -43,3 +44,4 @@ $mysql_database="";
 
 // Tabellen Prefix
 $tbl_prefix = "plakate_";
+

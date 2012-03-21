@@ -36,14 +36,13 @@
       unset($_SESSION['sidip']);
   }
   
-  
-  
   function login($username, $password)
   {
       global $tbl_prefix, $apiPath, $snoopy, $_SESSION;
       $username = mysql_escape($username);
       $password = mysql_escape($password);
-      $res = mysql_query("SELECT username, password FROM " . $tbl_prefix . "users WHERE username='" . $username . "' AND password='" . $password . "'");
+      $passwordmd5 = getPWHash($username, $password);
+      $res = mysql_query("SELECT username, password FROM " . $tbl_prefix . "users WHERE username='$username' AND password='$passwordmd5'");
       $num = mysql_num_rows($res);
       $result = false;
       if ($num == 1) {
@@ -118,17 +117,27 @@
 	  return $result;
   }
   
-  
+  function isAdmin() {
+    global $admins, $_SESSION;
+    if (isset($_SESSION['siduser'])) {
+      $user = $_SESSION['siduser'];
+      foreach($admins as $admin) {
+        if ($admin == $user)
+          return true;
+      }
+    }
+    return false;
+  }
   
   if ($_GET['action'] == 'logout') {
       logout();
-      header("Location: ./?message=Logout%20OK");
+      header(infoMsgHeader("Logout OK"));
   } else {
       if (isset($_POST['username']) && isset($_POST['password'])) {
           if (login($_POST['username'], $_POST['password']))
-              header("Location: ./?message=Login%20OK");
+              header(infoMsgHeader("Login OK"));
           else
-              header("Location: ./?message=Login%20Failed");
+              header(errorMsgHeader("Login fehlgeschlagen"));
       }
   }
 ?>

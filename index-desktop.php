@@ -43,6 +43,13 @@
 		left:0px; 
 		display:none;
 	}
+	.localmodaldlg {
+		position: relative; 
+		top: auto; 
+		left: auto; 
+		margin: 0 auto; 
+		display:none;
+	}
 	-->
 	
 	
@@ -99,12 +106,14 @@ else
 			}
 		}
 		
-		function closeModalDlg(shouldRemove) {
+		function closeModalDlg(shouldRemove, oncomplete) {
 			$('#mask').fadeTo("fast",0, function() {$(this).css('display', 'none')});  
 			$('body > .modal').fadeOut(function() { 
 				$(this).remove(); 
 				if(!shouldRemove)
 					$('#dlgBag').append($(this));
+				if (oncomplete)
+					oncomplete();
 			}); 
 		}
 		
@@ -286,7 +295,29 @@ else
 		});<?php if ($_GET['message']) { ?>
 		setTimeout("closeMsg()", 2500);
 		<?php } ?>
-	});
+		
+		$("body").bind("click", function(e) {
+			$("ul.menu-dropdown").hide();
+			$('a.menu').parent("li").removeClass("open").children("ul.menu-dropdown").hide();
+		});
+
+		$("a.menu").click(function(e) {
+			var $target = $(this);
+			var $parent = $target.parent("li");
+			var $siblings = $target.siblings("ul.menu-dropdown");
+			var $parentSiblings = $parent.siblings("li");
+			if ($parent.hasClass("open")) {
+			  $parent.removeClass("open");
+			  $siblings.hide();
+			} else {
+			  $parent.addClass("open");
+			  $siblings.show();
+			}
+			$parentSiblings.children("ul.menu-dropdown").hide();
+			$parentSiblings.removeClass("open");
+			return false;
+		});
+	});	
 //]]>
   </script>
 </head>
@@ -302,10 +333,23 @@ else
           <ul>
 		<?php if ($loginok != 0) { ?>
 			<form id="formLogout" action="<?php echo $url?>login.php?action=logout" method="post"></form>
-			<li><a href="#" onclick="javascript:document.forms['formLogout'].submit()">Abmelden</a></li>
+			
+			<?php if ($_SESSION['wikisession']) {?>
+			  <li><a href="#" onclick="javascript:document.forms['formLogout'].submit()">Abmelden</a></li>
+			<?php } else { ?>
+			  <li class="menu">
+				<a href="#" class="menu"><?php echo $_SESSION['siduser']?></a>
+				<ul class="menu-dropdown">
+					<li><a href="#" onclick="javascript:showModalId('chpwform');">Passwort ändern</a></li>
+					<li class="divider"></li>
+					<li><a href="#" onclick="javascript:document.forms['formLogout'].submit()">Abmelden</a></li>
+				</ul>
+			  </li>
+			<?php } ?>
 			<li><a href="#" onclick="javascript:showModalId('uploadimg');">Bild hochladen</a></li>
 		<?php } else { ?>
 			<li><a href="#" onclick="javascript:showModalId('loginform');">Anmelden</a></li>		
+                        <li><a href="#" onclick="javascript:showModalId('registerform');">Registrieren</a></li>
 		<?php } ?>
 			<li><a href="#" onclick="javascript:togglemapkey();">Legende / Hilfe</a></li>
           </ul>
@@ -314,8 +358,7 @@ else
     </div> <!-- /topbar -->
 	<div style="display:none;" id="dlgBag">
 	<?php if ($loginok == 0) { ?>
-		<div class="modal" style="position: relative; top: auto; left: auto; margin: 0 auto; display:none;"
-			 id="loginform">
+		<div class="modal localmodaldlg" id="loginform">
           <div class="modal-header">
             <h3>Anmelden</h3>
 			<a href="#" class="close" onclick="javascript:closeModalDlg(false);">&times;</a>
@@ -334,6 +377,9 @@ else
 					<label for="password">Passwort</label>
 					<div class="input">
 						<input type="password" size="30" class="xlarge" name="password" id="password" />
+						<span class="help-block">
+							<a href="#" onclick="javascript:closeModalDlg(false, function() {showModalId('newpassform');});">Passwort vergessen?</a> (Nur für nicht Wiki-Benutzer)
+						</span>
 					</div>
 				</div>
 			</form>
@@ -343,9 +389,70 @@ else
 			<a href="#" class="btn secondary" onclick="javascript:closeModalDlg(false);">Abbrechen</a>
           </div>
         </div>
+		
+		<div class="modal localmodaldlg" id="newpassform">
+          <div class="modal-header">
+			<h3>Neues Passwort</h3>
+			<a href="#" class="close" onclick="javascript:closeModalDlg(false);">&times;</a>
+          </div>
+          <div class="modal-body">
+			<form id="formnewpass" action="<?php echo $url?>register.php" method="post">
+				<input type="hidden" name="action" value="resetpw" />
+				<div class="clearfix">
+					<label for="username">Benutzer</label>
+					<div class="input">
+						<input type="text" size="30" class="xlarge" name="username" />
+					</div>
+				</div>
+
+				<div class="clearfix">
+					<label for="password">EMail Adresse</label>
+					<div class="input">
+						<input type="text" size="30" class="xlarge" name="email"/>
+					</div>
+				</div>
+			</form>
+          </div>
+          <div class="modal-footer">
+			<a href="#" class="btn primary" onclick="javascript:document.forms['formnewpass'].submit();">Passwort anfordern</a>
+			<a href="#" class="btn secondary" onclick="javascript:closeModalDlg(false);">Abbrechen</a>
+          </div>
+        </div>
+
+
+		<div class="modal localmodaldlg" id="registerform">
+			<div class="modal-header">
+				<h3>Registrieren</h3>
+				<a href="#" class="close" onclick="javascript:closeModalDlg(false);">&times;</a>
+			</div>
+			<div class="modal-body">
+				<form id="formregister" action="<?php echo $url?>register.php" method="post">
+					<input type="hidden" name="action" value="register" />
+					<div class="clearfix">
+						<label for="username">Benutzer</label>
+						<div class="input">
+							<input type="text" size="30" class="xlarge" name="username" />
+						</div>
+					</div>
+
+					<div class="clearfix">
+						<label for="password">EMail Adresse</label>
+						<div class="input">
+							<input type="text" size="30" class="xlarge" name="email"/>
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<a href="#" class="btn primary" onclick="javascript:document.forms['formregister'].submit();">Registrieren</a>
+				<a href="#" class="btn secondary" onclick="javascript:closeModalDlg(false);">Abbrechen</a>
+			</div>
+		</div>
+
+
+
 	<?php } else {?>
-		<div class="modal" style="position: relative; top: auto; left: auto; margin: 0 auto; display:none;"
-			 id="uploadimg">
+		<div class="modal localmodaldlg" id="uploadimg">
           <div class="modal-header">
 			<h3>Bild hochladen</h3>
 			<a href="#" class="close" onclick="javascript:closeModalDlg(false);">&times;</a>
@@ -366,6 +473,37 @@ else
 			<a href="#" class="btn secondary" onclick="javascript:closeModalDlg(false);">Abbrechen</a>
           </div>
         </div>
+		
+		<div class="modal localmodaldlg" id="chpwform">
+          <div class="modal-header">
+			<h3>Passwort ändern</h3>
+			<a href="#" class="close" onclick="javascript:closeModalDlg(false);">&times;</a>
+          </div>
+          <div class="modal-body">
+			<form id="formchpw" action="<?php echo $url?>register.php" method="post">
+				<input type="hidden" name="action" value="changepw" />
+				
+				<div class="clearfix">
+					<label for="password">Neues Passwort</label>
+					<div class="input">
+						<input type="password" size="30" class="xlarge" name="newpass" />
+					</div>
+				</div>
+
+				<div class="clearfix">
+					<label for="password">Neues Passwort wiederholen</label>
+					<div class="input">
+						<input type="password" size="30" class="xlarge" name="passconfirm" />
+					</div>
+				</div>
+			</form>
+          </div>
+          <div class="modal-footer">
+			<a href="#" class="btn primary" onclick="javascript:document.forms['formchpw'].submit();">Passwort ändern</a>
+			<a href="#" class="btn secondary" onclick="javascript:closeModalDlg(false);">Abbrechen</a>
+          </div>
+        </div>
+		
 	<?php } ?>
 	</div>
 	<?php
@@ -376,10 +514,15 @@ else
 		<a class="close" href="#" onclick="javascript:closeMsg();">&times;</a>
         <p><?php echo $_GET['message']?></p>
       </div>
+	<?php } else if ($_GET['error']) { ?>
+	<div class="alert-message error" id="message" style="margin-top:43px">
+		<a class="close" href="#" onclick="javascript:closeMsg();">&times;</a>
+		<p><?php echo $_GET['error']?></p>
+	</div>
 	<?php
 	}
-	?>
-    <?php if ($show_last_x_changes > 0) {?>
+	
+	if ($show_last_x_changes > 0) {?>
 	<div style="position:absolute; top:50px; bottom:30px; width:150px; right:0px;" id="log" >
 		<?php if ($loginok) {
 			$res = mysql_query("SELECT plakat_id as id,user,timestamp,subject,what FROM ".$tbl_prefix."log ORDER BY timestamp DESC LIMIT ".$show_last_x_changes) OR dieDB();
@@ -403,7 +546,7 @@ else
 	if ($show_last_x_changes > 0)
 		$mapmarginright = 150;
 	$mapmargintop = 40;
-	if ($_GET['message'])
+	if ($_GET['message'] || $_GET['error'])
 		$mapmargintop = 81;
 	?>
 	<div style="position:absolute; top:<?php echo $mapmargintop?>px; bottom:0px; left:0px; right:<?php echo $mapmarginright?>px;" id="map" ></div>
