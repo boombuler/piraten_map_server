@@ -130,6 +130,16 @@ function get_typ($typ) {
 	}
 }
 
+function request_location($lon, $lat) {
+        $src = new DOMDocument('1.0', 'utf-8');
+        $src->formatOutput = true;
+        $src->preserveWhiteSpace = false;
+        $src->load("http://nominatim.openstreetmap.org/reverse?format=xml&zoom=18&addressdetails=1&lon=".$lon."&lat=".$lat);
+        $city = get_inner_html($src->getElementsByTagName('city')->item(0));
+        $street = get_inner_html($src->getElementsByTagName('road')->item(0));
+        return array( "city" => mysql_escape($city), "street" =>  mysql_escape($street));
+}
+
 function map_add($lon, $lat, $typ) {
 	global $tbl_prefix, $_SESSION;
 	
@@ -137,14 +147,10 @@ function map_add($lon, $lat, $typ) {
 	$lat = mysql_escape($lat);
 	$typ = mysql_escape($typ);
 	
-	$src = new DOMDocument('1.0', 'utf-8');
-	$src->formatOutput = true;
-	$src->preserveWhiteSpace = false;
-	$src->load("http://nominatim.openstreetmap.org/reverse?format=xml&zoom=18&addressdetails=1&lon=".$lon."&lat=".$lat);
-	$city = get_inner_html($src->getElementsByTagName('city')->item(0));
-	$street = get_inner_html($src->getElementsByTagName('road')->item(0));
-	$city = mysql_escape($city);
-	$street = mysql_escape($street);
+	$location = request_location($lon, $lat);
+
+	$city = $location["city"];
+	$street = $location["street"];
 	
 	if ($typ != '')
 		$res = mysql_query("INSERT INTO ".$tbl_prefix."felder (lon,lat,user,type,city,street) VALUES ('".$lon."','".$lat."','".$_SESSION['siduser']."','".$typ."','".$city."','".$street."');") OR dieDB();
@@ -175,7 +181,7 @@ function map_change($id, $type, $comment, $city, $street, $imageurl) {
 	
 	$id = mysql_escape($id);
 	$query = "INSERT INTO ".$tbl_prefix."felder (plakat_id, lon, lat, user, type, comment, city, street, image) "
-               . "SELECT plakat_id, lon, lat, '".$_SESSION['siduser']."' as user, ";
+               . "SELECT $id as plakat_id, lon, lat, '".$_SESSION['siduser']."' as user, ";
 	if(isset($options[$type])) {
 		$type = mysql_escape($type);
 		$query .= "'$type' as type, ";
