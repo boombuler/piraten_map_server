@@ -17,6 +17,9 @@
        specific language governing permissions and limitations
        under the License.
 */
+$_SESSION['siduser'] = mysql_escape("CRONJOB");
+$_SESSION['sidip'] = $_SERVER["REMOTE_ADDR"];
+
 require("includes.php");
 
 $query = "SELECT p.id, f.lon, f.lat "
