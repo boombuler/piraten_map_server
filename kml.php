@@ -28,7 +28,7 @@ if ($loginok!=0) {
 		case 'add':
 			map_add(preg_replace("/,/",".",get_float('lon')),
 				preg_replace("/,/",".",get_float('lat')),
-				get_typ('typ'));
+				get_typ('typ'), true);
 			return;
 		case 'del':
 			map_del(get_int('id'));

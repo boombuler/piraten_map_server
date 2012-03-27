@@ -140,22 +140,25 @@ function request_location($lon, $lat) {
         return array( "city" => mysql_escape($city), "street" =>  mysql_escape($street));
 }
 
-function map_add($lon, $lat, $typ) {
+function map_add($lon, $lat, $typ, $resolveAdr) {
 	global $tbl_prefix, $_SESSION;
 	
 	$lon = mysql_escape($lon);
 	$lat = mysql_escape($lat);
 	$typ = mysql_escape($typ);
-	
-	$location = request_location($lon, $lat);
 
-	$city = $location["city"];
-	$street = $location["street"];
+        $city = "null";
+        $street = "null";
+        if ($resolveAdr) {
+            $location = request_location($lon, $lat);
+            $city = "'".$location["city"]."'";
+            $street = "'".$location["street"]."'";
+        }
 	
 	if ($typ != '')
-		$res = mysql_query("INSERT INTO ".$tbl_prefix."felder (lon,lat,user,type,city,street) VALUES ('".$lon."','".$lat."','".$_SESSION['siduser']."','".$typ."','".$city."','".$street."');") OR dieDB();
+		$res = mysql_query("INSERT INTO ".$tbl_prefix."felder (lon,lat,user,type,city,street) VALUES ('$lon', '$lat','".$_SESSION['siduser']."','$typ', $city, $street);") OR dieDB();
 	else
-		$res = mysql_query("INSERT INTO ".$tbl_prefix."felder (lon,lat,user,city,street) VALUES ('".$lon."','".$lat."','".$_SESSION['siduser']."','".$city."','".$street."');") OR dieDB();
+		$res = mysql_query("INSERT INTO ".$tbl_prefix."felder (lon,lat,user,city,street) VALUES ('$lon','$lat','".$_SESSION['siduser']."',$city, $street);") OR dieDB();
 	
 	$id = mysql_insert_id();
 	$res = mysql_query("INSERT INTO ".$tbl_prefix."plakat (actual_id, del) VALUES('".$id."',false)") OR dieDB();

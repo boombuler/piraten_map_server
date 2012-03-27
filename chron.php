@@ -17,44 +17,21 @@
        specific language governing permissions and limitations
        under the License.
 */
-ob_start("ob_gzhandler");
 require("includes.php");
 
-if (($loginok==0) and !$allow_view_public)
-	exit();
-
-if ($loginok!=0) 
-{
-	switch ($_GET['action'])
-	{
-	case 'add':
-		map_add(preg_replace("/,/",".",get_float('lon')),
-			preg_replace("/,/",".",get_float('lat')),
-			get_typ('typ'), true);
-		break;
-	case 'del':
-		map_del(get_int('id'));
-		break;
-	case 'change':
-		map_change(get_int('id'), get_typ('type'), null, null);
-		break;
-	case 'addcomment':
-		map_change(get_int('id'), null, $_GET['comment'], $_GET['image']);
-	}
-}
-
-$query = "SELECT p.id, f.lon, f.lat, f.type, f.user, f.timestamp, f.comment, f.city, f.street, f.image "
+$query = "SELECT p.id, f.lon, f.lat "
       . " FROM ".$tbl_prefix."felder f JOIN ".$tbl_prefix."plakat p on p.actual_id = f.id"
-      . " WHERE p.del != true";
+      . " WHERE p.del != true and f.street is null and f.city is null LIMIT 0, $max_resolve_count";
 
 $rs = mysql_query($query) OR dieDB();
 while($obj = mysql_fetch_object($rs))
 {
-	$obj->user    = htmlspecialchars($obj->user);
-	$obj->comment = htmlspecialchars($obj->comment);
-	$obj->city    = htmlspecialchars($obj->city);
-	$obj->street  = htmlspecialchars($obj->street);
-	$obj->image   = htmlspecialchars($obj->image);
-	$arr[] = $obj;
+        $location = request_location($obj->lon, $obj->lat);
+
+        $city = $location["city"];
+        $street = $location["street"];
+
+        map_change($obj->id, null, null, $city, $street, null);
 }
-print json_encode($arr);
+
+?>

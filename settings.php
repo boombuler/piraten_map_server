@@ -30,6 +30,8 @@ $allow_view_public = true;
 // Die letzten Änderungen anzeigen
 $show_last_x_changes = 10;
 
+$max_resolve_count = 5; // Wieviele Nominatim Requests sollen gestellt werden pro durchgang?
+
 $debug = true;
 
 // MySQL Verbindung:
