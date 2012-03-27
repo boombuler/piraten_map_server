@@ -41,8 +41,8 @@ if ($use_ssl) {
   $wikiPath = "http://wiki.piratenpartei.de";
 }
 $apiPath = "$wikiPath/wiki/api.php";
-
-session_start();
+if (! session_id() == "")
+    session_start();
 
 
 

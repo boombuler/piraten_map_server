@@ -17,7 +17,9 @@
        specific language governing permissions and limitations
        under the License.
 */
-$_SESSION['siduser'] = mysql_escape("CRONJOB");
+if (! session_id() == "")
+  session_start();
+$_SESSION['siduser'] = "CRONJOB";
 $_SESSION['sidip'] = $_SERVER["REMOTE_ADDR"];
 
 require("includes.php");
