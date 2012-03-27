@@ -63,7 +63,7 @@
 	$image = $change->ImageUrl();
 	if (!$image)
 	  $image = null;
-	map_change($id, $type, $comment, $image);
+	map_change($id, $type, $comment, null, null, $image);
 	$changesCount += 1;
       }
       $response->set_ChangedCount($changesCount);
