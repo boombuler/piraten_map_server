@@ -57,7 +57,9 @@
   
   function sendPasswordMail($email, $user, $pass, $reset) {
 	global $send_mail_adr;
-	return mail($email, getMailSubject($reset), getMailBody($user, $pass, $reset), getMailHeader(), "-f$send_mail_adr");
+        if ($send_mail_adr != "")
+          return mail($email, getMailSubject($reset), getMailBody($user, $pass, $reset), getMailHeader(), "-f$send_mail_adr");
+        return false;
   }
 
   function resetPassword($username, $email) {

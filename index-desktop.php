@@ -17,6 +17,7 @@
        specific language governing permissions and limitations
        under the License.
 */
+$canSendMail = $send_mail_adr != '';
 ?><!DOCTYPE html 
 	 PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
 	 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -342,17 +343,21 @@ else
 			  <li class="menu">
 				<a href="#" class="menu"><?php echo $_SESSION['siduser']?></a>
 				<ul class="menu-dropdown">
+                                  <?php if ($canSendMail) { ?>
 					<li><a href="#" onclick="javascript:showModalId('chpwform');">Passwort ändern</a></li>
 					<li class="divider"></li>
+                                  <?php } ?>
 					<li><a href="#" onclick="javascript:document.forms['formLogout'].submit()">Abmelden</a></li>
 				</ul>
 			  </li>
 			<?php } ?>
 			<li><a href="#" onclick="javascript:showModalId('uploadimg');">Bild hochladen</a></li>
 		<?php } else { ?>
-			<li><a href="#" onclick="javascript:showModalId('loginform');">Anmelden</a></li>		
+			<li><a href="#" onclick="javascript:showModalId('loginform');">Anmelden</a></li>
+                <?php if ($canSendMail) { ?>
                         <li><a href="#" onclick="javascript:showModalId('registerform');">Registrieren</a></li>
-		<?php } ?>
+		<?php } /* $canSendMail */
+                      } /* loginok */ ?>
 			<li><a href="#" onclick="javascript:togglemapkey();">Legende / Hilfe</a></li>
           </ul>
         </div>
@@ -379,9 +384,11 @@ else
 					<label for="password">Passwort</label>
 					<div class="input">
 						<input type="password" size="30" class="xlarge" name="password" id="password" />
+                                                <?php if ($canSendMail) { ?>
 						<span class="help-block">
 							<a href="#" onclick="javascript:closeModalDlg(false, function() {showModalId('newpassform');});">Passwort vergessen?</a> (Nur für nicht Wiki-Benutzer)
 						</span>
+                                                <?php } ?>
 					</div>
 				</div>
 			</form>
@@ -391,7 +398,8 @@ else
 			<a href="#" class="btn secondary" onclick="javascript:closeModalDlg(false);">Abbrechen</a>
           </div>
         </div>
-		
+	
+        <?php if ($canSendMail) { ?>
 		<div class="modal localmodaldlg" id="newpassform">
           <div class="modal-header">
 			<h3>Neues Passwort</h3>
@@ -453,7 +461,9 @@ else
 
 
 
-	<?php } else {?>
+	<?php
+            } /* $canSendMail */
+            } else {?>
 		<div class="modal localmodaldlg" id="uploadimg">
           <div class="modal-header">
 			<h3>Bild hochladen</h3>
@@ -475,7 +485,7 @@ else
 			<a href="#" class="btn secondary" onclick="javascript:closeModalDlg(false);">Abbrechen</a>
           </div>
         </div>
-		
+		<?php if ($canSendMail) { ?>
 		<div class="modal localmodaldlg" id="chpwform">
           <div class="modal-header">
 			<h3>Passwort ändern</h3>
@@ -506,7 +516,8 @@ else
           </div>
         </div>
 		
-	<?php } ?>
+	<?php } /* $canSendMail */
+        } ?>
 	</div>
 	<?php
 	if ($_GET['message'])
