@@ -17,12 +17,12 @@
        specific language governing permissions and limitations
        under the License.
 */
-if (! session_id() == "")
-  session_start();
+
+require("includes.php");
+
 $_SESSION['siduser'] = "CRONJOB";
 $_SESSION['sidip'] = $_SERVER["REMOTE_ADDR"];
 
-require("includes.php");
 
 $query = "SELECT p.id, f.lon, f.lat "
       . " FROM ".$tbl_prefix."felder f JOIN ".$tbl_prefix."plakat p on p.actual_id = f.id"
@@ -39,4 +39,7 @@ while($obj = mysql_fetch_object($rs))
         map_change($obj->id, null, null, $city, $street, null);
 }
 
+unset($_SESSION['siduser']);
+unset($_SESSION['wikisession']);
+unset($_SESSION['sidip']);
 ?>
