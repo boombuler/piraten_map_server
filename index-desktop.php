@@ -16,9 +16,9 @@
        KIND, either express or implied.  See the License for the
        specific language governing permissions and limitations
        under the License.
-*/
+    */
 $canSendMail = $send_mail_adr != '';
-?><!DOCTYPE html 
+?><!DOCTYPE html
 	 PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
 	 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" >
@@ -57,9 +57,9 @@ $canSendMail = $send_mail_adr != '';
 	</style>
 	<script src="http://code.jquery.com/jquery-1.5.2.min.js"></script>
 	<script type="text/javascript" src="./js/OpenLayers.php"></script>
- 
+
 	<script type="text/javascript">
-//<![CDATA[	
+//<![CDATA[
 <?php
 $lat = get_float('lat');
 $lon = get_float('lon');
@@ -83,11 +83,11 @@ else if ($_SESSION['defzoom'])
 	echo "var zoom = ".json_encode($_SESSION['defzoom']).";";
 else
 	echo "var zoom = 6;";
-?> 
+?>
 		
 		var map;
 		var gmlLayers = new Array();
- 
+
 		function makeAJAXrequest(url, data) {
 			$.ajax({
 				url: url,
@@ -141,9 +141,9 @@ else
 		function showModalId(id) {
 			showModal($('#'+id));
 		}
- 
+
 		<?php include "popups.php" ?>
- 
+
 		function getGML(filter, display) {
 			if (!display)
 				display = "Unbearbeitet";
@@ -158,7 +158,7 @@ else
 				protocol: new OpenLayers.Protocol.HTTP({
 					url: filterurl,
 					format: new OpenLayers.Format.KML({
-                        extractStyles: true, 
+                        extractStyles: true,
                         extractAttributes: true
                     }),
 				})
@@ -324,7 +324,7 @@ else
 //]]>
   </script>
 </head>
- 
+
 <body>
 	<div id="mask"></div>
 	
@@ -343,10 +343,14 @@ else
 			  <li class="menu">
 				<a href="#" class="menu"><?php echo $_SESSION['siduser']?></a>
 				<ul class="menu-dropdown">
-                                  <?php if ($canSendMail) { ?>
+                        <?php if (isAdmin()) { ?>
+                    <li><a href="admin.php" target="_blank">Administration</a></li>
+                    <li class="divider" />
+                        <?php }
+                        if ($canSendMail) { ?>
 					<li><a href="#" onclick="javascript:showModalId('chpwform');">Passwort ändern</a></li>
-					<li class="divider"></li>
-                                  <?php } ?>
+					<li class="divider" />
+                        <?php } ?>
 					<li><a href="#" onclick="javascript:document.forms['formLogout'].submit()">Abmelden</a></li>
 				</ul>
 			  </li>

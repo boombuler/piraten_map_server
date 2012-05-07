@@ -22,12 +22,11 @@ include "Snoopy.class.php";
 include "settings.php";
 
 function get_inner_html( $node ) { 
-    $innerHTML= ''; 
+    $innerHTML= '';
     $children = $node->childNodes; 
     foreach ($children as $child) { 
         $innerHTML .= $child->ownerDocument->saveXML( $child ); 
-    } 
-
+    }
     return $innerHTML; 
 } 
 
@@ -113,6 +112,10 @@ function mysql_escape($value) {
 
 function get_float($name) {
   return filter_input(INPUT_GET, $name, FILTER_VALIDATE_FLOAT);
+}
+
+function format_float($val) {
+    return preg_replace("/,/",".",$val);
 }
 
 function get_int($name) {
@@ -228,6 +231,18 @@ function errorMsgHeader($msg) {
 
 function infoMsgHeader($msg) {
 	return "Location: ./?message=".urlencode($msg);
+}
+
+function isAdmin() {
+    global $admins, $_SESSION;
+    if (isset($_SESSION['siduser'])) {
+        $user = $_SESSION['siduser'];
+        foreach($admins as $admin) {
+            if ($admin == $user)
+                return true;
+        }
+    }
+    return false;
 }
 
 ?>

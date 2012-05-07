@@ -48,3 +48,5 @@ $mysql_database="";
 // Tabellen Prefix
 $tbl_prefix = "plakate_";
 
+// Admin Accounts
+$admins = array();

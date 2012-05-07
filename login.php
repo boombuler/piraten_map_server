@@ -17,15 +17,15 @@
    specific language governing permissions and limitations
    under the License.
    */
-  
+
   require_once("includes.php");
-  
+
   function logout()
   {
       global $snoopy, $apiPath, $_SESSION;
       if ($_SESSION['wikisession']) {
           $snoopy->cookies = $_SESSION['wikisession'];
-          
+
           $request_vars = array('action' => 'logout', 'format' => 'php');
           if (!$snoopy->submit($apiPath, $request_vars))
               die("Snoopy error: {$snoopy->error}");
@@ -35,7 +35,7 @@
       unset($_SESSION['wikisession']);
       unset($_SESSION['sidip']);
   }
-  
+
   function login($username, $password)
   {
       global $tbl_prefix, $apiPath, $snoopy, $_SESSION;
@@ -51,26 +51,25 @@
           $result = true;
       } else {
           $username = strtoupper(substr($username, 0, 1)) . substr($username, 1, strlen($username) - 1);
-          
+
           $request_vars = array('action' => 'login', 'lgname' => $username, 'lgpassword' => $password, 'format' => 'php');
           if (!$snoopy->submit($apiPath, $request_vars))
               die("Snoopy error: {$snoopy->error}");
-          
+
           // We're only really interested in the cookies
           $snoopy->setcookies();
           $array = unserialize($snoopy->results);
-          
+
           if ($array[login][result] == "NeedToken") {
               $request_vars = array('action' => 'login', 'lgname' => $username, 'lgpassword' => $password, 'lgtoken' => $array[login][token], 'format' => 'php');
               if (!$snoopy->submit($apiPath, $request_vars))
                   die("Snoopy error: {$snoopy->error}");
-              
+
               // We're only really interested in the cookies
               $snoopy->setcookies();
               $array = unserialize($snoopy->results);
           }
-          
-          
+
           if ($array[login][result] == "Success") {
               $_SESSION['siduser'] = mysql_escape($username);
               $_SESSION['wikisession'] = $snoopy->cookies;
@@ -78,8 +77,7 @@
               $result = true;
           }
       }
-      
-      
+
       // Try to get the users location...
       if ($_SESSION['siduser']) {
           $request_vars = array('action' => 'query', 'prop' => 'categories', 'titles' => 'Benutzer:' . $_SESSION['siduser'], 'format' => 'php');
@@ -106,7 +104,7 @@
               $query = "SELECT lat, lon,zoom FROM " . $tbl_prefix . "regions WHERE category in (" . $regionen . ") order by zoom desc limit 1";
               $res = mysql_query($query);
               $num = mysql_num_rows($res);
-              
+
               if ($num == 1) {
                   $_SESSION['deflat'] = mysql_result($res, 0, "lat");
                   $_SESSION['deflon'] = mysql_result($res, 0, "lon");
@@ -114,21 +112,10 @@
               }
           }
       }
-	  return $result;
+      return $result;
   }
-  
-  function isAdmin() {
-    global $admins, $_SESSION;
-    if (isset($_SESSION['siduser'])) {
-      $user = $_SESSION['siduser'];
-      foreach($admins as $admin) {
-        if ($admin == $user)
-          return true;
-      }
-    }
-    return false;
-  }
-  
+
+
   if ($_GET['action'] == 'logout') {
       logout();
       header(infoMsgHeader("Logout OK"));
