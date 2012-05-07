@@ -90,7 +90,7 @@
     if ($newpass != $confirm)
         return errorMsgHeader("Passwörter stimmen nicht überein");
     $lusername = strtolower($_SESSION['siduser']);
-    $pwhash = getPWHash($username, $newpass);
+    $pwhash = getPWHash($lusername, $newpass);
     $db = openDB();
     $db->prepare("UPDATE ".$tbl_prefix."users SET password = ? WHERE username = ?")
        ->execute(array($pwhash, $lusername));
