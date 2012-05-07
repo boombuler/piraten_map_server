@@ -21,7 +21,7 @@
   require_once("includes.php");
   
   function createRandomPassword() { 
-    $chars = "abcdefghijkmnopqrstuvwxyz-_~!+%<()>?ABCDEFGHIJKLMNOPQRSTUVWXYZ023456789"; 
+    $chars = "abcdefghijkmnopqrstuvwxyz-_~!+%&§@<()>?ABCDEFGHIJKLMNOPQRSTUVWXYZ023456789";
     $len = rand(7, 10);
     $pass = ""; 
 
@@ -64,17 +64,21 @@
 
   function resetPassword($username, $email) {
     global $tbl_prefix;
-    $lusername = mysql_escape(strtolower($username)); 
-    $email = mysql_escape($email);
-    $res = mysql_query("Select * from ".$tbl_prefix."users WHERE username='$lusername' and email='$email'") OR dieDB();
-    if (mysql_num_rows($res) == 0) {
+    $lusername = strtolower($username);
+    $db = openDB();
+    $stmt = $db->prepare("Select * from ".$tbl_prefix."users WHERE username = ? AND email = ?");
+    $stmt->execute(array($lusername, $email));
+    $res = $stmt->fetch();
+    if (!$res) {
       return errorMsgHeader("Benutzername oder EMail-Adresse nicht gefunden!");
     }
     $plain_password = createRandomPassword();
     $pwhash = getPWHash($username, $plain_password);
-    mysql_query("UPDATE ".$tbl_prefix."users SET password='$pwhash' where username='$lusername' and email='$email'") OR dieDB();
- 
-	if (!sendPasswordMail($email, $username, $plain_password, true))
+    $db->prepare("UPDATE ".$tbl_prefix."users SET password = ? WHERE username = ? AND email = ?")
+       ->execute(array($pwhash, $lusername, $email));
+
+    $db = null;
+    if (!sendPasswordMail($email, $username, $plain_password, true))
       return errorMsgHeader("Fehler beim versenden der EMail!");
     return infoMsgHeader("Neues Passwort per EMail versand");
   }
@@ -83,12 +87,15 @@
     global $tbl_prefix, $_SESSION;
     if (!isset($_SESSION['siduser']) || isset($_SESSION['wikisession']))
       return errorMsgHeader("Passwort konnte nicht geändert werden");
-	if ($newpass != $confirm)
-	  return errorMsgHeader("Passwörter stimmen nicht überein");
-    $lusername = mysql_escape(strtolower($_SESSION['siduser']));
+    if ($newpass != $confirm)
+        return errorMsgHeader("Passwörter stimmen nicht überein");
+    $lusername = strtolower($_SESSION['siduser']);
     $pwhash = getPWHash($username, $newpass);
-    mysql_query("UPDATE ".$tbl_prefix."users SET password='$pwhash' where username='$lusername'") OR dieDB();
-	return infoMsgHeader("Passwort wurde geändert");
+    $db = openDB();
+    $db->prepare("UPDATE ".$tbl_prefix."users SET password = ? WHERE username = ?")
+       ->execute(array($pwhash, $lusername));
+    $db = null;
+    return infoMsgHeader("Passwort wurde geändert");
   }
 
   function register($username, $email) {
@@ -96,16 +103,19 @@
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
       return errorMsgHeader("Ungültige EMail Adresse");
     }
-    $lusername = mysql_escape(strtolower($username));
-    $email = mysql_escape($email);
-    $res = mysql_query("Select * from ".$tbl_prefix."users WHERE username='$lusername' or email='$email'") OR dieDB();
-    if (mysql_num_rows($res) > 0) {
+    $lusername = strtolower($username);
+    $db = openDB();
+    $stmt = $db->prepare("Select * from ".$tbl_prefix."users WHERE username = ? OR email = ?");
+    $stmt->execute(array($lusername, $email));
+
+    if ($stmt->rowCount() > 0) {
       return errorMsgHeader("Benutzername oder EMail-Adresse wird bereits verwendet");
     }
     $plain_password = createRandomPassword();
     $pwhash = getPWHash($username, $plain_password);
-    mysql_query("INSERT INTO ".$tbl_prefix."users (username, password, email) VALUES('$lusername', '$pwhash', '$email')") OR dieDB();
-
+    $db->prepare("INSERT INTO ".$tbl_prefix."users (username, password, email) VALUES(?, ?, ?)")
+       ->execute(array($lusername, $pwhash, $email));
+    $db = null;
     if (!sendPasswordMail($email, $username, $plain_password, false)) {
       return errorMsgHeader("Email konnte nicht gesendet werden!");
     }
@@ -118,7 +128,7 @@
       }
   } else if ($_POST['action'] == 'changepw') {
       if (isset($_POST['newpass']) && isset($_POST['passconfirm'])) {	  
-		header(changePassword($_POST['newpass'], $_POST['passconfirm']));
+        header(changePassword($_POST['newpass'], $_POST['passconfirm']));
       }
   } else if ($_POST['action'] == 'resetpw') {
       if (isset($_POST['username']) && isset($_POST['email'])) {

@@ -538,30 +538,8 @@ else
 	</div>
 	<?php
 	}
-	
-	if ($show_last_x_changes > 0) {?>
-	<div style="position:absolute; top:50px; bottom:30px; width:150px; right:0px;" id="log" >
-		<?php if ($loginok) {
-			$res = mysql_query("SELECT plakat_id as id,user,timestamp,subject,what FROM ".$tbl_prefix."log ORDER BY timestamp DESC LIMIT ".$show_last_x_changes) OR dieDB();
-			$num = mysql_num_rows($res);
 
-			for ($i=0;$i<$num;$i++)
-			{
-				echo mysql_result($res, $i, "timestamp")." (".mysql_result($res, $i, "user")."):<br>";
-				if (mysql_result($res, $i, "subject")=='add') echo "Neues Plakat: ".mysql_result($res, $i, "id");
-				if (mysql_result($res, $i, "subject")=='del') echo "Plakat ".mysql_result($res, $i, "id")." gelöscht.";
-				if (mysql_result($res, $i, "subject")=='change') {
-					echo "Plakat ".mysql_result($res, $i, "id")." geändert: ".mysql_result($res, $i, "what");
-				}
-				
-				echo "<br>";
-			}
-		}?>
-	</div>
-	<?php } 
 	$mapmarginright = 0;
-	if ($show_last_x_changes > 0)
-		$mapmarginright = 150;
 	$mapmargintop = 40;
 	if ($_GET['message'] || $_GET['error'])
 		$mapmargintop = 81;

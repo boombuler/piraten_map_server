@@ -27,18 +27,17 @@ $_SESSION['sidip'] = $_SERVER["REMOTE_ADDR"];
 $query = "SELECT p.id, f.lon, f.lat "
       . " FROM ".$tbl_prefix."felder f JOIN ".$tbl_prefix."plakat p on p.actual_id = f.id"
       . " WHERE p.del != true and f.street is null and f.city is null LIMIT 0, $max_resolve_count";
-
-$rs = mysql_query($query) OR dieDB();
-while($obj = mysql_fetch_object($rs))
+$db = openDB();
+foreach ($db->query($query) as $obj) {
 {
-        $location = request_location($obj->lon, $obj->lat);
+    $location = request_location($obj->lon, $obj->lat);
 
-        $city = $location["city"];
-        $street = $location["street"];
+    $city = $location["city"];
+    $street = $location["street"];
 
-        map_change($obj->id, null, null, $city, $street, null);
+    map_change($obj->id, null, null, $city, $street, null);
 }
-
+$db = null;
 unset($_SESSION['siduser']);
 unset($_SESSION['wikisession']);
 unset($_SESSION['sidip']);

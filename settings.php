@@ -27,8 +27,6 @@ $send_mail_adr = "no-reply@piratenpartei.de";
 $use_ssl = true;
 $curl_path="/usr/bin/curl";
 $allow_view_public = true;
-// Die letzten Änderungen anzeigen
-$show_last_x_changes = 10;
 
 $max_resolve_count = 5; // Wieviele Nominatim Requests sollen gestellt werden pro durchgang?
 

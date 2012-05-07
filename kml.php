@@ -76,73 +76,80 @@ foreach($options as $key=>$value) {
 }
 
 $filterstr = "";
+$params = array();
+
 if ($filter) {
-  $filterstr = " AND type = '".mysql_escape($filter)."'";
+  $filterstr = " AND type = :type";
+  $params['type'] = $filter;
 }
-$bbox = mysql_escape($_GET['bbox']);
+
+$bbox = $_GET['bbox'];
 if ($bbox) {
-	list($bbe, $bbn, $bbw, $bbs) = split(",", $bbox);
-	$filterstr .= " AND (f.lon >= $bbe) AND (f.lon <= $bbw) AND (f.lat >= $bbn) AND (f.lat <= $bbs)";
+    list($bbe, $bbn, $bbw, $bbs) = split(",", $bbox);
+    $params['bbe'] = $bbe;
+    $params['bbw'] = $bbw;
+    $params['bbs'] = $bbs;
+    $params['bbn'] = $bbn;
+    $filterstr .= " AND (f.lon >= :bbe) AND (f.lon <= :bbw) AND (f.lat >= :bbn) AND (f.lat <= :bbs)";
 }
 
 
 $query = "SELECT p.id, f.lon, f.lat, f.type, f.user, f.timestamp, f.comment, f.city, f.street, f.image "
       . " FROM ".$tbl_prefix."felder f JOIN ".$tbl_prefix."plakat p on p.actual_id = f.id"
       . " WHERE p.del != true".$filterstr;
+$db = openDB();
 
-$res = mysql_query($query) OR dieDB();
-$num = mysql_num_rows($res);
+$sql = $db->prepare($query);
+$sql->execute($params);
+$result = $sql->fetchAll();
+foreach($result as $obj) {
+    $id  = $obj->id;
 
-for ($i=0;$i<$num;$i++) {
-	$id  = mysql_result($res, $i, "id");
-	
-	$lon = mysql_result($res, $i, "lon");
-	$arr = preg_split("/\./", $lon);
-	$ar2 = str_split($arr[1],6);
-	$lon = $arr[0].".".$ar2[0];
-	
-	$lat = mysql_result($res, $i, "lat");
-	$arr = preg_split("/\./", $lat);
-	$ar2 = str_split($arr[1],6);
-	$lat = $arr[0].".".$ar2[0];
-	
-	$type= mysql_result($res, $i, "type");
-	
-	$user= mysql_result($res, $i, "user");
-	
-	$time= mysql_result($res, $i, "timestamp");
-	
-	$comment = mysql_result($res, $i, "comment");
-	
-	if ($comment == null)
-		$comment = "";
-	$city = mysql_result($res, $i, "city");
-	if ($city == null)
-		$city = "";
-	$street = mysql_result($res, $i, "street");
-	if ($street == null)
-		$street = "";
-	$image   = mysql_result($res, $i, "image");
-	if ($image == "")
-		$image = null;
-	
-	$place = $nodeDoc->appendChild($dom->createElement('Placemark'));
-	$place->appendChild($dom->createElement('name', $id));
-	$place->appendChild($dom->createElement('description'))->appendChild(
-		$dom->createCDATASection(json_encode(array(
-			'id'=>$id,
-			't'=>$type, 
-			'tb'=>$options[$type],
-			'i'=>htmlspecialchars($image),
-			'c'=>htmlspecialchars($comment),
-			'ci'=>htmlspecialchars($city),
-			's'=>htmlspecialchars($street),
-			'u'=>htmlspecialchars($user),
-			'd'=>date('d.m.y H:i', strtotime($time))
-		))));
-	if (isset($options[$type]))
-		$place->appendChild($dom->createElement('styleUrl', '#'.$styles[$type]));
-	$place->appendChild($dom->createElement('Point'))->appendChild($dom->createElement('coordinates', "$lon,$lat"));
+    $lon = $obj->lon;
+    $arr = preg_split("/\./", $lon);
+    $ar2 = str_split($arr[1],6);
+    $lon = $arr[0].".".$ar2[0];
+
+    $lat = $obj->lat;
+    $arr = preg_split("/\./", $lat);
+    $ar2 = str_split($arr[1],6);
+    $lat = $arr[0].".".$ar2[0];
+
+    $type= $obj->type;
+    $user= $obj->user;
+    $time= $obj->timestamp;
+    $comment = $obj->comment;
+
+    if ($comment == null)
+        $comment = "";
+    $city = $obj->city;
+    if ($city == null)
+        $city = "";
+    $street = $obj->street;
+    if ($street == null)
+        $street = "";
+    $image   = $obj->image;
+    if ($image == "")
+        $image = null;
+
+    $place = $nodeDoc->appendChild($dom->createElement('Placemark'));
+    $place->appendChild($dom->createElement('name', $id));
+    $place->appendChild($dom->createElement('description'))->appendChild(
+        $dom->createCDATASection(json_encode(array(
+            'id'=>$id,
+            't'=>$type,
+            'tb'=>$options[$type],
+            'i'=>htmlspecialchars($image),
+            'c'=>htmlspecialchars($comment),
+            'ci'=>htmlspecialchars($city),
+            's'=>htmlspecialchars($street),
+            'u'=>htmlspecialchars($user),
+            'd'=>date('d.m.y H:i', strtotime($time))
+        ))));
+    if (isset($options[$type]))
+        $place->appendChild($dom->createElement('styleUrl', '#'.$styles[$type]));
+    $place->appendChild($dom->createElement('Point'))->appendChild($dom->createElement('coordinates', "$lon,$lat"));
 }
-echo $dom->saveXML();	
+$db = null;
+echo $dom->saveXML();
 ?>

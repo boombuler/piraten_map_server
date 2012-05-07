@@ -47,14 +47,17 @@ $query = "SELECT p.id, f.lon, f.lat, f.type, f.user, f.timestamp, f.comment, f.c
       . " FROM ".$tbl_prefix."felder f JOIN ".$tbl_prefix."plakat p on p.actual_id = f.id"
       . " WHERE p.del != true";
 
-$rs = mysql_query($query) OR dieDB();
-while($obj = mysql_fetch_object($rs))
-{
-	$obj->user    = htmlspecialchars($obj->user);
-	$obj->comment = htmlspecialchars($obj->comment);
-	$obj->city    = htmlspecialchars($obj->city);
-	$obj->street  = htmlspecialchars($obj->street);
-	$obj->image   = htmlspecialchars($obj->image);
-	$arr[] = $obj;
+$db = openDB();
+$sql = $db->prepare($query);
+$sql->execute();
+
+foreach($sql->fetchAll() as $obj) {
+    $obj->user    = htmlspecialchars($obj->user);
+    $obj->comment = htmlspecialchars($obj->comment);
+    $obj->city    = htmlspecialchars($obj->city);
+    $obj->street  = htmlspecialchars($obj->street);
+    $obj->image   = htmlspecialchars($obj->image);
+    $arr[] = $obj;
 }
+$db = null;
 print json_encode($arr);

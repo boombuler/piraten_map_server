@@ -168,11 +168,8 @@ if (!isAdmin())
                             <tbody>
 <?php
 
-    $query = "SELECT * FROM  ".$tbl_prefix."regions";
-    $res = mysql_query($query) OR dieDB();
-
-    while($cat = mysql_fetch_object($res))
-    {
+    $db = openDB();
+    foreach ($db->query("SELECT * FROM  ".$tbl_prefix."regions") as $cat) {
         echo "<tr id=\"trwikicat".$cat->id."\"><td>";
         echo $cat->category;
         echo "</td><td>";
@@ -185,6 +182,7 @@ if (!isAdmin())
         echo "<a class=\"close\" onclick=\"javascript:dropwikicat(".$cat->id.");\">&times;</a>";
         echo "</td></tr>";
     }
+    $db = null;
 ?>
                             </tbody>
                         </table>

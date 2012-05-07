@@ -39,14 +39,16 @@
   function login($username, $password)
   {
       global $tbl_prefix, $apiPath, $snoopy, $_SESSION;
-      $username = mysql_escape($username);
-      $password = mysql_escape($password);
       $passwordmd5 = getPWHash($username, $password);
-      $res = mysql_query("SELECT username, password FROM " . $tbl_prefix . "users WHERE username='$username' AND password='$passwordmd5'");
-      $num = mysql_num_rows($res);
+      $db = openDB();
+      $qry = $db->prepare("SELECT username, password FROM " . $tbl_prefix . "users WHERE username = ? AND password = ?");
+      $qry->execute(array($username, $passwordmd5));
+
+      $num = $qry->rowCount();
       $result = false;
       if ($num == 1) {
-          $_SESSION['siduser'] = mysql_escape(mysql_result($res, 0, "username"));
+          $res = $qry->fetch();
+          $_SESSION['siduser'] = $res->username;
           $_SESSION['sidip'] = $_SERVER["REMOTE_ADDR"];
           $result = true;
       } else {
@@ -71,7 +73,7 @@
           }
 
           if ($array[login][result] == "Success") {
-              $_SESSION['siduser'] = mysql_escape($username);
+              $_SESSION['siduser'] = $username;
               $_SESSION['wikisession'] = $snoopy->cookies;
               $_SESSION['sidip'] = $_SERVER["REMOTE_ADDR"];
               $result = true;
@@ -98,20 +100,20 @@
                       }
                   }
               }
-              $regionen = "'" . mysql_escape($categories[0]) . "'";
+              $filter = "category = ?";
               for ($i = 1; $i < count($categories); $i++)
-                  $regionen .= ",'" . mysql_escape($categories[$i]) . "'";
-              $query = "SELECT lat, lon,zoom FROM " . $tbl_prefix . "regions WHERE category in (" . $regionen . ") order by zoom desc limit 1";
-              $res = mysql_query($query);
-              $num = mysql_num_rows($res);
-
-              if ($num == 1) {
-                  $_SESSION['deflat'] = mysql_result($res, 0, "lat");
-                  $_SESSION['deflon'] = mysql_result($res, 0, "lon");
-                  $_SESSION['defzoom'] = mysql_result($res, 0, "zoom");
+                  $filter .= " OR category = ?";
+              $query = "SELECT lat, lon,zoom FROM " . $tbl_prefix . "regions WHERE $filter order by zoom desc limit 1";
+              $res = $db->prepare($query);
+              $res->execute($categories);
+              if ($obj = $res->fetch()) {
+                  $_SESSION['deflat'] = $obj->lat;
+                  $_SESSION['deflon'] = $obj->lon;
+                  $_SESSION['defzoom'] = $obj->zoom;
               }
           }
       }
+      $db = null;
       return $result;
   }
 

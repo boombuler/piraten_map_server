@@ -18,8 +18,9 @@
        under the License.
 */
 
-include "Snoopy.class.php";
-include "settings.php";
+require_once("Snoopy.class.php");
+require_once("settings.php");
+require_once("dbcon.php");
 
 function get_inner_html( $node ) { 
     $innerHTML= '';
@@ -56,12 +57,6 @@ $options = array("default"=>"",
 
 $image_upload_typ = 'plakat_ok';
 
-
-$db = mysql_connect($mysql_server, $mysql_user, $mysql_password);
-mysql_selectdb($mysql_database);
-mysql_query("SET character_set_connection = utf8");
-mysql_query("SET character_set_results = utf8");
-mysql_query("SET character_set_client = utf8");
 setlocale(LC_ALL, 'de_DE.UTF-8');
 
 if ($_SESSION['siduser'] || $_SESSION['sidip']) {
@@ -96,31 +91,14 @@ if ($_SESSION['siduser'] || $_SESSION['sidip']) {
        }
 }
 
-function dieDB() {
-    global $debug;
-    if ($debug)
-      DIE(mysql_error());
-    else
-      DIE("Error!");
-}
-
-function mysql_escape($value) {
-	if (get_magic_quotes_gpc())
-		$value = stripslashes($value);
-	return mysql_real_escape_string($value);
-}
-
 function get_float($name) {
   return filter_input(INPUT_GET, $name, FILTER_VALIDATE_FLOAT);
-}
-
-function format_float($val) {
-    return preg_replace("/,/",".",$val);
 }
 
 function get_int($name) {
   return filter_input(INPUT_GET, $name, FILTER_VALIDATE_INT);
 }
+
 function get_typ($typ) {
 	global $options;
 	$t = $_GET[$typ];
@@ -140,85 +118,110 @@ function request_location($lon, $lat) {
         $src->load("http://nominatim.openstreetmap.org/reverse?format=xml&zoom=18&addressdetails=1&lon=".$lon."&lat=".$lat);
         $city = get_inner_html($src->getElementsByTagName('city')->item(0));
         $street = get_inner_html($src->getElementsByTagName('road')->item(0));
-        return array( "city" => mysql_escape($city), "street" =>  mysql_escape($street));
+        return array( "city" => $city, "street" =>  $street);
 }
 
 function map_add($lon, $lat, $typ, $resolveAdr) {
-	global $tbl_prefix, $_SESSION;
-	
-	$lon = mysql_escape($lon);
-	$lat = mysql_escape($lat);
-	$typ = mysql_escape($typ);
+    global $tbl_prefix, $_SESSION;
 
-        $city = "null";
-        $street = "null";
-        if ($resolveAdr) {
-            $location = request_location($lon, $lat);
-            $city = "'".$location["city"]."'";
-            $street = "'".$location["street"]."'";
-        }
-	
-	if ($typ != '')
-		$res = mysql_query("INSERT INTO ".$tbl_prefix."felder (lon,lat,user,type,city,street) VALUES ('$lon', '$lat','".$_SESSION['siduser']."','$typ', $city, $street);") OR dieDB();
-	else
-		$res = mysql_query("INSERT INTO ".$tbl_prefix."felder (lon,lat,user,city,street) VALUES ('$lon','$lat','".$_SESSION['siduser']."',$city, $street);") OR dieDB();
-	
-	$id = mysql_insert_id();
-	$res = mysql_query("INSERT INTO ".$tbl_prefix."plakat (actual_id, del) VALUES('".$id."',false)") OR dieDB();
-	$pid = mysql_insert_id();
-	mysql_query("UPDATE ".$tbl_prefix."felder SET plakat_id = $pid WHERE id = $id") or dieDB();
-	$res = mysql_query("INSERT INTO ".$tbl_prefix."log (plakat_id, user, subject) VALUES('".$pid."','".$_SESSION['siduser']."','add')") OR dieDB();
-	return $pid;
+    $city = "null";
+    $street = "null";
+    if ($resolveAdr) {
+        $location = request_location($lon, $lat);
+        $city = "'".$location["city"]."'";
+        $street = "'".$location["street"]."'";
+    }
+
+    $db = openDB();
+
+    if ($typ != '') {
+        $sql = $db->prepare("INSERT INTO ".$tbl_prefix."felder (lon, lat, user, type, city, street) VALUES (:lon, :lat, :user, :type, :city, :street)");
+        $sql->bindValue("type", $typ);
+    } else {
+        $sql = $db->prepare("INSERT INTO ".$tbl_prefix."felder (lon, lat, user, city, street) VALUES (:lon, :lat, :user, :city, :street)");
+    }
+
+    $sql->bindValue("lon", $lon);
+    $sql->bindValue("lat", $lat);
+    $sql->bindValue("user", $_SESSION['siduser']);
+    $sql->bindValue("city", $city);
+    $sql->bindValue("street", $street);
+    $sql->execute();
+    $id = $db->lastInsertId();
+
+    $db->prepare("INSERT INTO ".$tbl_prefix."plakat (actual_id, del) VALUES (?, false)")
+       ->execute(array($id));
+
+    $pid = $db->lastInsertId();
+
+    $db->prepare("UPDATE ".$tbl_prefix."felder SET plakat_id = ? WHERE id = ?")
+       ->execute(array($pid, $id));
+
+    $db->prepare("INSERT INTO ".$tbl_prefix."log (plakat_id, user, subject) VALUES(?, ?, ?)")
+       ->execute(array($pid, $_SESSION['siduser'], "add"));
+
+    $db = null;
+    return $pid;
 }
 
 function map_del($id) {
-	global $tbl_prefix, $_SESSION;
-	
-	$id = mysql_escape($id);
-	
-	$res = mysql_query("UPDATE ".$tbl_prefix."plakat SET del = true where id = $id") OR dieDB();
-	
-	$res = mysql_query("INSERT INTO ".$tbl_prefix."log (plakat_id, user, subject) VALUES('".$id."','".$_SESSION['siduser']."','del')") OR dieDB();
-	return;
+    global $tbl_prefix, $_SESSION;
+    $db = openDB();
+
+    $db->prepare("UPDATE ".$tbl_prefix."plakat SET del = true where id = ?")
+       ->execute(array($id));
+
+    $db->prepare("INSERT INTO ".$tbl_prefix."log (plakat_id, user, subject) VALUES (?,?,?)")
+       ->execute(array($id, $_SESSION['siduser'], "del"));
+    $db = null;
 }
 
 function map_change($id, $type, $comment, $city, $street, $imageurl) {
-	global $tbl_prefix, $_SESSION, $options;
-	
-	$id = mysql_escape($id);
-	$query = "INSERT INTO ".$tbl_prefix."felder (plakat_id, lon, lat, user, type, comment, city, street, image) "
-               . "SELECT $id as plakat_id, lon, lat, '".$_SESSION['siduser']."' as user, ";
-	if(isset($options[$type])) {
-		$type = mysql_escape($type);
-		$query .= "'$type' as type, ";
-	} else $query .= "type, ";
-	if ($comment !== null) {
-		$comment = mysql_escape($comment);
-		$query .= "'$comment' as comment, ";
-	} else $query .= "comment, ";
-	if($city !== null) {	  
-		$city = mysql_escape($city);
-		$query .= "'$city' as city, ";
-	} else $query .= "city, ";
-	if($street !== null) {	  
-		$street = mysql_escape($street);
-		$query .= "'$street' as street, ";
-	} else $query .= "street, ";
-	if($imageurl !== null) {	  
-		$imageurl = mysql_escape($imageurl);
-		$query .= "'$imageurl' as image ";
-	} else $query .= "image ";
+    global $tbl_prefix, $_SESSION, $options;
 
-	$query .= " FROM ".$tbl_prefix."felder WHERE id in (SELECT actual_id from ".$tbl_prefix."plakat where id = $id)";
+    $db = openDB();
 
-	$res = mysql_query($query) OR dieDB();
-	$newid = mysql_insert_id();
+    $query = "INSERT INTO ".$tbl_prefix."felder (plakat_id, lon, lat, user, type, comment, city, street, image) " .
+             "SELECT :pid as plakat_id, lon, lat, :user as user, ";
+    $params = array(
+        'pid' => $id,
+        'user' => $_SESSION['siduser']
+    );
 
-	$res = mysql_query("INSERT INTO ".$tbl_prefix."log (plakat_id, user, subject, what) VALUES('".$id."','".$_SESSION['siduser']."','change', 'Type: ".$type."')") OR dieDB();
+    if(isset($options[$type])) {
+        $params['type'] = $type;
+        $query .= ":type as type, ";
+    } else $query .= "type, ";
+    if ($comment !== null) {
+        $params['comment'] = $comment;
+        $query .= ":comment as comment, ";
+    } else $query .= "comment, ";
+    if($city !== null) {
+        $params['city'] = $city;
+        $query .= ":city as city, ";
+    } else $query .= "city, ";
+    if($street !== null) {
+        $params['street'] = $street;
+        $query .= ":street as street, ";
+    } else $query .= "street, ";
+    if($imageurl !== null) {
+        $params['img'] = $imageurl;
+        $query .= ":img as image ";
+    } else $query .= "image ";
 
-	mysql_query("UPDATE ".$tbl_prefix."plakat SET actual_id = $newid where id = $id");
-	
-	return;
+    $query .= " FROM ".$tbl_prefix."felder WHERE id in (SELECT actual_id from ".$tbl_prefix."plakat where id = :pid)";
+
+    $db->prepare($query)->execute($params);
+
+    $newid = $db->lastInsertId();
+
+    $db->prepare("INSERT INTO ".$tbl_prefix."log (plakat_id, user, subject, what) VALUES (?, ?, ?, ?)")
+       ->execute(array($id, $_SESSION['siduser'], 'change', 'Type: '.$type));
+
+    $db->prepare("UPDATE ".$tbl_prefix."plakat SET actual_id = ? where id = ?")
+       ->execute(array($newid, $id));
+
+    $db = null;
 }
 
 function getPWHash($user, $pass) {

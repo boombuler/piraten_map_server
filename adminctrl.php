@@ -10,34 +10,65 @@
             $zoom = get_int('zoom');
             $lat = get_float('lat');
             $lon = get_float('lon');
-            $name = mysql_escape($_GET['name']);
+            $name = $_GET['name'];
             if ($zoom && $lat && $lon && $name) {
-                $lat = format_float($lat);
-                $lon = format_float($lon);
-                if (mysql_query("INSERT INTO ".$tbl_prefix."regions (category, lat, lon, zoom) VALUES('$name', '$lat', '$lon', '$zoom')")) {
-                    $id = mysql_insert_id();
-                    $insertet = '{"id": "'.$id.'", "name": "'.$name.'", "lat":"'.$lat.'","lon":"'.$lon.'", "zoom":"'.$zoom.'"}';
-                    
-                    echo '{"status": "success", "message": "\''.$name.'\' hinzugefügt.", "data":'.$insertet.'}';
+                $db = openDB();
+                if ($db->prepare("INSERT INTO ".$tbl_prefix."regions (category, lat, lon, zoom) VALUES(?, ?, ?, ?)")
+                       ->execute(array($name, $lat, $lon, $zoom))) {
+                    $id = $db->lastInsertId();
+                    $result = array(
+                        'status' => 'success',
+                        'message' => "'$name' hinzugefügt.",
+                        'data' => array(
+                            'id' => $id,
+                            'name' => $name,
+                            'lat' => $lat,
+                            'lon' => $lon,
+                            'zoom' => $zoom
+                        )
+                    );
+                    echo json_encode($result);
                 } else {
-                    echo '{"status": "error", "message": "Kategorie konnte nicht hinzugefügt werden."}';
+                    echo json_encode(array(
+                        'status' => 'error',
+                        'message' => 'Kategorie konnte nicht hinzugefügt werden.'
+                    ));
                 }
+                $db = null;
             } else {
-                echo '{"status": "error", "message": "Fehlerhafte Eingabe"}';
+                echo json_encode(array(
+                    'status' => 'error',
+                    'message' => 'Fehlerhafte Eingabe.'
+                ));
             }
         } else if ($action == 'drop') {
             $id = get_int('id');
             if ($id) {
-                if (mysql_query("DELETE FROM ".$tbl_prefix."regions WHERE id = $id")) {
-                    echo '{"status": "success", "message": "Kategorie gelöscht"}';
+                $db = openDB();
+                if ($db->prepare("DELETE FROM ".$tbl_prefix."regions WHERE id = ?")
+                       ->execute(array($id))) {
+                    echo json_encode(array(
+                        'status' => 'success',
+                        'message'=> 'Kategorie gelöscht.'
+                    ));
                 } else {
-                    echo '{"status": "error", "message": "Kategorie konnte nicht gelöscht werden."}';
+                    echo json_encode(array(
+                        'status' => 'error',
+                        'message'=> 'Kategorie konnte nicht gelöscht werden.'
+                    ));
                 }
+                $db = null;
             } else {
-                echo '{"status": "error", "message": "Fehlerhafte Eingabe"}';
+                echo json_encode(array(
+                    'status' => 'error',
+                    'message'=> 'Fehlerhafte Eingabe.'
+                ));
             }
         } else {
-            echo '{"status": "error", "message": "Unbekannte Aktion"}';
+            echo json_encode(array(
+                'status' => 'error',
+                'message' => 'Unbekannte Aktion.'
+            ));
         }
     }
 ?>
