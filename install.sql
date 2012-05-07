@@ -52,6 +52,7 @@ CREATE TABLE IF NOT EXISTS `plakate_users` (
   `username` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `password` varchar(32) COLLATE utf8_unicode_ci NOT NULL,
   `email` VARCHAR( 256 ) COLLATE utf8_unicode_ci NULL ,
+  `admin` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 

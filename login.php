@@ -34,6 +34,7 @@
       unset($_SESSION['siduser']);
       unset($_SESSION['wikisession']);
       unset($_SESSION['sidip']);
+      unset($_SESSION['admin']);
   }
 
   function login($username, $password)
@@ -41,15 +42,18 @@
       global $tbl_prefix, $apiPath, $snoopy, $_SESSION;
       $passwordmd5 = getPWHash($username, $password);
       $db = openDB();
-      $qry = $db->prepare("SELECT username, password FROM " . $tbl_prefix . "users WHERE username = ? AND password = ?");
+      $qry = $db->prepare("SELECT username, password, admin FROM " . $tbl_prefix . "users WHERE username = ? AND password = ?");
       $qry->execute(array($username, $passwordmd5));
 
       $num = $qry->rowCount();
       $result = false;
+      $_SESSION['admin'] = false;
       if ($num == 1) {
           $res = $qry->fetch();
           $_SESSION['siduser'] = $res->username;
           $_SESSION['sidip'] = $_SERVER["REMOTE_ADDR"];
+          if ($res->admin == 1)
+              $_SESSION['admin'] = true;
           $result = true;
       } else {
           $username = strtoupper(substr($username, 0, 1)) . substr($username, 1, strlen($username) - 1);

@@ -237,13 +237,9 @@ function infoMsgHeader($msg) {
 }
 
 function isAdmin() {
-    global $admins, $_SESSION;
+    global $_SESSION;
     if (isset($_SESSION['siduser'])) {
-        $user = $_SESSION['siduser'];
-        foreach($admins as $admin) {
-            if ($admin == $user)
-                return true;
-        }
+        return $_SESSION['admin'] === true;
     }
     return false;
 }

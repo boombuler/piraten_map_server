@@ -22,6 +22,7 @@ require("includes.php");
 
 $_SESSION['siduser'] = "CRONJOB";
 $_SESSION['sidip'] = $_SERVER["REMOTE_ADDR"];
+$_SESSION['admin'] = false;
 
 
 $query = "SELECT p.id, f.lon, f.lat "
@@ -41,4 +42,5 @@ $db = null;
 unset($_SESSION['siduser']);
 unset($_SESSION['wikisession']);
 unset($_SESSION['sidip']);
+unset($_SESSION['admin']);
 ?>
