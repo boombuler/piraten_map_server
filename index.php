@@ -17,7 +17,10 @@
        specific language governing permissions and limitations
        under the License.
 */
+include_once('library/System.php');
+
 ob_start("ob_gzhandler");
+
 function detect_ie()
 {
 	if (isset($_SERVER['HTTP_USER_AGENT']) && 

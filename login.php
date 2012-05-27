@@ -17,19 +17,13 @@
    specific language governing permissions and limitations
    under the License.
    */
-
+  require_once('library/System.php');
   require_once("includes.php");
 
   function logout()
   {
-      global $snoopy, $apiPath, $_SESSION;
-      if ($_SESSION['wikisession']) {
-          $snoopy->cookies = $_SESSION['wikisession'];
-
-          $request_vars = array('action' => 'logout', 'format' => 'php');
-          if (!$snoopy->submit($apiPath, $request_vars))
-              die("Snoopy error: {$snoopy->error}");
-      }
+      global $_SESSION;
+      WikiConnection::logout();
       $loginok = 0;
       unset($_SESSION['siduser']);
       unset($_SESSION['wikisession']);
@@ -39,82 +33,41 @@
 
   function login($username, $password)
   {
-      global $tbl_prefix, $apiPath, $snoopy, $_SESSION;
+      global $_SESSION;
       $passwordmd5 = getPWHash($username, $password);
-      $db = openDB();
-      $qry = $db->prepare("SELECT username, password, admin FROM " . $tbl_prefix . "users WHERE username = ? AND password = ?");
-      $qry->execute(array($username, $passwordmd5));
 
+      $qry = System::query("SELECT username, password, admin FROM " . System::getConfig('tbl_prefix') . "users WHERE username = ?", array($username));
       $num = $qry->rowCount();
+
       $result = false;
       $_SESSION['admin'] = false;
       if ($num == 1) {
           $res = $qry->fetch();
-          $_SESSION['siduser'] = $res->username;
-          $_SESSION['sidip'] = $_SERVER["REMOTE_ADDR"];
-          if ($res->admin == 1)
+          if ($res->password == $passwordmd5) {
+            $_SESSION['siduser'] = $res->username;
+            $_SESSION['sidip'] = $_SERVER["REMOTE_ADDR"];
+            if ($res->admin == 1)
               $_SESSION['admin'] = true;
-          $result = true;
+            $result = true;
+          } else {
+            return false;
+          }
       } else {
-          $username = strtoupper(substr($username, 0, 1)) . substr($username, 1, strlen($username) - 1);
-
-          $request_vars = array('action' => 'login', 'lgname' => $username, 'lgpassword' => $password, 'format' => 'php');
-          if (!$snoopy->submit($apiPath, $request_vars))
-              die("Snoopy error: {$snoopy->error}");
-
-          // We're only really interested in the cookies
-          $snoopy->setcookies();
-          $array = unserialize($snoopy->results);
-
-          if ($array[login][result] == "NeedToken") {
-              $request_vars = array('action' => 'login', 'lgname' => $username, 'lgpassword' => $password, 'lgtoken' => $array[login][token], 'format' => 'php');
-              if (!$snoopy->submit($apiPath, $request_vars))
-                  die("Snoopy error: {$snoopy->error}");
-
-              // We're only really interested in the cookies
-              $snoopy->setcookies();
-              $array = unserialize($snoopy->results);
-          }
-
-          if ($array[login][result] == "Success") {
-              $_SESSION['siduser'] = $username;
-              $_SESSION['wikisession'] = $snoopy->cookies;
-              $_SESSION['sidip'] = $_SERVER["REMOTE_ADDR"];
-              $result = true;
-          }
+          $result = WikiConnection::login($username, $password);
       }
 
       // Try to get the users location...
       if ($_SESSION['siduser']) {
-          $request_vars = array('action' => 'query', 'prop' => 'categories', 'titles' => 'Benutzer:' . $_SESSION['siduser'], 'format' => 'php');
-          if ($snoopy->submit($apiPath, $request_vars)) {
-              $array = unserialize($snoopy->results);
-              $categories = array('Germany');
-              if (($array) && ($array['query']) && ($array['query']['pages'])) {
-                  $pages = $array['query']['pages'];
-                  reset($pages);
-                  while (list($key, $val) = each($pages)) {
-                      if (($val) && ($val['categories'])) {
-                          $cats = $val['categories'];
-                          reset($cats);
-                          while (list($k, $cat) = each($cats)) {
-                              if (($cat) && ($cat['title']))
-                                  $categories[] = $cat['title'];
-                          }
-                      }
-                  }
-              }
-              $filter = "category = ?";
-              for ($i = 1; $i < count($categories); $i++)
-                  $filter .= " OR category = ?";
-              $query = "SELECT lat, lon,zoom FROM " . $tbl_prefix . "regions WHERE $filter order by zoom desc limit 1";
-              $res = $db->prepare($query);
-              $res->execute($categories);
-              if ($obj = $res->fetch()) {
-                  $_SESSION['deflat'] = $obj->lat;
-                  $_SESSION['deflon'] = $obj->lon;
-                  $_SESSION['defzoom'] = $obj->zoom;
-              }
+          $categories = WikiConnection::getUserCategories();
+          $filter = "category = ?";
+          for ($i = 1; $i < count($categories); $i++) 
+              $filter .= " OR category = ?";
+          $query = "SELECT lat, lon,zoom FROM " . System::getConfig('tbl_prefix') . "regions WHERE $filter order by zoom desc limit 1";
+          $res = System::query($query, $categories);
+          if ($obj = $res->fetch()) {
+              $_SESSION['deflat'] = $obj->lat;
+              $_SESSION['deflon'] = $obj->lon;
+              $_SESSION['defzoom'] = $obj->zoom;
           }
       }
       $db = null;

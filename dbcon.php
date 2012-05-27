@@ -1,13 +1,15 @@
 <?php
-  require_once('settings.php');
+  require_once('library/System.php');
 
   function openDB() {
-    global $mysql_password, $mysql_user, $mysql_server, $mysql_database;
+
     static $dbh = null;
     if ($__dbcon_dbh == null)
     {
         try {
-            $dbh = new PDO("mysql:host=$mysql_server;dbname=$mysql_database", $mysql_user, $mysql_password, array(
+            $server = System::getConfig('mysql_server');
+            $database = System::getConfig('mysql_database');
+            $dbh = new PDO("mysql:host=$server;dbname=$database", System::getConfig('mysql_user'), System::getConfig('mysql_password'), array(
                 PDO::ATTR_PERSISTENT => true,
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_OBJ
             ));
