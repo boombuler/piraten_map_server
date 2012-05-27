@@ -17,34 +17,8 @@
        specific language governing permissions and limitations
        under the License.
 */
-
-require_once("Snoopy.class.php");
-require_once("settings.php");
-require_once("dbcon.php");
-
-function get_inner_html( $node ) { 
-    $innerHTML= '';
-    $children = $node->childNodes; 
-    foreach ($children as $child) { 
-        $innerHTML .= $child->ownerDocument->saveXML( $child ); 
-    }
-    return $innerHTML; 
-} 
-
-$snoopy = new Snoopy;
-
-if ($use_ssl) {
-  $snoopy->curl_path=$curl_path;
-  $wikiPath = "https://wiki.piratenpartei.de";
-} else {
-  $snoopy->curl_path=false;
-  $wikiPath = "http://wiki.piratenpartei.de";
-}
-$apiPath = "$wikiPath/wiki/api.php";
-
+require_once(dirname(__FILE__). '/System.php');
 session_start();
-
-
 
 $options = array("default"=>"",
 	"plakat_ok"=>'Plakat hängt',
@@ -61,35 +35,24 @@ setlocale(LC_ALL, 'de_DE.UTF-8');
 
 if ($_SESSION['siduser'] || $_SESSION['sidip']) {
 	// Check if the session is still valid.
-	if ($_SESSION['wikisession']) {
-		$snoopy->cookies = $_SESSION['wikisession'];
-
-		$request_vars = array('action' => 'query', 'meta' => 'userinfo',  'format' => 'php');
-		if(!$snoopy->submit($apiPath, $request_vars))
-			die("Snoopy error: {$snoopy->error}");
-		$array = unserialize($snoopy->results);
-
-		if ($_SESSION['siduser'] == $array[query][userinfo][name] && $_SESSION['sidip']==$_SERVER["REMOTE_ADDR"])
-			$loginok=1;
-		else
-		{
-			$loginok=0;
-			unset($_SESSION['siduser']);
-			unset($_SESSION['wikisession']);
-			unset($_SESSION['sidip']);
-		}
-	} else {
-		if ($_SESSION['sidip']==$_SERVER["REMOTE_ADDR"])
-			$loginok=1;
-		else
-		{
-			$loginok=0;
-			unset($_SESSION['siduser']);
-			unset($_SESSION['wikisession']);
-			unset($_SESSION['sidip']);
-		}
-       }
+    if (WikiConnection::isSessionValid() && $_SESSION['sidip']==$_SERVER["REMOTE_ADDR"])
+        $loginok=1;
+    else
+    {
+        $loginok=0;
+        unset($_SESSION['siduser']);
+        unset($_SESSION['sidip']);
+    }
 }
+
+function get_inner_html( $node ) { 
+    $innerHTML= '';
+    $children = $node->childNodes; 
+    foreach ($children as $child) { 
+        $innerHTML .= $child->ownerDocument->saveXML( $child ); 
+    }
+    return $innerHTML; 
+} 
 
 function get_float($name) {
   return filter_input(INPUT_GET, $name, FILTER_VALIDATE_FLOAT);
@@ -122,7 +85,7 @@ function request_location($lon, $lat) {
 }
 
 function map_add($lon, $lat, $typ, $resolveAdr) {
-    global $tbl_prefix, $_SESSION;
+    global $_SESSION;
 
     $city = "null";
     $street = "null";
@@ -132,13 +95,13 @@ function map_add($lon, $lat, $typ, $resolveAdr) {
         $street = "'".$location["street"]."'";
     }
 
-    $db = openDB();
+    $tbl_prefix = System::getConfig('tbl_prefix');
 
     if ($typ != '') {
-        $sql = $db->prepare("INSERT INTO ".$tbl_prefix."felder (lon, lat, user, type, city, street) VALUES (:lon, :lat, :user, :type, :city, :street)");
+        $sql = System::prepare("INSERT INTO ".$tbl_prefix."felder (lon, lat, user, type, city, street) VALUES (:lon, :lat, :user, :type, :city, :street)");
         $sql->bindValue("type", $typ);
     } else {
-        $sql = $db->prepare("INSERT INTO ".$tbl_prefix."felder (lon, lat, user, city, street) VALUES (:lon, :lat, :user, :city, :street)");
+        $sql = System::prepare("INSERT INTO ".$tbl_prefix."felder (lon, lat, user, city, street) VALUES (:lon, :lat, :user, :city, :street)");
     }
 
     $sql->bindValue("lon", $lon);
@@ -147,39 +110,32 @@ function map_add($lon, $lat, $typ, $resolveAdr) {
     $sql->bindValue("city", $city);
     $sql->bindValue("street", $street);
     $sql->execute();
-    $id = $db->lastInsertId();
+    $id = System::lastInsertId();
 
-    $db->prepare("INSERT INTO ".$tbl_prefix."plakat (actual_id, del) VALUES (?, false)")
-       ->execute(array($id));
+    System::query("INSERT INTO ".$tbl_prefix."plakat (actual_id, del) VALUES (?, false)", array($id));
 
-    $pid = $db->lastInsertId();
+    $pid = System::lastInsertId();
 
-    $db->prepare("UPDATE ".$tbl_prefix."felder SET plakat_id = ? WHERE id = ?")
-       ->execute(array($pid, $id));
+    System::query("UPDATE ".$tbl_prefix."felder SET plakat_id = ? WHERE id = ?", array($pid, $id));
 
-    $db->prepare("INSERT INTO ".$tbl_prefix."log (plakat_id, user, subject) VALUES(?, ?, ?)")
-       ->execute(array($pid, $_SESSION['siduser'], "add"));
+    System::query("INSERT INTO ".$tbl_prefix."log (plakat_id, user, subject) VALUES(?, ?, ?)", array($pid, $_SESSION['siduser'], "add"));
 
-    $db = null;
     return $pid;
 }
 
 function map_del($id) {
     global $tbl_prefix, $_SESSION;
-    $db = openDB();
+    $tbl_prefix = System::getConfig('tbl_prefix');
 
-    $db->prepare("UPDATE ".$tbl_prefix."plakat SET del = true where id = ?")
-       ->execute(array($id));
+    System::query("UPDATE ".$tbl_prefix."plakat SET del = true where id = ?", array($id));
 
-    $db->prepare("INSERT INTO ".$tbl_prefix."log (plakat_id, user, subject) VALUES (?,?,?)")
-       ->execute(array($id, $_SESSION['siduser'], "del"));
-    $db = null;
+    System::query("INSERT INTO ".$tbl_prefix."log (plakat_id, user, subject) VALUES (?,?,?)", array($id, $_SESSION['siduser'], "del"));
 }
 
 function map_change($id, $type, $comment, $city, $street, $imageurl) {
-    global $tbl_prefix, $_SESSION, $options;
+    global $_SESSION, $options;
 
-    $db = openDB();
+    $tbl_prefix = System::getConfig('tbl_prefix');
 
     $query = "INSERT INTO ".$tbl_prefix."felder (plakat_id, lon, lat, user, type, comment, city, street, image) " .
              "SELECT :pid as plakat_id, lon, lat, :user as user, ";
@@ -211,17 +167,13 @@ function map_change($id, $type, $comment, $city, $street, $imageurl) {
 
     $query .= " FROM ".$tbl_prefix."felder WHERE id in (SELECT actual_id from ".$tbl_prefix."plakat where id = :pid)";
 
-    $db->prepare($query)->execute($params);
+    System::query($query, $params);
 
-    $newid = $db->lastInsertId();
+    $newid = System::lastInsertId();
 
-    $db->prepare("INSERT INTO ".$tbl_prefix."log (plakat_id, user, subject, what) VALUES (?, ?, ?, ?)")
-       ->execute(array($id, $_SESSION['siduser'], 'change', 'Type: '.$type));
+    System::query("INSERT INTO ".$tbl_prefix."log (plakat_id, user, subject, what) VALUES (?, ?, ?, ?)", array($id, $_SESSION['siduser'], 'change', 'Type: '.$type));
 
-    $db->prepare("UPDATE ".$tbl_prefix."plakat SET actual_id = ? where id = ?")
-       ->execute(array($newid, $id));
-
-    $db = null;
+    System::query("UPDATE ".$tbl_prefix."plakat SET actual_id = ? where id = ?", array($newid, $id));
 }
 
 function getPWHash($user, $pass) {

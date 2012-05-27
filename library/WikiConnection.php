@@ -1,5 +1,5 @@
 <?php
-require_once(dirname(__FILE__). '/Snoopy.php');
+require_once(dirname(__FILE__). '/System.php');
 
 class WikiConnection
 {
@@ -14,7 +14,7 @@ class WikiConnection
     }
 
     private function __construct() {
-        this->$snoopy = new Snoopy;
+        $this->$snoopy = new Snoopy;
 
         if ($use_ssl) {
             $snoopy->curl_path = $curl_path;
@@ -23,7 +23,7 @@ class WikiConnection
             $snoopy->curl_path = false;
             $wikiPath = "http://wiki.piratenpartei.de";
         }
-        this->$apiPath = "$wikiPath/wiki/api.php";
+        $this->apiPath = "$wikiPath/wiki/api.php";
     }
 
     public static function __callStatic($method, $arguments) {
@@ -39,27 +39,27 @@ class WikiConnection
         $username = strtoupper(substr($username, 0, 1)) . substr($username, 1, strlen($username) - 1);
 
         $request_vars = array('action' => 'login', 'lgname' => $username, 'lgpassword' => $password, 'format' => 'php');
-        if (!this->$snoopy->submit(this->$apiPath, $request_vars))
-            die("Snoopy error: {$snoopy->error}");
+        if (!$this->snoopy->submit($this->apiPath, $request_vars))
+            die("Snoopy error: {$this->snoopy->error}");
         // We're only really interested in the cookies
-        this->$snoopy->setcookies();
-        $array = unserialize($snoopy->results);
+        $this->snoopy->setcookies();
+        $array = unserialize($this->snoopy->results);
 
-        if ($array[login][result] == "NeedToken") {
-            $request_vars = array('action' => 'login', 'lgname' => $username, 'lgpassword' => $password, 'lgtoken' => $array[login][token], 'format' => 'php');
-            if (!$snoopy->submit($apiPath, $request_vars))
-                die("Snoopy error: {$snoopy->error}");
+        if ($array['login']['result'] == "NeedToken") {
+            $request_vars = array('action' => 'login', 'lgname' => $username, 'lgpassword' => $password, 'lgtoken' => $array['login']['token'], 'format' => 'php');
+            if (!$this->snoopy->submit($this->apiPath, $request_vars))
+                die("Snoopy error: {$this->snoopy->error}");
 
             // We're only really interested in the cookies
-            this->$snoopy->setcookies();
-            $array = unserialize($snoopy->results);
+            $this->snoopy->setcookies();
+            $array = unserialize($this->snoopy->results);
         }
 
-        if ($array[login][result] == "Success") {
+        if ($array['login']['result'] == "Success") {
               //TODO: move the next two lines to a user object:
               $_SESSION['siduser'] = $username;
               $_SESSION['sidip'] = $_SERVER["REMOTE_ADDR"];
-              this->$wiki_session = $snoopy->cookies;
+              $this->wiki_session = $this->snoopy->cookies;
 
               return true;
         }
@@ -67,13 +67,26 @@ class WikiConnection
     }
 
     public function logout() {
-        if (this->$wiki_session) {
-            $snoopy->cookies = this->$wiki_session;
+        if ($this->wiki_session) {
+            $this->snoopy->cookies = $this->wiki_session;
             $request_vars = array('action' => 'logout', 'format' => 'php');
-            if (!this->$snoopy->submit($apiPath, $request_vars))
-                die("Snoopy error: {$snoopy->error}");
-            this->$wiki_session = false;
+            if (!$this->snoopy->submit($this->apiPath, $request_vars))
+                die("Snoopy error: {$this->snoopy->error}");
+            $this->wiki_session = false;
         }
+    }
+
+    public function isSessionValid() {
+        if (!$this->wiki_session)
+            return true; // No session is a valid session.
+
+        $this->snoopy->cookies = $this->wiki_session;
+
+        $request_vars = array('action' => 'query', 'meta' => 'userinfo',  'format' => 'php');
+        if(!$this->snoopy->submit($this->$apiPath, $request_vars))
+            die("Snoopy error: {$this->snoopy->error}");
+        $array = unserialize($this->snoopy->results);
+        return $_SESSION['siduser'] == $array['query']['userinfo']['name'];
     }
 
     public function getUserCategories() {
@@ -81,8 +94,8 @@ class WikiConnection
 
         $request_vars = array('action' => 'query', 'prop' => 'categories', 'titles' => 'Benutzer:' . $_SESSION['siduser'], 'format' => 'php');
 
-        if (this->$snoopy->submit($apiPath, $request_vars)) {
-            $array = unserialize($snoopy->results);
+        if ($this->snoopy->submit($this->apiPath, $request_vars)) {
+            $array = unserialize($this->snoopy->results);
             if (($array) && ($array['query']) && ($array['query']['pages'])) {
                 $pages = $array['query']['pages'];
                 reset($pages);

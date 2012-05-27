@@ -8,44 +8,27 @@ require_once('dbcon.php');
 class System
 {
   /**
-   * @var System
+   * @var bool
    */
-  private static $instance = null;
+  private static $initiated = false;
 
-  private $configuration = array();
-  
-  /**
-   * @var mysqli
-   */
-  private $db = null;
-
-  public static function getInstance()
-  {
-    if (!$instance) {
-      self::$instance = new System();
-    }
-
-    return self::$instance;
-  }
+  private static $configuration = array();
 
   public static function init()
   {
-    return self::getInstance();
-  }
-
-  public static function __callStatic($method, $arguments)
-  {
-    if (!is_callable(array(self::getInstance(), $method))) {
-      throw new Exception('Method ' . $method . ' does not exist.');
+    if (self::$initiated) {
+      return;
     }
 
-    return call_user_func(array(self::getInstance(), $method), $arguments);
+    spl_autoload_register('System::autoload');
+    setlocale(LC_ALL, 'de_DE.UTF-8');
+    self::readConfiguration();
+    self::$initiated = true;
   }
 
   public static function autoload($classname)
   {
-    $path = dirname(__FILE__);
-    $path .= str_replace('_', '/', $classname) . '.php';
+    $path = dirname(__FILE__) . '/' . str_replace('_', '/', $classname) . '.php';
     if (!file_exists($path)) {
       throw new Exception('Class ' . $classname . ' not Found');
     }
@@ -53,25 +36,19 @@ class System
     include_once($path);
   }
 
-  private function __construct()
-  {
-    spl_autoload_register('System::autoload');
-    $this->readConfiguration();
-  }
-
-  private function readConfiguration()
+  private static function readConfiguration()
   {
     include 'settings.php';
 
-    $this->configuration = get_defined_vars();
+    self::configuration = get_defined_vars();
   }
 
-  public function getConfig($varname)
+  public static function getConfig($varname)
   {
-    return $this->configuration[$varname];
+    return self::configuration[$varname];
   }
 
-  public function query($query, $arguments = null)
+  public static function query($query, $arguments = null)
   {
     $db = openDB();
     $qry = $db->prepare($query);
@@ -79,9 +56,14 @@ class System
     return $qry;
   }
 
-  public function getDb()
+  public static function prepare($query)
   {
-    return $this->db;
+    return openDB()->prepare($query);
+  }
+
+  public static function lastInsertId()
+  {
+    return openDB()->lastInsertId();
   }
 }
 

@@ -18,7 +18,7 @@
        under the License.
 */
 ob_start("ob_gzhandler");
-require("includes.php");
+require_once("library/System.php");
 
 if (($loginok==0) and !$allow_view_public)
 	exit();
@@ -93,13 +93,12 @@ if ($bbox) {
     $filterstr .= " AND (f.lon >= :bbe) AND (f.lon <= :bbw) AND (f.lat >= :bbn) AND (f.lat <= :bbs)";
 }
 
-
+$tbl_prefix = System::getConfig('tbl_prefix');
 $query = "SELECT p.id, f.lon, f.lat, f.type, f.user, f.timestamp, f.comment, f.city, f.street, f.image "
       . " FROM ".$tbl_prefix."felder f JOIN ".$tbl_prefix."plakat p on p.actual_id = f.id"
       . " WHERE p.del != true".$filterstr;
-$db = openDB();
 
-$sql = $db->prepare($query);
+$sql = System::prepare($query);
 $sql->execute($params);
 $result = $sql->fetchAll();
 foreach($result as $obj) {
