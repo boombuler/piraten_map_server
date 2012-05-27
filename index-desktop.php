@@ -335,7 +335,7 @@ else
           <h3><a href="#">Plakat Karte</a></h3>
           <ul>
 		<?php if ($loginok != 0) { ?>
-			<form id="formLogout" action="<?php echo $url?>login.php?action=logout" method="post"></form>
+			<form id="formLogout" action="<?php echo System::getConfig('url')?>login.php?action=logout" method="post"></form>
 			
 			<?php if ($_SESSION['wikisession']) {?>
 			  <li><a href="#" onclick="javascript:document.forms['formLogout'].submit()">Abmelden</a></li>
@@ -375,7 +375,7 @@ else
 			<a href="#" class="close" onclick="javascript:closeModalDlg(false);">&times;</a>
           </div>
           <div class="modal-body">
-			<form id="formlogin" action="<?php echo $url?>login.php" method="post">
+			<form id="formlogin" action="<?php echo System::getConfig('url')?>login.php" method="post">
 
 				<div class="clearfix">
 					<label for="username">Benutzer</label>
@@ -410,7 +410,7 @@ else
 			<a href="#" class="close" onclick="javascript:closeModalDlg(false);">&times;</a>
           </div>
           <div class="modal-body">
-			<form id="formnewpass" action="<?php echo $url?>register.php" method="post">
+			<form id="formnewpass" action="<?php echo System::getConfig('url')?>register.php" method="post">
 				<input type="hidden" name="action" value="resetpw" />
 				<div class="clearfix">
 					<label for="username">Benutzer</label>
@@ -440,7 +440,7 @@ else
 				<a href="#" class="close" onclick="javascript:closeModalDlg(false);">&times;</a>
 			</div>
 			<div class="modal-body">
-				<form id="formregister" action="<?php echo $url?>register.php" method="post">
+				<form id="formregister" action="<?php echo System::getConfig('url')?>register.php" method="post">
 					<input type="hidden" name="action" value="register" />
 					<div class="clearfix">
 						<label for="username">Benutzer</label>
@@ -496,7 +496,7 @@ else
 			<a href="#" class="close" onclick="javascript:closeModalDlg(false);">&times;</a>
           </div>
           <div class="modal-body">
-			<form id="formchpw" action="<?php echo $url?>register.php" method="post">
+			<form id="formchpw" action="<?php echo System::getConfig('url')?>register.php" method="post">
 				<input type="hidden" name="action" value="changepw" />
 				
 				<div class="clearfix">

@@ -18,6 +18,8 @@
        under the License.
 */
     ob_start("ob_gzhandler");
+    require_once('library/System.php');
+
     require_once(dirname(__FILE__). "/includes.php");
     require_once(dirname(__FILE__). '/login.php');
     // first include pb_message
@@ -25,7 +27,7 @@
     require_once(dirname(__FILE__). '/protobuf/pb_proto_api.php');
 
     $request = new Request();
-    $data = file_get_contents('php://input');//base64_decode($_POST['request']);
+    $data = file_get_contents('php://input');
     $request->parseFromString($data);
     $response = new Response();
 
@@ -97,13 +99,12 @@
         }
     }
 
+    $tbl_prefix = System::getConfig('tbl_prefix');
     $query = "SELECT p.id, f.lon, f.lat, f.type, f.user, f.timestamp, f.comment, f.image "
          . " FROM ".$tbl_prefix."felder f JOIN ".$tbl_prefix."plakat p on p.actual_id = f.id"
          . " WHERE p.del != true".$filterstr;
 
-    $db = openDB();
-    $stmt = $db->prepare($query);
-    $stmt->execute($params);
+    $stmt = System::query($query, $params);
 
     foreach($stmt->fetchAll() as  $obj) {
         $plak = $response->add_Plakate();
@@ -116,6 +117,6 @@
         $plak->set_Comment($obj->comment);
         $plak->set_ImageUrl($obj->image);
     }
-    $db = null;
+
     die($response->SerializeToString()); // use die to prevent any other data being send
 ?>

@@ -16,8 +16,8 @@ class WikiConnection
     private function __construct() {
         $this->$snoopy = new Snoopy;
 
-        if ($use_ssl) {
-            $snoopy->curl_path = $curl_path;
+        if (System::getConfig('use_ssl')) {
+            $snoopy->curl_path = System::getConfig('curl_path');
             $wikiPath = "https://wiki.piratenpartei.de";
         } else {
             $snoopy->curl_path = false;

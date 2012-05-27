@@ -18,6 +18,7 @@
        under the License.
     */
 ob_start("ob_gzhandler");
+require_once(dirname(__FILE__). '/System.php');
 require('includes.php');
 if (!isAdmin())
     die();
@@ -168,8 +169,7 @@ if (!isAdmin())
                             <tbody>
 <?php
 
-    $db = openDB();
-    foreach ($db->query("SELECT * FROM  ".$tbl_prefix."regions") as $cat) {
+    foreach (System::query("SELECT * FROM  ".System::getConfig('tbl_prefix')."regions")->fetchAll() as $cat) {
         echo "<tr id=\"trwikicat".$cat->id."\"><td>";
         echo $cat->category;
         echo "</td><td>";

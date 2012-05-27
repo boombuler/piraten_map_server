@@ -19,8 +19,9 @@
 */
 ob_start("ob_gzhandler");
 require("includes.php");
+require_once('library/System.php');
 
-if (($loginok==0) and !$allow_view_public)
+if (($loginok==0) and !System::getConfig('allow_view_public'))
 	exit();
 
 if ($loginok!=0) 

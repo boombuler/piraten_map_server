@@ -1,4 +1,5 @@
 <?php
+    require_once(dirname(__FILE__). '/System.php');
     require_once('includes.php');
 
     if (!isAdmin()) {
@@ -12,10 +13,9 @@
             $lon = get_float('lon');
             $name = $_GET['name'];
             if ($zoom && $lat && $lon && $name) {
-                $db = openDB();
-                if ($db->prepare("INSERT INTO ".$tbl_prefix."regions (category, lat, lon, zoom) VALUES(?, ?, ?, ?)")
-                       ->execute(array($name, $lat, $lon, $zoom))) {
-                    $id = $db->lastInsertId();
+
+                if (System::query("INSERT INTO ".System::getConfig('tbl_prefix')."regions (category, lat, lon, zoom) VALUES(?, ?, ?, ?)", array($name, $lat, $lon, $zoom))) {
+                    $id = System::lastInsertId();
                     $result = array(
                         'status' => 'success',
                         'message' => "'$name' hinzugefügt.",
@@ -34,7 +34,6 @@
                         'message' => 'Kategorie konnte nicht hinzugefügt werden.'
                     ));
                 }
-                $db = null;
             } else {
                 echo json_encode(array(
                     'status' => 'error',
@@ -44,9 +43,7 @@
         } else if ($action == 'drop') {
             $id = get_int('id');
             if ($id) {
-                $db = openDB();
-                if ($db->prepare("DELETE FROM ".$tbl_prefix."regions WHERE id = ?")
-                       ->execute(array($id))) {
+                if (System::query("DELETE FROM ".System::getConfig('tbl_prefix')."regions WHERE id = ?", array($id))) {
                     echo json_encode(array(
                         'status' => 'success',
                         'message'=> 'Kategorie gelöscht.'
@@ -57,7 +54,6 @@
                         'message'=> 'Kategorie konnte nicht gelöscht werden.'
                     ));
                 }
-                $db = null;
             } else {
                 echo json_encode(array(
                     'status' => 'error',

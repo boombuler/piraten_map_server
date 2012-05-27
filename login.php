@@ -22,9 +22,10 @@
 
   function logout()
   {
-      global $_SESSION;
+      global $_SESSION, $loginok;
       WikiConnection::logout();
       $loginok = 0;
+      unset($_SESSION['siduserid']);
       unset($_SESSION['siduser']);
       unset($_SESSION['wikisession']);
       unset($_SESSION['sidip']);
@@ -34,30 +35,23 @@
   function login($username, $password)
   {
       global $_SESSION;
-      $passwordmd5 = getPWHash($username, $password);
+      $user = null;
+      try {
+        $user = Data_User::login($username, $password);
+        if ($user->getAdmin())
+            $_SESSION['admin'] = true;
 
-      $qry = System::query("SELECT username, password, admin FROM " . System::getConfig('tbl_prefix') . "users WHERE username = ?", array($username));
-      $num = $qry->rowCount();
-
-      $result = false;
-      $_SESSION['admin'] = false;
-      if ($num == 1) {
-          $res = $qry->fetch();
-          if ($res->password == $passwordmd5) {
-            $_SESSION['siduser'] = $res->username;
-            $_SESSION['sidip'] = $_SERVER["REMOTE_ADDR"];
-            if ($res->admin == 1)
-              $_SESSION['admin'] = true;
-            $result = true;
-          } else {
-            return false;
-          }
-      } else {
-          $result = WikiConnection::login($username, $password);
+        $_SESSION['siduserid'] = $user->getId();
+        $_SESSION['siduser'] = $user->getUsername();
+        $result = true;
+      } catch (Exception $e) {
+        $result = WikiConnection::login($username, $password);
       }
 
       // Try to get the users location...
-      if ($_SESSION['siduser']) {
+      if ($result) {
+          $_SESSION['sidip'] = $_SERVER["REMOTE_ADDR"];
+
           $categories = WikiConnection::getUserCategories();
           $filter = "category = ?";
           for ($i = 1; $i < count($categories); $i++) 
@@ -70,7 +64,6 @@
               $_SESSION['defzoom'] = $obj->zoom;
           }
       }
-      $db = null;
       return $result;
   }
 

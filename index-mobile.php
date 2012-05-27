@@ -207,9 +207,9 @@ foreach ($options as $key=>$value)
 		<div data-role="content">
 		
 <?php if ($loginok==0) { ?>
-			<form action="<?php echo $url?>login.php" method="post" class="dialog" id="loginfrm" name="loginfrm">
+			<form action="<?php echo System::getConfig('url')?>login.php" method="post" class="dialog" id="loginfrm" name="loginfrm">
 <?php } else { ?>
-			<form name="logout" id="logout" action="<?php echo $url?>login.php?action=logout" method="post">
+			<form name="logout" id="logout" action="<?php echo System::getConfig('url')?>login.php?action=logout" method="post">
 <?php } ?>
 				<ul data-role="listview" data-theme="c" data-dividertheme="b">
 					<li data-role="list-divider">Zugang</li>
