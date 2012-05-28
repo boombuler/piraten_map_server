@@ -7,9 +7,9 @@
    to you under the Apache License, Version 2.0 (the
    "License"); you may not use this file except in compliance
    with the License.  You may obtain a copy of the License at
-   
+
    http://www.apache.org/licenses/LICENSE-2.0
-   
+
    Unless required by applicable law or agreed to in writing,
    software distributed under the License is distributed on an
    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -23,9 +23,10 @@
 
   function resetPassword($username, $email) {
     global $tbl_prefix;
-
-    $user = Data_User::find('username', $username)->fetchObject('Data_User');
-    if ($user && strtolower($user->getEmail()) == strtolower($email)) {
+    $username = strtolower($username);
+    $email = strtolower($email);
+    $user = Data_User::find(array('username', "LOWER(email)"), array($username, $email))->fetchObject('Data_User');
+    if ($user) {
         $plain_password = $user->setRandomPassword();
         if (!EMail::sendPasswordMail($user, $plain_password, true))
             return errorMsgHeader("Fehler beim versenden der EMail!");
@@ -41,7 +42,7 @@
     if ($newpass != $confirm)
         return errorMsgHeader("Passwörter stimmen nicht überein");
 
-    $user = Data_User::find('id', $_SESSION['siduserid'])->fetchObject('Data_User');
+    $user = Data_User::get($_SESSION['siduserid']);
     $user->setPassword($newpass);
     $user->save();
 
@@ -51,8 +52,7 @@
   function register($username, $email) {
     global $tbl_prefix;
 
-    if (Data_User::find('username', strtolower($username)).rowCount() > 0 ||
-        Data_User::find('email', strtolower($email)).rowCount() > 0)
+    if (Data_User::isUsernameOrPasswordInUse($username, $email))
         return errorMsgHeader("Benutzername oder EMail-Adresse wird bereits verwendet");
 
     $user = new Data_User;

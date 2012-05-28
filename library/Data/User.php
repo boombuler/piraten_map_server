@@ -101,7 +101,26 @@ class Data_User extends Data_Abstract
       throw new Exception('Attribute does not exist');
     }
 
-    return System::query('SELECT * FROM ' . System::getConfig('tbl_prefix') . 'users WHERE ' . $attribute . '=?', $value);
+    if (is_array($attribute) && is_array($value)) {
+        $filter = implode(" =? AND ", $attribute) . " = ?";
+        $args = $value;
+    } else {
+        $filter = $attribute . "=?";
+        $args = array($value);
+    }
+
+    return System::query('SELECT * FROM ' . System::getConfig('tbl_prefix') . 'users WHERE ' . $filter, $args);
+  }
+
+  public static function get($id) {
+    $result = Data_User::find("id", $id);
+    return $result->fetchObject(__CLASS__);
+  }
+
+  public static function isUsernameOrPasswordInUse($username, $email) {
+    $result = System::query('SELECT * FROM ' . System::getConfig('tbl_prefix') . 'users WHERE username=? OR LOWER(email)=?',
+                            array(strtolower($username), strtolower($email)));
+    return $result->rowCount();
   }
 
   public static function login($username, $password)
@@ -112,9 +131,6 @@ class Data_User extends Data_Abstract
     $username = strtolower($username);
     $password = $this->getPWHash($username, $password);
     $result = System::query('SELECT * FROM ' . System::getConfig('tbl_prefix') . 'users WHERE username=? AND password=?', array($username, $password));
-    if ($result->rowCount() != 1) {
-      return self::login_deprecated($username, $password);
-    }
     $user = $result->fetchObject(__CLASS__);
 
     return $user;
