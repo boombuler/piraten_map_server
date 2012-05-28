@@ -142,12 +142,8 @@ class Data_User extends Data_Abstract
       return false;
     }
     if ($this->getId()) {
-      $setvars = array();
-      $setvals = array();
-      foreach ($this->getModifications() as $variable) {
-        $setvars[] = $variable . '=?';
-        $setvals[] = $this->$variable;
-      }
+      $setvals = $this->getModifications();
+      $setvars = array_keys($setvals);
 
       if (empty($setvars)) {
         return 0;
