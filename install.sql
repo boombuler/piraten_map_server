@@ -51,7 +51,6 @@ CREATE TABLE IF NOT EXISTS `plakate_users` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `password` varchar(32) COLLATE utf8_unicode_ci NOT NULL,
-  `hash` varchar(32) COLLATE utf8_unicode_ci NOT NULL,
   `email` VARCHAR( 256 ) COLLATE utf8_unicode_ci NULL ,
   `admin` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)

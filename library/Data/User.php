@@ -9,8 +9,6 @@ class Data_User extends Data_Abstract
 
   private $email;
 
-  private $hash;
-
   private $admin;
 
   public function __construct()
@@ -51,7 +49,7 @@ class Data_User extends Data_Abstract
 
   public function setPassword($password)
   {
-    $this->password = crypt($password, $this->getHash());
+    $this->password = $this->getPWHash($this->getUsername(), $password);
     $this->logModification('password');
     return $this;
   }
@@ -84,15 +82,6 @@ class Data_User extends Data_Abstract
     return $this;
   }
 
-  public function getHash()
-  {
-    if (!$this->hash) {
-      $this->hash = md5(gmmktime() . $this->getUsername());
-      $this->logModification('hash');
-    }
-    return $this->hash;
-  }
-
   public function getAdmin() {
     return $this->admin;
   }
@@ -121,25 +110,12 @@ class Data_User extends Data_Abstract
       throw new Exception('Wrong password');
     }
     $username = strtolower($username);
-    $result = System::query('SELECT * FROM ' . System::getConfig('tbl_prefix') . 'users WHERE username=? AND password=ENCRYPT(?, hash)', array($username, $password));
+    $password = $this->getPWHash($username, $password);
+    $result = System::query('SELECT * FROM ' . System::getConfig('tbl_prefix') . 'users WHERE username=? AND password=?', array($username, $password));
     if ($result->rowCount() != 1) {
       return self::login_deprecated($username, $password);
     }
     $user = $result->fetchObject(__CLASS__);
-
-    return $user;
-  }
-
-  private static function login_deprecated($username, $password)
-  {
-    $result = System::query('SELECT * FROM ' . System::getConfig('tbl_prefix') . 'users WHERE username=? AND password=MD5(?)', array($username, $password));
-    if ($result->rowCount() != 1) {
-      throw new Exception('Wrong password');
-    }
-    //Fix password
-    $user = $result->fetchObject(__CLASS__);
-    $user->setPassword($password);
-    $user->save();
 
     return $user;
   }
@@ -164,15 +140,18 @@ class Data_User extends Data_Abstract
       $setvals[] = $this->getId();
       System::query('UPDATE ' . System::getConfig('tbl_prefix') . 'users SET ' . implode(', ', $setvars) . ' WHERE id=?', $setvals);
     } else {}
-        $this->setId(System::query('INSERT INTO ' . System::getConfig('tbl_prefix') . 'users (username, password, active, hash) VALUES (?, ?, ?, ?, ?)',
-                               array($this->getUsername(), $this->getPassword(), $this->getActive(), $this->getHash())));
+        $this->setId(System::query('INSERT INTO ' . System::getConfig('tbl_prefix') . 'users (username, password, admin, email) VALUES (?, ?, ?, ?)',
+                               array(strtolower($this->getUsername()), $this->getPassword(), $this->getAdmin(), $this->getEmail())));
     }
 
     return $this;
   }
 
-  public function validate()
-  {
+  function getPWHash($user, $pass) {
+    return md5(strtolower($user).":".$pass);
+  }
+
+  public function validate() {
     if (!$this->getUsername()) {
       return false;
     }
@@ -182,8 +161,6 @@ class Data_User extends Data_Abstract
     if (!$this->getEmail()) {
       return false;
     }
-
-
     return true;
   }
 }
