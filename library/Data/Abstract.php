@@ -16,6 +16,10 @@ abstract class Data_Abstract
 
   protected function getModifications()
   {
-    return $this->modifications;
+    $result = array();
+    foreach ($this->modifications as $variable) {
+        $result[$variable] = $this->$variable;
+    }
+    return $result;
   }
 }

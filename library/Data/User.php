@@ -1,15 +1,15 @@
 <?php
 class Data_User extends Data_Abstract
 {
-  private $id;
+  protected $id;
 
-  private $username;
+  protected $username;
 
-  private $password;
+  protected $password;
 
-  private $email;
+  protected $email;
 
-  private $admin;
+  protected $admin;
 
   public function __construct()
   {

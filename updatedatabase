@@ -1,0 +1,15 @@
+#!/usr/bin/php 
+<?php
+if (!PHP_SAPI === 'cli') {
+  die('Console access only.');
+}
+
+require_once('library/System.php');
+try {
+  $changer = new DatabaseChanger();
+  $changer->execute();
+} catch (Exception $e) {
+  print System::getLastRequest() . PHP_EOL;
+  print $e->getMessage() . PHP_EOL;
+  print $e->getFile() . ':' . $e->getLine() . PHP_EOL;
+}
