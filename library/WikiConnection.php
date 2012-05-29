@@ -3,8 +3,8 @@ require_once(dirname(__FILE__). '/System.php');
 
 class WikiConnection
 {
-    private $snoopy;
-    private $apipath;
+    private $snoopy = null;
+    private $apipath = "";
     private $wiki_session = false;
 
     public static function getInstance() {
@@ -14,88 +14,84 @@ class WikiConnection
     }
 
     private function __construct() {
-        $this->$snoopy = new Snoopy;
+        $this->snoopy = new Snoopy();
 
         if (System::getConfig('use_ssl')) {
-            $snoopy->curl_path = System::getConfig('curl_path');
+            $this->snoopy->curl_path = System::getConfig('curl_path');
             $wikiPath = "https://wiki.piratenpartei.de";
         } else {
-            $snoopy->curl_path = false;
+            $this->snoopy->curl_path = false;
             $wikiPath = "http://wiki.piratenpartei.de";
         }
         $this->apiPath = "$wikiPath/wiki/api.php";
     }
 
-    public static function __callStatic($method, $arguments) {
-        if (!is_callable(array(self::getInstance(), $method))) {
-            throw new Exception('Method ' . $method . ' does not exist.');
-        }
-
-        return call_user_func(array(self::getInstance(), $method), $arguments);
-    }
-
-    public function login($username, $password) {
+    public static function login($username, $password) {
+        $instance = self::getInstance();
         // Make sure that the first username char is uppercase:
         $username = strtoupper(substr($username, 0, 1)) . substr($username, 1, strlen($username) - 1);
 
         $request_vars = array('action' => 'login', 'lgname' => $username, 'lgpassword' => $password, 'format' => 'php');
-        if (!$this->snoopy->submit($this->apiPath, $request_vars))
-            die("Snoopy error: {$this->snoopy->error}");
+        if (!$instance->snoopy->submit($instance->apiPath, $request_vars))
+            die("Snoopy error: {$instance->snoopy->error}");
         // We're only really interested in the cookies
-        $this->snoopy->setcookies();
-        $array = unserialize($this->snoopy->results);
+        $instance->snoopy->setcookies();
+        $array = unserialize($instance->snoopy->results);
 
         if ($array['login']['result'] == "NeedToken") {
             $request_vars = array('action' => 'login', 'lgname' => $username, 'lgpassword' => $password, 'lgtoken' => $array['login']['token'], 'format' => 'php');
-            if (!$this->snoopy->submit($this->apiPath, $request_vars))
-                die("Snoopy error: {$this->snoopy->error}");
+            if (!$instance->snoopy->submit($instance->apiPath, $request_vars))
+                die("Snoopy error: {$instance->snoopy->error}");
 
             // We're only really interested in the cookies
-            $this->snoopy->setcookies();
-            $array = unserialize($this->snoopy->results);
+            $instance->snoopy->setcookies();
+            $array = unserialize($instance->snoopy->results);
         }
 
         if ($array['login']['result'] == "Success") {
               //TODO: move the next two lines to a user object:
               $_SESSION['siduser'] = $username;
               $_SESSION['sidip'] = $_SERVER["REMOTE_ADDR"];
-              $this->wiki_session = $this->snoopy->cookies;
+              $instance->wiki_session = $instance->snoopy->cookies;
 
               return true;
         }
         return false;
     }
 
-    public function logout() {
-        if ($this->wiki_session) {
-            $this->snoopy->cookies = $this->wiki_session;
+    public static function logout() {
+        $instance = self::getInstance();
+        if ($instance->wiki_session) {
+            $instance->snoopy->cookies = $instance->wiki_session;
             $request_vars = array('action' => 'logout', 'format' => 'php');
-            if (!$this->snoopy->submit($this->apiPath, $request_vars))
-                die("Snoopy error: {$this->snoopy->error}");
-            $this->wiki_session = false;
+            if (!$instance->snoopy->submit($instance->apiPath, $request_vars))
+                die("Snoopy error: {$instance->snoopy->error}");
+            $instance->wiki_session = false;
         }
     }
 
-    public function isSessionValid() {
-        if (!$this->wiki_session)
+    public static function isSessionValid() {
+        $instance = self::getInstance();
+        if (!$instance->wiki_session)
             return true; // No session is a valid session.
 
-        $this->snoopy->cookies = $this->wiki_session;
+        $instance->snoopy->cookies = $instance->wiki_session;
 
         $request_vars = array('action' => 'query', 'meta' => 'userinfo',  'format' => 'php');
-        if(!$this->snoopy->submit($this->$apiPath, $request_vars))
-            die("Snoopy error: {$this->snoopy->error}");
-        $array = unserialize($this->snoopy->results);
+        if(!$instance->snoopy->submit($instance->apiPath, $request_vars))
+            die("Snoopy error: {$instance->snoopy->error}");
+        $array = unserialize($instance->snoopy->results);
         return $_SESSION['siduser'] == $array['query']['userinfo']['name'];
     }
 
-    public function getUserCategories() {
+    public static function getUserCategories() {
+        $instance = self::getInstance();
         $categories = array('Germany');
 
         $request_vars = array('action' => 'query', 'prop' => 'categories', 'titles' => 'Benutzer:' . $_SESSION['siduser'], 'format' => 'php');
 
-        if ($this->snoopy->submit($this->apiPath, $request_vars)) {
-            $array = unserialize($this->snoopy->results);
+        if ($instance->snoopy->submit($instance->apiPath, $request_vars)) {
+            $array = unserialize($instance->snoopy->results);
             if (($array) && ($array['query']) && ($array['query']['pages'])) {
                 $pages = $array['query']['pages'];
                 reset($pages);

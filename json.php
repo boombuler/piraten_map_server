@@ -45,12 +45,10 @@ if ($loginok!=0)
 }
 
 $query = "SELECT p.id, f.lon, f.lat, f.type, f.user, f.timestamp, f.comment, f.city, f.street, f.image "
-      . " FROM ".$tbl_prefix."felder f JOIN ".$tbl_prefix."plakat p on p.actual_id = f.id"
+      . " FROM ".System::getConfig('tbl_prefix')."felder f JOIN ".System::getConfig('tbl_prefix')."plakat p on p.actual_id = f.id"
       . " WHERE p.del != true";
 
-$db = openDB();
-$sql = $db->prepare($query);
-$sql->execute();
+$sql = System::query($query);
 
 foreach($sql->fetchAll() as $obj) {
     $obj->user    = htmlspecialchars($obj->user);
@@ -60,5 +58,5 @@ foreach($sql->fetchAll() as $obj) {
     $obj->image   = htmlspecialchars($obj->image);
     $arr[] = $obj;
 }
-$db = null;
+
 print json_encode($arr);

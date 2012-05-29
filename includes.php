@@ -17,17 +17,8 @@
        specific language governing permissions and limitations
        under the License.
 */
-require_once(dirname(__FILE__). '/System.php');
+require_once('library/System.php');
 session_start();
-
-$options = array("default"=>"",
-	"plakat_ok"=>'Plakat hängt',
-	"plakat_a0"=>'A0-Plakat steht',
-	"plakat_dieb"=>'Plakat wurde gestohlen',
-	"plakat_niceplace"=>'Gute Stelle für ein Plakat',
-	"plakat_wrecked"=>'Plakat beschädigt',
-	"wand"=>'Plakatwand der Gemeinde',
-	"wand_ok"=>'Plakat an der Plakatwand');
 
 $image_upload_typ = 'plakat_ok';
 
@@ -63,11 +54,10 @@ function get_int($name) {
 }
 
 function get_typ($typ) {
-	global $options;
 	$t = $_GET[$typ];
 	if (!($t))
 		return null;
-	foreach($options as $key=>$value) {
+	foreach(System::getPosterFlags() as $key=>$value) {
 		if ($t == $key) {
 			return $t;
 		}
@@ -133,7 +123,7 @@ function map_del($id) {
 }
 
 function map_change($id, $type, $comment, $city, $street, $imageurl) {
-    global $_SESSION, $options;
+    global $_SESSION;
 
     $tbl_prefix = System::getConfig('tbl_prefix');
 
@@ -144,7 +134,7 @@ function map_change($id, $type, $comment, $city, $street, $imageurl) {
         'user' => $_SESSION['siduser']
     );
 
-    if(isset($options[$type])) {
+    if(System::getPosterFlags($type)) {
         $params['type'] = $type;
         $query .= ":type as type, ";
     } else $query .= "type, ";

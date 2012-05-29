@@ -18,8 +18,8 @@
        under the License.
     */
 ob_start("ob_gzhandler");
-require_once(dirname(__FILE__). '/System.php');
-require('includes.php');
+require_once('library/System.php');
+require_once('includes.php');
 if (!isAdmin())
     die();
 

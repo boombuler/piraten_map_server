@@ -17,7 +17,7 @@
        specific language governing permissions and limitations
        under the License.
 */
-
+require_once('library/System.php');
 require("includes.php");
 
 $_SESSION['siduser'] = "CRONJOB";

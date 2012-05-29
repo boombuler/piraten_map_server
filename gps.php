@@ -17,7 +17,7 @@
        specific language governing permissions and limitations
        under the License.
 */
-
+require_once('library/System.php');
 function read_latlon($img)
 {
 	$arr = exif_read_data($img);

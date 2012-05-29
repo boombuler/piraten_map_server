@@ -17,7 +17,7 @@
        specific language governing permissions and limitations
        under the License.
 */
-
+require_once('library/System.php');
 require("includes.php");
 
 if ($loginok==0)

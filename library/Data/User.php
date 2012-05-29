@@ -49,7 +49,7 @@ class Data_User extends Data_Abstract
 
   public function setPassword($password)
   {
-    $this->password = $this->getPWHash($this->getUsername(), $password);
+    $this->password = Data_User::getPWHash($this->getUsername(), $password);
     $this->logModification('password');
     return $this;
   }
@@ -129,10 +129,11 @@ class Data_User extends Data_Abstract
       throw new Exception('Wrong password');
     }
     $username = strtolower($username);
-    $password = $this->getPWHash($username, $password);
+    $password = Data_User::getPWHash($username, $password);
     $result = System::query('SELECT * FROM ' . System::getConfig('tbl_prefix') . 'users WHERE username=? AND password=?', array($username, $password));
     $user = $result->fetchObject(__CLASS__);
-
+    if (!$user)
+        throw new Exception("Invalid user or password");
     return $user;
   }
 
@@ -151,7 +152,7 @@ class Data_User extends Data_Abstract
 
       $setvals[] = $this->getId();
       System::query('UPDATE ' . System::getConfig('tbl_prefix') . 'users SET ' . implode(', ', $setvars) . ' WHERE id=?', $setvals);
-    } else {}
+    } else {
         $this->setId(System::query('INSERT INTO ' . System::getConfig('tbl_prefix') . 'users (username, password, admin, email) VALUES (?, ?, ?, ?)',
                                array(strtolower($this->getUsername()), $this->getPassword(), $this->getAdmin(), $this->getEmail())));
     }
@@ -159,7 +160,7 @@ class Data_User extends Data_Abstract
     return $this;
   }
 
-  function getPWHash($user, $pass) {
+  static function getPWHash($user, $pass) {
     return md5(strtolower($user).":".$pass);
   }
 

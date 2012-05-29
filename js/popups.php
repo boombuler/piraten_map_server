@@ -1,3 +1,10 @@
+<?php
+ob_start("ob_gzhandler");
+header('Content-Type: text/javascript');
+
+
+?>
+
 function createPopup(infos) {
 	infos = jQuery.parseJSON(infos);
 	result  = '<div class="modal" style="position: relative; top: auto; left: auto; margin: 0 auto; z-index: 9001">';
@@ -21,7 +28,7 @@ function createPopup(infos) {
 	result += '					<label for="typ['+infos.id+']">Marker</label>';
 	result += '					<div class="input">';
 	result += '						<select class="xlarge" id="typ['+infos.id+']" name="typ['+infos.id+']">';
-	<?php foreach ($options as $key=>$value) {
+	<?php foreach (System::getPosterFlags() as $key=>$value) {
 			if ($key != 'default') {  ?>
 				result += '							<option value="<?php echo $key?>"';
 				if (infos.t == '<?php echo $key ?>')

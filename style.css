@@ -1,0 +1,58 @@
+.photo {
+  height: 120px;
+}
+
+#mask {
+  position:absolute;
+  z-index:10100;
+  background-color:#888;
+  display:none;
+}
+
+#mapkey {
+  position:absolute;
+  z-index:3000;
+  bottom:0px; 
+  left:0px; 
+  display:none;
+}
+
+#mapkey > .modal {
+    display: block;
+    position: relative;
+    top: auto;
+    left: auto;
+    margin: 0 auto;
+    width: 256px;
+}
+
+#msgBag {
+   position: absolute;
+   top: 45px;
+   z-index: 100;
+   min-width: 100%;
+}
+
+#map {
+   position:absolute;
+   top: 40px;
+   bottom:0px;
+   left:0px;
+   right: 0px;
+}
+
+.topbar a {
+  font-weight: bold;
+}
+
+.modal {
+  position: relative;
+  top: auto;
+  left: auto;
+  margin: 0 auto;
+  display:none;
+}
+
+.alert-message {
+  margin-bottom: 5px;
+}

@@ -40,12 +40,12 @@ class System
   {
     include 'settings.php';
 
-    self::configuration = get_defined_vars();
+    self::$configuration = get_defined_vars();
   }
 
   public static function getConfig($varname)
   {
-    return self::configuration[$varname];
+    return self::$configuration[$varname];
   }
 
   public static function query($query, $arguments = null)
@@ -64,6 +64,15 @@ class System
   public static function lastInsertId()
   {
     return openDB()->lastInsertId();
+  }
+
+  public static function getPosterFlags($key = null) {
+    $flags = self::getConfig('poster_flags');
+    if ($key == null) {
+        return $flags;
+    } else {
+        return $flags[$key];
+    }
   }
 }
 

@@ -1,6 +1,6 @@
 <?php
 ob_start("ob_gzhandler");
-
+header('Content-Type: text/javascript');
 /*
 
   OpenLayers.js -- OpenLayers Map Viewer Library

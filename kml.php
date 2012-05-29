@@ -18,7 +18,8 @@
        under the License.
 */
 ob_start("ob_gzhandler");
-require_once("library/System.php");
+require_once('library/System.php');
+require_once('includes.php');
 
 if (($loginok==0) and !System::getConfig('allow_view_public'))
 	exit();
@@ -57,7 +58,7 @@ $nodeDoc->appendChild($dom->createElement('description'))->appendChild($dom->cre
 // Define the styles
 $styles = array();
 $i = 0;
-foreach($options as $key=>$value) {
+foreach(System::getConfig('poster_flags') as $key=>$value) {
 	$styleKey = "s$i";
 	$i++;
 	$styles[$key] = $styleKey;
@@ -137,7 +138,7 @@ foreach($result as $obj) {
         $dom->createCDATASection(json_encode(array(
             'id'=>$id,
             't'=>$type,
-            'tb'=>$options[$type],
+            'tb'=>System::getPosterFlags($type),
             'i'=>htmlspecialchars($image),
             'c'=>htmlspecialchars($comment),
             'ci'=>htmlspecialchars($city),
@@ -145,7 +146,7 @@ foreach($result as $obj) {
             'u'=>htmlspecialchars($user),
             'd'=>date('d.m.y H:i', strtotime($time))
         ))));
-    if (isset($options[$type]))
+    if (System::getPosterFlags($type))
         $place->appendChild($dom->createElement('styleUrl', '#'.$styles[$type]));
     $place->appendChild($dom->createElement('Point'))->appendChild($dom->createElement('coordinates', "$lon,$lat"));
 }
