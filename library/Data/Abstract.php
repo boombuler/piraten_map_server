@@ -9,7 +9,7 @@ abstract class Data_Abstract
 
   protected function logModification($varname)
   {
-    if (!in_array($varname, $this->modifiedValues)) {
+    if (!in_array($varname, $this->modifications)) {
       $this->modifications[] = $varname;
     }
   }

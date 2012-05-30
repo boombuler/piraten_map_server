@@ -26,7 +26,7 @@ class EMail {
            "X-Mailer: PHP/" . phpversion();
   }
 
-  function static sendPasswordMail($user, $pass, $reset) {
+  public static function sendPasswordMail($user, $pass, $reset) {
     $send_mail_adr = System::getConfig('send_mail_adr');
     $email = $user->getEmail();
         if ($send_mail_adr != "")
