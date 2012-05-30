@@ -30,7 +30,7 @@ class EMail {
     $send_mail_adr = System::getConfig('send_mail_adr');
     $email = $user->getEmail();
         if ($send_mail_adr != "")
-          return mail($email, getMailSubject($reset), getMailBody($user, $pass, $reset), getMailHeader(), "-f$send_mail_adr");
+          return mail($email, self::getMailSubject($reset), self::getMailBody($user, $pass, $reset), self::getMailHeader(), "-f$send_mail_adr");
     return false;
   }
 
