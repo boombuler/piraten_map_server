@@ -17,9 +17,9 @@ class Login_Controller extends Controller
       $loginok = 0;
       unset($_SESSION['siduserid']);
       unset($_SESSION['siduser']);
-      unset($_SESSION['wikisession']);
       unset($_SESSION['sidip']);
       unset($_SESSION['admin']);
+      unset($_SESSION['sidusertype']);
       $this->displayMessage("Logout OK", true);
   }
 
@@ -37,6 +37,7 @@ class Login_Controller extends Controller
 
         $_SESSION['siduserid'] = $user->getId();
         $_SESSION['siduser'] = $user->getUsername();
+        $_SESSION['sidusertype'] = 'local';
         $result = true;
       } catch (Exception $e) {
         $result = WikiConnection::login($username, $password);
@@ -57,14 +58,19 @@ class Login_Controller extends Controller
               $_SESSION['deflon'] = $obj->lon;
               $_SESSION['defzoom'] = $obj->zoom;
           }
-          $this->displayMessage("Login OK", true);
+          $this->displayMessage("Login OK", true, System::getUserData());
       }
       else
         $this->displayMessage("Login fehlgeschlagen", false);
   }
 
-  private function displayMessage($msg, $success = false)
+
+
+  private function displayMessage($msg, $success, $data = null)
   {
-    print json_encode(array('message' => $msg, 'success' => $success));
+    $message = array('message' => $msg, 'success' => $success);
+    if ($data != null)
+        $message = array_merge($message, $data);
+    print json_encode($message);
   }
 }

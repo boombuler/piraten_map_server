@@ -1,4 +1,5 @@
-<!DOCTYPE html> 
+<?php echo '<?xml version="1.0" ?>';?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
 <head>
   <title>OpenStreetMap Piraten Karte</title>
@@ -11,114 +12,24 @@
   <script type="text/javascript" src="js/PanoJS.min.js"></script>
   <script type="text/javascript" src="js/touchMapLite.js"></script>
   <script type="text/javascript" src="js/touchMapLite.tileUrlProvider.OSM.js"></script>
-
   <script type="text/javascript" src="js/touchMapLite.marker.js"></script>
-  <script type="text/javascript" src="js/htmlEncode.js"></script>
-  <link rel="stylesheet" type="text/css" href="viewer.css" />
 
+  <link rel="stylesheet" type="text/css" href="style-mobile.css" />
   <link rel="stylesheet" href="http://code.jquery.com/mobile/1.0b2/jquery.mobile-1.0b2.min.css" />
+
   <script src="http://code.jquery.com/jquery-1.6.2.min.js"></script>
-  <script src="http://code.jquery.com/mobile/1.0b2/jquery.mobile-1.0b2.min.js"></script>    
+  <script src="http://code.jquery.com/mobile/1.0b2/jquery.mobile-1.0b2.min.js"></script>
+
   <script type="text/javascript" src="js/touchMapLite.event.touch.js"></script>
   <script type="text/javascript" src="js/touchMapLite.event.wheel.js"></script>
   <script type="text/javascript" src="js/touchMapLite.geolocation.js"></script>
-    
+
+
+  <script type="text/javascript" src="js/map-mobile.js"></script>
   <script type="text/javascript">
-    var isLoggedIn = <?php print $loginok ? 'true': 'false'); ?>;
+    var isLoggedIn = <?php print $loginok ? 'true': 'false'; ?>;
     var posterFlags = <?php print json_encode($this->getPosterFlags()); ?>;
-    var touchMap = null;
-    
-    function createMarker(data)
-    {
-      var marker = new touchMap.marker({
-        title: data.type,
-        lat: data.lat*1.0,
-        lon: data.lon*1.0,
-        divx: -8,
-        divy: -8,
-        markerSrc: 'images/markers/'+data.type+'.png',
-        onClick: function(event) {
-          document.getElementById('info_typ').innerHTML = posterFlags[data.type];
-          document.getElementById('info_memo').innerHTML = data.comment;
-          document.getElementById('info_image').src = data.image ? data.image : 'images/noimg.png';
-          document.getElementById('delMark').onclick = function() {
-            makeAJAXrequest("./json.php?action=del&id="+data.id);
-          }
-          $.mobile.changePage($("#editfrm"));
-          return false;
-        }
-      } , findOnMap, false);
-    }
-    
-    function makeAJAXrequest(url, readyFn)
-    {
-      var createXMLHttpRequest = function() {
-        try { return new XMLHttpRequest(); } catch(e) {}
-        return null;
-      }
-      if (!readyFn)
-        readyFn = gmlreload;
-      var xhReq = createXMLHttpRequest();
-      xhReq.open("get", url, true);
-      xhReq.onreadystatechange = function() {
-        if ( xhReq.readyState == 4 && xhReq.status == 200 ) {
-          readyFn(xhReq.responseText);
-        }
-      };
-      xhReq.send(null);
-    }
-    
-    function setMarker(aType)
-    {
-      navigator.geolocation.getCurrentPosition(function(pos) {
-        makeAJAXrequest("./json.php?action=add&typ="+aType+"&lon="+
-                        pos.coords.longitude+"&lat="+pos.coords.latitude);
-      }, undefined, {enableHighAccuracy: true});
-    }
-    
-    function gmlreload(result)
-    {
-      for(var i = 0; i < touchMap.MARKERS.length; i++) {
-        if (touchMap.MARKERS[i])
-          touchMap.MARKERS[i].drop()
-      }
-      var new_markers = JSON.parse( result );
-      if (new_markers != null) {
-        for(var i = 0; i < new_markers.length; i++)
-          createMarker(new_markers[i]);
-      }
-    }
-    
-    EventUtils.addEventListener(window, 'load', function()
-    {
-      touchMap = new touchMapLite("viewer");
-      var startPos = <?php print json_encode($this->getInitialPosition()); ?>;
-      for (var i in startPos) {
-        touchMap[i] = startPos[i];
-      }
-      touchMap.init();
-      findOnMap = touchMap;
-      makeAJAXrequest('json.php');
-    }, false);
-    
-    EventUtils.addEventListener(window, 'resize', function(){
-      touchMap.reinitializeGraphic();
-    }, false);
-    
-    PanoJS.optionsHandler = function(e)
-    {
-      $.mobile.changePage($("#settings"));
-      return false;
-    }
-    
-    toggleWatchLocation = function(node)
-    {
-      if(!touchMap.watchLocationHandler()){
-        var myswitch = $("#slider");
-        myswitch[0].selectedIndex = myswitch[0].selectedIndex == 0 ? 1 : 0;
-        myswitch.slider("refresh");
-      }
-    }
+    var startPos = <?php print json_encode($this->getInitialPosition()); ?>;
   </script> 
 </head>
 <body>
@@ -160,15 +71,15 @@ foreach ($this->getPosterFlags() as $key=>$value)
     <h1>Menu</h1>
   </div>
   <div data-role="content">
-        
-<?php if (!System::getCurrentUser()) { ?>
+
+<?php if (!$loginok) { ?>
     <form action="login.php" method="post" class="dialog" id="loginfrm" name="loginfrm">
 <?php } else { ?>
     <form name="logout" id="logout" action="login.php?action=logout" method="post">
 <?php } ?>
       <ul data-role="listview" data-theme="c" data-dividertheme="b">
         <li data-role="list-divider">Zugang</li>
-<?php if (!System::getCurrentUser()) { ?>
+<?php if (!$loginok) { ?>
         <li data-role="fieldcontain">
           <label for="username">Benutzername:</label>
           <input type="text" name="username" id="username" />
@@ -211,7 +122,7 @@ foreach ($this->getPosterFlags() as $key=>$value)
       <li><label id="info_memo" class="plaintxt" >&nbsp;</label></li>
       <li><img src="images/noimg.png" id="info_image" width="250" /></li>
     </ul>
-<?php if (System::getCurrentUser()) { ?>
+<?php if ($loginok) { ?>
     <!--a class="whiteButton" href="#home">Marker editieren</a-->
     <a href="#home" data-role="button" id="delMark" data-icon="delete">Marker löschen</a>
 <?php } ?>

@@ -7,16 +7,16 @@
   <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
   <title>OpenStreetMap Piraten Karte</title>
   <link rel="stylesheet" href="bootstrap-1.1.0.min.css" />
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style-desktop.css" />
   <script type="text/javascript" src="http://code.jquery.com/jquery-1.5.2.min.js"></script>
   <script type="text/javascript" src="js/OpenLayers.php"></script>
-  <script type="text/javascript" src="js/map.js"></script>
+  <script type="text/javascript" src="js/map-desktop.js"></script>
   <script type="text/javascript" src="js/popups.php"></script>
   <script type="text/javascript">
 //<![CDATA[
     var startPos = <?php print json_encode($this->getInitialPosition()); ?>;
     var posterFlags = <?php print json_encode($this->getPosterFlags()); ?>;
-    var isLoggedIn = <?php print $loginok ? 'true': 'false'; ?>;
+    var loginData = <?php print json_encode(System::getUserData()); ?>;
 
     function onPageLoaded() {
         <?php
@@ -38,32 +38,31 @@
             <div class="container">
                 <h3><a href="#">Plakat Karte</a></h3>
                 <ul>
-                    <?php if ($_SESSION['wikisession']) {?>
-                    <li class="showifloggedin"><a href="#" onclick="auth.logout();">Abmelden</a></li>
-                    <?php } else { ?>
-                    <li class="menu showifloggedin">
-                        <a href="#" class="menu"><?php echo $_SESSION['siduser']?></a>
+                    <li class="depUsrWiki"><a href="#" onclick="auth.logout();">Abmelden</a></li>
+
+                    <li class="menu depUsrLocal">
+                        <a href="#" class="menu" id="menuusername"></a>
                         <ul class="menu-dropdown">
-                            <?php if (isAdmin()) { ?>
-                            <li><a href="admin.php" target="_blank">Administration</a></li>
-                            <li class="divider" />
-                            <?php }
-                            if ($canSendMail) { ?>
+
+                            <li class="depAdmin"><a href="admin.php" target="_blank">Administration</a></li>
+                            <li class="divider depAdmin" />
+
+                            <?php if (System::canSendMails()) { ?>
                             <li><a href="#" onclick="javascript:showModalId('chpwform');">Passwort ändern</a></li>
                             <li class="divider" />
                             <?php } ?>
                             <li><a href="#" onclick="auth.logout();">Abmelden</a></li>
                         </ul>
                     </li>
-                    <?php } ?>
 
-                    <li class="showifloggedin"><a href="#" onclick="javascript:showModalId('uploadimg');">Bild hochladen</a></li>
-                    <li class="showifloggedin"><a href="#" onclick="showModalId('exportCity');">Export</a></li>
 
-                    <li class="hideifloggedin"><a href="#" onclick="javascript:showModalId('loginform');">Anmelden</a></li>
-                    <?php if ($canSendMail) { ?>
-                    <li class="hideifloggedin"><a href="#" onclick="javascript:showModalId('registerform');">Registrieren</a></li>
-                    <?php } /* $canSendMail */ ?>
+                    <li class="depLogin"><a href="#" onclick="javascript:showModalId('uploadimg');">Bild hochladen</a></li>
+                    <li class="depLogin"><a href="#" onclick="showModalId('exportCity');">Export</a></li>
+
+                    <li class="depLogout"><a href="#" onclick="javascript:showModalId('loginform');">Anmelden</a></li>
+                    <?php if (System::canSendMails()) { ?>
+                    <li class="depLogout"><a href="#" onclick="javascript:showModalId('registerform');">Registrieren</a></li>
+                    <?php } /* canSendMails */ ?>
                     <li><a href="#" onclick="togglemapkey();">Legende / Hilfe</a></li>
                 </ul>
             </div>
@@ -74,7 +73,7 @@
         include('dialogs/loginform.php');
         include('dialogs/uploadimg.php');
         include('dialogs/exportCity.php');
-        if ($canSendMail) {
+        if (System::canSendMails()) {
             include('dialogs/newpassform.php');
             include('dialogs/registerform.php');
             include('dialogs/chpwform.php');

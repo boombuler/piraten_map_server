@@ -8,7 +8,7 @@ class WikiConnection
     private $wiki_session = false;
 
     public static function getInstance() {
-        if (!isset($_SESSION['wikiconnection']))
+        if (!$_SESSION['wikiconnection'] instanceof WikiConnection)
             $_SESSION['wikiconnection'] = new WikiConnection;
         return $_SESSION['wikiconnection'];
     }
@@ -52,6 +52,7 @@ class WikiConnection
               //TODO: move the next two lines to a user object:
               $_SESSION['siduser'] = $username;
               $_SESSION['sidip'] = $_SERVER["REMOTE_ADDR"];
+              $_SESSION['sidusertype'] = "wiki";
               $instance->wiki_session = $instance->snoopy->cookies;
 
               return true;
@@ -66,7 +67,7 @@ class WikiConnection
             $request_vars = array('action' => 'logout', 'format' => 'php');
             if (!$instance->snoopy->submit($instance->apiPath, $request_vars))
                 die("Snoopy error: {$instance->snoopy->error}");
-            $instance->wiki_session = false;
+            unset($_SESSION['wikiconnection']); // drop current instance
         }
     }
 

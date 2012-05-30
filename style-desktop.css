@@ -56,3 +56,8 @@
 .alert-message {
   margin-bottom: 5px;
 }
+
+.depLogin { display: none; }
+.depAdmin { display: none; }
+.depUsrWiki { display: none; }
+.depUsrLocal { display: none; }

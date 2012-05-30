@@ -18,7 +18,6 @@
        under the License.
 */
 require_once('library/System.php');
-session_start();
 
 $image_upload_typ = 'plakat_ok';
 

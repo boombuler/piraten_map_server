@@ -42,17 +42,32 @@ function displaymessage(type, msg) {
 var auth = {
   isLoggedIn: false,
 
-  goToLoggedInState: function()
+  hideLoginElements: function() {
+    $('.depLogin').hide();
+    $('.depLogout').hide();
+    $('.depAdmin').hide();
+    $('.depUsrWiki').hide();
+    $('.depUsrLocal').hide();
+  },
+
+  goToLoggedInState: function(userdata)
   {
-    $('.hideifloggedin').hide();
-    $('.showifloggedin').show();
+    this.hideLoginElements();
+    $('#menuusername').text(userdata.username);
+    if (userdata.admin)
+        $('.depAdmin').show();
+    if (userdata.usertype == 'wiki')
+        $('.depUsrWiki').show();
+    if (userdata.usertype == 'local')
+        $('.depUsrLocal').show();
+    $('.depLogin').show();
     this.isLoggedIn = true;
   },
 
   goToLoggedOutState: function()
   {
-    $('.showifloggedin').hide();
-    $('.hideifloggedin').show();
+    this.hideLoginElements();
+    $('.depLogout').show();
     this.isLoggedIn = false;
   },
 
@@ -66,7 +81,7 @@ var auth = {
       success: function(data) {
         if (data.success) {
           displaymessage('success', data.message);
-          auth.goToLoggedInState();
+          auth.goToLoggedInState(data);
         } else {
           message.error('error', data.message);
         }
@@ -281,8 +296,8 @@ function init() {
 $(document).ready(function(e) {
     init();
 
-    if (isLoggedIn)
-        auth.goToLoggedInState();
+    if (loginData != null)
+        auth.goToLoggedInState(loginData);
     else
         auth.goToLoggedOutState();
 
