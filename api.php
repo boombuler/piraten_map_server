@@ -102,7 +102,7 @@
     $tbl_prefix = System::getConfig('tbl_prefix');
     $query = "SELECT p.id, f.lon, f.lat, f.type, f.user, f.timestamp, f.comment, f.image "
          . " FROM ".$tbl_prefix."felder f JOIN ".$tbl_prefix."plakat p on p.actual_id = f.id"
-         . " WHERE p.del != true".$filterstr;
+         . " WHERE p.del != 1".$filterstr;
 
     $stmt = System::query($query, $params);
 

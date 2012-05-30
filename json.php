@@ -46,7 +46,7 @@ if ($loginok!=0)
 
 $query = "SELECT p.id, f.lon, f.lat, f.type, f.user, f.timestamp, f.comment, f.city, f.street, f.image "
       . " FROM ".System::getConfig('tbl_prefix')."felder f JOIN ".System::getConfig('tbl_prefix')."plakat p on p.actual_id = f.id"
-      . " WHERE p.del != true";
+      . " WHERE p.del != 1";
 
 $sql = System::query($query);
 
