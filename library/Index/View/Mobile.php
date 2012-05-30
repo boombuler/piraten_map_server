@@ -24,7 +24,7 @@
   <script type="text/javascript" src="js/touchMapLite.geolocation.js"></script>
     
   <script type="text/javascript">
-    var isLoggedIn = <?php print (System::getCurrentUser() ? 'true': 'false'); ?>;
+    var isLoggedIn = <?php print $loginok ? 'true': 'false'); ?>;
     var posterFlags = <?php print json_encode($this->getPosterFlags()); ?>;
     var touchMap = null;
     
