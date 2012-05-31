@@ -83,7 +83,7 @@ var auth = {
           displaymessage('success', data.message);
           auth.goToLoggedInState(data);
         } else {
-          message.error('error', data.message);
+          displaymessage('error', data.message);
         }
       }
     });
