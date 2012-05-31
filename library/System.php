@@ -45,7 +45,8 @@ class System
             $database = self::getConfig('mysql_database');
             $dbh = new PDO("mysql:host=$server;dbname=$database", self::getConfig('mysql_user'), self::getConfig('mysql_password'), array(
                 PDO::ATTR_PERSISTENT => true,
-                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_OBJ
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_OBJ,
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
             ));
             $dbh->exec("SET CHARACTER SET utf8");
             $dbh->exec("SET character_set_connection = utf8");
@@ -75,10 +76,17 @@ class System
 
   public static function query($query, $arguments = null)
   {
-    $db = self::getDB();
-    $qry = $db->prepare($query);
-    $qry->execute($arguments);
-    return $qry;
+    try {
+        $db = self::getDB();
+        $qry = $db->prepare($query);
+        $qry->execute($arguments);
+        return $qry;
+    } catch (Exception $e) {
+        if (self::getConfig('debug')) {
+            print $query;
+        }
+        throw $e;
+    }
   }
 
   public static function prepare($query)

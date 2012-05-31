@@ -145,13 +145,15 @@ class Data_User extends Data_Abstract
     if ($this->getId()) {
       $setvals = $this->getModifications();
       $setvars = array_keys($setvals);
+      $setvals = array_values($setvals);
 
       if (empty($setvars)) {
         return 0;
       }
 
       $setvals[] = $this->getId();
-      System::query('UPDATE ' . System::getConfig('tbl_prefix') . 'users SET ' . implode(', ', $setvars) . ' WHERE id=?', $setvals);
+
+      System::query('UPDATE ' . System::getConfig('tbl_prefix') . 'users SET ' . implode('=?, ', $setvars) . '=? WHERE id=?', $setvals);
     } else {
         $this->setId(System::query('INSERT INTO ' . System::getConfig('tbl_prefix') . 'users (username, password, admin, email) VALUES (?, ?, ?, ?)',
                                array(strtolower($this->getUsername()), $this->getPassword(), $this->getAdmin(), $this->getEmail())));
