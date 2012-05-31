@@ -58,6 +58,7 @@
     $user = new Data_User;
     $user->setUsername($username);
     $user->setEmail($email);
+    $user->setAdmin(false);
     $plain_password = $user->setRandomPassword();
 
     if (!EMail::sendPasswordMail($user, $plain_password, false)) {
