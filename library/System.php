@@ -1,6 +1,5 @@
 <?php
 session_start();
-require_once('dbcon.php');
 
 /**
  * Singleton containing system whide important information.
@@ -35,6 +34,32 @@ class System
 
     include_once($path);
   }
+  
+  private static function getDB() 
+  {
+    static $dbh = null;
+    if ($dbh == null)
+    {
+        try {
+            $server = self::getConfig('mysql_server');
+            $database = self::getConfig('mysql_database');
+            $dbh = new PDO("mysql:host=$server;dbname=$database", self::getConfig('mysql_user'), self::getConfig('mysql_password'), array(
+                PDO::ATTR_PERSISTENT => true,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_OBJ
+            ));
+            $dbh->exec("SET CHARACTER SET utf8");
+            $dbh->exec("SET character_set_connection = utf8");
+            $dbh->exec("SET character_set_results = utf8");
+            $dbh->exec("SET character_set_client = utf8");
+        } catch (PDOException $e) {
+            if (self::getConfig('debug'))
+                die("Error!: " . $e->getMessage() . "<br/>");
+            die();
+        }
+    }
+    return $dbh;
+  
+  }
 
   private static function readConfiguration()
   {
@@ -50,7 +75,7 @@ class System
 
   public static function query($query, $arguments = null)
   {
-    $db = openDB();
+    $db = self::getDB();
     $qry = $db->prepare($query);
     $qry->execute($arguments);
     return $qry;
@@ -58,12 +83,12 @@ class System
 
   public static function prepare($query)
   {
-    return openDB()->prepare($query);
+    return self::getDB()->prepare($query);
   }
 
   public static function lastInsertId()
   {
-    return openDB()->lastInsertId();
+    return self::getDB()->lastInsertId();
   }
 
   public static function getPosterFlags($key = null) {
