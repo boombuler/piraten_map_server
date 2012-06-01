@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Singleton containing system whide important information.
  */
@@ -112,18 +112,6 @@ class System
         } else {
             return $flags[$key];
         }
-    }
-
-    public static function getUserData() 
-    {
-        $usertyp = $_SESSION['sidusertype'];
-        if (!isset($usertyp))
-            return null;
-        return array(
-            'username' => $_SESSION['siduser'],
-            'usertype' => $usertyp,
-            'admin' => isAdmin()
-        );
     }
 
     public static function canSendMails() 

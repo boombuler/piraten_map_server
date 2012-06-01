@@ -20,7 +20,7 @@
 require_once('library/System.php');
 require("includes.php");
 
-if ($loginok==0)
+if (!User::current())
 {
 	echo "Please Login!";
 	exit();

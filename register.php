@@ -18,14 +18,13 @@
    under the License.
    */
 
-  require_once("includes.php");
   require_once('library/System.php');
 
   function resetPassword($username, $email) {
     global $tbl_prefix;
     $username = strtolower($username);
     $email = strtolower($email);
-    $user = Data_User::find(array('username', "LOWER(email)"), array($username, $email))->fetchObject('Data_User');
+    $user = Data_User::find(array('LOWER(username)', "LOWER(email)"), array($username, $email))->fetchObject('Data_User');
     if ($user) {
         $plain_password = $user->setRandomPassword();
         if (!EMail::sendPasswordMail($user, $plain_password, true))
@@ -35,19 +34,21 @@
     }
   }
 
-  function changePassword($newpass, $confirm) {
-    global $tbl_prefix, $_SESSION;
-    if (!isset($_SESSION['siduserid']) || isset($_SESSION['wikisession']))
-      return errorMsgHeader("Passwort konnte nicht geändert werden");
-    if ($newpass != $confirm)
-        return errorMsgHeader("Passwörter stimmen nicht überein");
+    function changePassword($newpass, $confirm) 
+    {
+        global $tbl_prefix, $_SESSION;
+    
+        $user = User::current();
+        if (!($user instanceof IChangableUser))
+            return errorMsgHeader("Passwort konnte nicht geändert werden");
+        if ($newpass != $confirm)
+            return errorMsgHeader("Passwörter stimmen nicht überein");
 
-    $user = Data_User::get($_SESSION['siduserid']);
-    $user->setPassword($newpass);
-    $user->save();
+        $user->setPassword($newpass);
+        $user->save();
 
-    return infoMsgHeader("Passwort wurde geändert");
-  }
+        return infoMsgHeader("Passwort wurde geändert");
+    }
 
   function register($username, $email) {
     global $tbl_prefix;
@@ -81,5 +82,3 @@
         header(resetPassword($_POST['username'], $_POST['email']));
       }
   }
-
-?>

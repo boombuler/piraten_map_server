@@ -2,17 +2,19 @@
 require_once('library/System.php');
 require_once("includes.php");
 
-if (!$loginok && !System::getCurrentUser()) {
-  header("location: index.php");
-  die;
+if (!User::current()) {
+    header("location: index.php");
+    die;
 }
 if (!filter_input(INPUT_GET, 'city', FILTER_SANITIZE_STRING))
-  die('Bitte gib eine Stadt ein.');
+    die('Bitte gib eine Stadt ein.');
 
 $filename = '/tmp/' . md5(gmmktime()) . '.csv';
 $result = System::query('SELECT COUNT(p.id) plakate, street, type, comment '
                       . 'FROM ' . System::getConfig('tbl_prefix') . 'felder f '
-                      . 'JOIN ' . System::getConfig('tbl_prefix') . 'plakat p ON p.actual_id=f.id WHERE p.del !=1 AND f.city LIKE ? GROUP BY street, type, comment', array(filter_input(INPUT_GET, 'city', FILTER_SANITIZE_STRING)));
+                      . 'JOIN ' . System::getConfig('tbl_prefix') . 'plakat p ON '
+                      . 'p.actual_id=f.id WHERE p.del !=1 AND f.city LIKE ? '
+                      . 'GROUP BY street, type, comment', array(filter_input(INPUT_GET, 'city', FILTER_SANITIZE_STRING)));
 $file = fopen($filename, 'w');
 if (!$file)
   die('could not open file');

@@ -13,6 +13,19 @@ class Index_Controller extends Controller
     $this->display();
   }
 
+    public function getUserData()
+    {
+        $user = User::current();
+        if ($user instanceof IUser)
+            return array(
+                'username' => $user->getUsername(),
+                'usertype' => $user->getType(),
+                'admin' => $user->getAdmin()
+            );
+        else
+            return null;
+    }
+  
   public function getInitialPosition()
   {
     $result = array('lat'   => $_SESSION['deflat'] ? $_SESSION['deflat'] : System::getConfig('start_lat'),

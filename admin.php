@@ -17,10 +17,8 @@
        specific language governing permissions and limitations
        under the License.
     */
-ob_start("ob_gzhandler");
 require_once('library/System.php');
-require_once('includes.php');
-if (!isAdmin())
+if (!User::isAdmin())
     die();
 
 ?><!DOCTYPE html

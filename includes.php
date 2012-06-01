@@ -21,19 +21,8 @@ require_once('library/System.php');
 
 $image_upload_typ = 'plakat_ok';
 
-setlocale(LC_ALL, 'de_DE.UTF-8');
+$loginok = User::validateSession() ? 1 : 0;
 
-if ($_SESSION['siduser'] || $_SESSION['sidip']) {
-	// Check if the session is still valid.
-    if (WikiConnection::isSessionValid() && $_SESSION['sidip']==$_SERVER["REMOTE_ADDR"])
-        $loginok=1;
-    else
-    {
-        $loginok=0;
-        unset($_SESSION['siduser']);
-        unset($_SESSION['sidip']);
-    }
-}
 
 function get_inner_html( $node ) { 
     $innerHTML= '';
@@ -177,11 +166,11 @@ function infoMsgHeader($msg) {
 	return "Location: ./?message=".urlencode($msg);
 }
 
-function isAdmin() {
-    global $_SESSION;
-    if (isset($_SESSION['siduser'])) {
-        return $_SESSION['admin'] === true;
-    }
+function isAdmin() 
+{
+    $user = User::current();
+    if ($user)
+        return $user->getAdmin();
     return false;
 }
 

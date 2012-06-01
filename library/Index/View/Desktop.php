@@ -16,7 +16,7 @@
 //<![CDATA[
     var startPos = <?php print json_encode($this->getInitialPosition()); ?>;
     var posterFlags = <?php print json_encode($this->getPosterFlags()); ?>;
-    var loginData = <?php print json_encode(System::getUserData()); ?>;
+    var loginData = <?php print json_encode($this->getUserData()); ?>;
 
     function onPageLoaded() {
         <?php
@@ -48,7 +48,7 @@
                             <li class="divider depAdmin" />
 
                             <?php if (System::canSendMails()) { ?>
-                            <li><a href="#" onclick="javascript:showModalId('chpwform');">Passwort Ã¤ndern</a></li>
+                            <li><a href="#" onclick="javascript:showModalId('chpwform');">Passwort ändern</a></li>
                             <li class="divider" />
                             <?php } ?>
                             <li><a href="#" onclick="auth.logout();">Abmelden</a></li>
@@ -92,7 +92,7 @@
                 <ul class="unstyled">
                     <?php if ($loginok==0) { ?>
                     <li>Plakate werden erst nachdem Login editierbar.</li>
-                    <li>Lokaler oder Wiki Login mÃ¶glich!</li>
+                    <li>Lokaler oder Wiki Login möglich!</li>
                     <? } else {   ?>
                     <li>STRG+Mausklick: neuer Marker</li>
                     <?php } ?>

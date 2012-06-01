@@ -1,9 +1,11 @@
 <?php
     require_once('library/System.php');
-    require_once('includes.php');
 
-    if (!isAdmin()) {
-        echo '{"status": "error", "message": "Keine Berechtigung"}';
+    if (!User::isAdmin()) {
+        echo json_encode(array(
+            'status' => 'error', 
+            'message' => 'Keine Berechtigung'
+        ));
     } else {
         $action = $_GET['action'];
 
@@ -67,4 +69,3 @@
             ));
         }
     }
-?>

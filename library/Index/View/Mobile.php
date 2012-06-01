@@ -27,7 +27,7 @@
 
   <script type="text/javascript" src="js/map-mobile.js"></script>
   <script type="text/javascript">
-    var isLoggedIn = <?php print $loginok ? 'true': 'false'; ?>;
+    var isLoggedIn = <?php print User::current() ? 'true': 'false'; ?>;
     var posterFlags = <?php print json_encode($this->getPosterFlags()); ?>;
     var startPos = <?php print json_encode($this->getInitialPosition()); ?>;
   </script> 
@@ -72,14 +72,14 @@ foreach ($this->getPosterFlags() as $key=>$value)
   </div>
   <div data-role="content">
 
-<?php if (!$loginok) { ?>
+<?php if (!User::current()) { ?>
     <form action="login.php" method="post" class="dialog" id="loginfrm" name="loginfrm">
 <?php } else { ?>
     <form name="logout" id="logout" action="login.php?action=logout" method="post">
 <?php } ?>
       <ul data-role="listview" data-theme="c" data-dividertheme="b">
         <li data-role="list-divider">Zugang</li>
-<?php if (!$loginok) { ?>
+<?php if (!User::current()) { ?>
         <li data-role="fieldcontain">
           <label for="username">Benutzername:</label>
           <input type="text" name="username" id="username" />
@@ -122,7 +122,7 @@ foreach ($this->getPosterFlags() as $key=>$value)
       <li><label id="info_memo" class="plaintxt" >&nbsp;</label></li>
       <li><img src="images/noimg.png" id="info_image" width="250" /></li>
     </ul>
-<?php if ($loginok) { ?>
+<?php if (User::current()) { ?>
     <!--a class="whiteButton" href="#home">Marker editieren</a-->
     <a href="#home" data-role="button" id="delMark" data-icon="delete">Marker löschen</a>
 <?php } ?>

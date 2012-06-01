@@ -20,16 +20,18 @@
 require_once('library/System.php');
 require("includes.php");
 
-$_SESSION['siduser'] = "CRONJOB";
-$_SESSION['sidip'] = $_SERVER["REMOTE_ADDR"];
-$_SESSION['admin'] = false;
+User::setCurrent(CronUser::login('', ''));
 
 
-$query = "SELECT p.id, f.lon, f.lat "
-      . " FROM ".$tbl_prefix."felder f JOIN ".$tbl_prefix."plakat p on p.actual_id = f.id"
-      . " WHERE p.del != true and f.street is null and f.city is null LIMIT 0, $max_resolve_count";
-$db = openDB();
-foreach ($db->query($query) as $obj) {
+$query = 'SELECT p.id, f.lon, f.lat '
+       . ' FROM ' . System::getConfig('tbl_prefix') . 'felder f JOIN '
+       . System::getConfig('tbl_prefix') . 'plakat p on p.actual_id = f.id'
+       . ' WHERE p.del != true and f.street is null and f.city is null LIMIT 0, ' 
+       . System::getConfig('max_resolve_count');
+
+$result = System::query($query)->fetchAll();
+
+foreach ($result as $obj) {
 {
     $location = request_location($obj->lon, $obj->lat);
 
@@ -38,9 +40,6 @@ foreach ($db->query($query) as $obj) {
 
     map_change($obj->id, null, null, $city, $street, null);
 }
-$db = null;
-unset($_SESSION['siduser']);
-unset($_SESSION['wikisession']);
-unset($_SESSION['sidip']);
-unset($_SESSION['admin']);
+
+User::logout();
 ?>

@@ -17,14 +17,15 @@
        specific language governing permissions and limitations
        under the License.
 */
-ob_start("ob_gzhandler");
 require_once('library/System.php');
 require_once('includes.php');
 
-if (($loginok==0) and !System::getConfig('allow_view_public'))
-	exit();
+$user = User::current();
 
-if ($loginok!=0) {
+if (!$user and !System::getConfig('allow_view_public'))
+    exit();
+
+if ($user) {
 	switch ($_GET['action']) {
 		case 'add':
 			map_add(preg_replace("/,/",".",get_float('lon')),
@@ -99,9 +100,8 @@ $query = "SELECT p.id, f.lon, f.lat, f.type, f.user, f.timestamp, f.comment, f.c
       . " FROM ".$tbl_prefix."felder f JOIN ".$tbl_prefix."plakat p on p.actual_id = f.id"
       . " WHERE p.del != 1".$filterstr;
 
-$sql = System::prepare($query);
-$sql->execute($params);
-$result = $sql->fetchAll();
+
+$result = System::query($query, $params)->fetchAll();
 foreach($result as $obj) {
     $id  = $obj->id;
 
@@ -150,6 +150,5 @@ foreach($result as $obj) {
         $place->appendChild($dom->createElement('styleUrl', '#'.$styles[$type]));
     $place->appendChild($dom->createElement('Point'))->appendChild($dom->createElement('coordinates', "$lon,$lat"));
 }
-$db = null;
+
 echo $dom->saveXML();
-?>

@@ -21,31 +21,32 @@ ob_start("ob_gzhandler");
 require("includes.php");
 require_once('library/System.php');
 
-if (($loginok==0) and !System::getConfig('allow_view_public'))
-	exit();
+$user = User::current();
+if (!$user and !System::getConfig('allow_view_public'))
+    exit();
 
-if ($loginok!=0) 
+if ($user) 
 {
-	switch ($_GET['action'])
-	{
-	case 'add':
-		map_add(preg_replace("/,/",".",get_float('lon')),
-			preg_replace("/,/",".",get_float('lat')),
-			get_typ('typ'), true);
-		break;
-	case 'del':
-		map_del(get_int('id'));
-		break;
-	case 'change':
-		map_change(get_int('id'), get_typ('type'), null, null);
-		break;
-	case 'addcomment':
-		map_change(get_int('id'), null, $_GET['comment'], $_GET['image']);
-	}
+    switch ($_GET['action'])
+    {
+    case 'add':
+        map_add(preg_replace("/,/",".",get_float('lon')),
+            preg_replace("/,/",".",get_float('lat')),
+            get_typ('typ'), true);
+        break;
+    case 'del':
+        map_del(get_int('id'));
+        break;
+    case 'change':
+        map_change(get_int('id'), get_typ('type'), null, null);
+        break;
+    case 'addcomment':
+        map_change(get_int('id'), null, $_GET['comment'], $_GET['image']);
+    }
 }
 
 $query = "SELECT p.id, f.lon, f.lat, f.type, f.user, f.timestamp, f.comment, f.city, f.street, f.image "
-      . " FROM ".System::getConfig('tbl_prefix')."felder f JOIN ".System::getConfig('tbl_prefix')."plakat p on p.actual_id = f.id"
+      . " FROM " . System::getConfig('tbl_prefix') . "felder f JOIN " . System::getConfig('tbl_prefix') . "plakat p on p.actual_id = f.id"
       . " WHERE p.del != 1";
 
 $sql = System::query($query);
