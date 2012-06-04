@@ -1,6 +1,20 @@
 var map;
 var gmlLayers = new Array();
 
+$.fn.clearForm = function() {
+  return this.each(function() {
+    var type = this.type, tag = this.tagName.toLowerCase();
+    if (tag == 'form')
+      return $(':input',this).clearForm();
+    if (type == 'text' || type == 'password' || tag == 'textarea')
+      this.value = '';
+    else if (type == 'checkbox' || type == 'radio')
+      this.checked = false;
+    else if (tag == 'select')
+      this.selectedIndex = -1;
+  });
+};
+
 function makeAJAXrequest(url, data) {
     $.ajax({
         url: url,
@@ -106,6 +120,36 @@ var auth = {
       }
     });
     closeModalDlg(false);
+  },
+
+  getForm: function(id) {
+    $.ajax({
+      type: "GET",
+      url: "login.php",
+      data: $(id).serialize(),
+      dataType: 'json',
+      success: function(data) {
+        if (data.success) {
+          $(id).clearForm();
+          displaymessage('success', data.message);
+        } else {
+          displaymessage('error', data.message);
+        }
+      }
+    });
+    closeModalDlg(false);
+  },
+
+  register: function() {
+    this.getForm('#formregister');
+  },
+
+  resetpwd: function() {
+    this.getForm('#formnewpass');
+  },
+
+  changepwd: function() {
+    this.getForm('#formchpw');
   }
 }
 

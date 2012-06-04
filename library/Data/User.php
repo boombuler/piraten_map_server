@@ -117,7 +117,7 @@ class Data_User extends Data_Abstract implements IChangableUser
     {
         return $_SESSION['sidip'] == $_SERVER["REMOTE_ADDR"];
     }
-    
+
     /**
      * get the default location for that user. Should return an array with lon, lat and zoom
      */
@@ -129,18 +129,13 @@ class Data_User extends Data_Abstract implements IChangableUser
             'zoom' => System::getConfig('start_zoom'),
         );
     }
-    
+
     public function logout() {
         unset($_SESSION['sidip']);
     }
-    
-    
+
     public static function find($attribute, $value)
     {
-        if (!array_key_exists($attribute, get_class_vars(__CLASS__))) {
-            throw new Exception('Attribute does not exist');
-        }
-
         if (is_array($attribute) && is_array($value)) {
             $filter = implode(" =? AND ", $attribute) . " = ?";
             $args = $value;

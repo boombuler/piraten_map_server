@@ -4,8 +4,8 @@
         <a href="#" class="close" onclick="javascript:closeModalDlg(false);">&times;</a>
     </div>
     <div class="modal-body">
-        <form id="formchpw" action="<?php echo System::getConfig('url')?>register.php" method="post">
-            <input type="hidden" name="action" value="changepw" />
+        <form id="formchpw" action="<?php echo System::getConfig('url')?>login.php">
+            <input type="hidden" name="action" value="changepwd" />
 
             <div class="clearfix">
                 <label for="password">Neues Passwort</label>
@@ -23,7 +23,7 @@
         </form>
     </div>
     <div class="modal-footer">
-        <a href="#" class="btn primary" onclick="javascript:document.forms['formchpw'].submit();">Passwort ändern</a>
+        <a href="#" class="btn primary" onclick="javascript:auth.changepwd();">Passwort ändern</a>
         <a href="#" class="btn secondary" onclick="javascript:closeModalDlg(false);">Abbrechen</a>
     </div>
 </div>

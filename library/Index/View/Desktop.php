@@ -48,7 +48,7 @@
                             <li class="divider depAdmin" />
 
                             <?php if (System::canSendMails()) { ?>
-                            <li><a href="#" onclick="javascript:showModalId('chpwform');">Passwort ändern</a></li>
+                            <li><a href="#" onclick="javascript:showModalId('chpwform');">Passwort Ã¤ndern</a></li>
                             <li class="divider" />
                             <?php } ?>
                             <li><a href="#" onclick="auth.logout();">Abmelden</a></li>
@@ -92,7 +92,7 @@
                 <ul class="unstyled">
                     <?php if ($loginok==0) { ?>
                     <li>Plakate werden erst nachdem Login editierbar.</li>
-                    <li>Lokaler oder Wiki Login möglich!</li>
+                    <li>Lokaler oder Wiki Login mï¿½glich!</li>
                     <? } else {   ?>
                     <li>STRG+Mausklick: neuer Marker</li>
                     <?php } ?>

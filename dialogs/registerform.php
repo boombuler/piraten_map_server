@@ -4,7 +4,7 @@
         <a href="#" class="close" onclick="javascript:closeModalDlg(false);">&times;</a>
     </div>
     <div class="modal-body">
-        <form id="formregister" action="<?php echo System::getConfig('url')?>register.php" method="post">
+        <form id="formregister" action="<?php echo System::getConfig('url')?>login.php">
             <input type="hidden" name="action" value="register" />
             <div class="clearfix">
                 <label for="username">Benutzer</label>
@@ -22,7 +22,7 @@
         </form>
     </div>
     <div class="modal-footer">
-        <a href="#" class="btn primary" onclick="javascript:document.forms['formregister'].submit();">Registrieren</a>
+        <a href="#" class="btn primary" onclick="javascript:auth.register();">Registrieren</a>
         <a href="#" class="btn secondary" onclick="javascript:closeModalDlg(false);">Abbrechen</a>
     </div>
 </div>

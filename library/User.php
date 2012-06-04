@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 class User
 {
@@ -8,7 +8,7 @@ class User
             return unserialize($_SESSION['user']);
         return null;
     }
-    
+
     public static function setCurrent($user)
     {
         if ($user instanceof IUser)
@@ -22,12 +22,12 @@ class User
         $user = Data_User::login($username, $password);
         if (!($user instanceof IUser))
             $user = Wiki_User::login($username, $password);
-            
+
         self::setCurrent($user);
-        
+
         return $user;
     }
-    
+
     public static function logout()
     {
         $user = self::current();
@@ -35,7 +35,7 @@ class User
             $user->logout();
         self::setCurrent(null);
     }
-    
+
     public static function validateSession()
     {
         $user = self::current();
@@ -47,7 +47,7 @@ class User
         }
         return false;
     }
-    
+
     public static function isAdmin()
     {
         $user = self::current();
