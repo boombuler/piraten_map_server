@@ -17,11 +17,11 @@
                 <label for="password">Passwort</label>
                 <div class="input">
                     <input type="password" size="30" class="xlarge" name="password" id="password" />
-                                            <?php if ($canSendMail) { ?>
+<?php if (System::canSendMails()) { ?>
                     <span class="help-block">
                         <a href="#" onclick="javascript:closeModalDlg(false, function() {showModalId('newpassform');});">Passwort vergessen?</a> (Nur für nicht Wiki-Benutzer)
                     </span>
-                                            <?php } ?>
+<?php } ?>
                 </div>
             </div>
         </form>
