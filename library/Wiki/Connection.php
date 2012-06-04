@@ -117,7 +117,6 @@ class Wiki_Connection
 
     public static function getUserCategories($session, $username) 
     {
-        $instance = self::getInstance();
         self::$snoopy->cookies = $session;
         
         $categories = array('Germany');
