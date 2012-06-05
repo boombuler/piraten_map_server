@@ -1,5 +1,5 @@
 <?php
-class Data_User extends Data_Abstract implements IChangableUser
+class Data_User extends Data_Table implements IChangableUser
 {
     protected $id;
 
@@ -130,21 +130,9 @@ class Data_User extends Data_Abstract implements IChangableUser
         );
     }
 
-    public function logout() {
-        unset($_SESSION['sidip']);
-    }
-
-    public static function find($attribute, $value)
+    public function logout() 
     {
-        if (is_array($attribute) && is_array($value)) {
-            $filter = implode(" =? AND ", $attribute) . " = ?";
-            $args = $value;
-        } else {
-            $filter = $attribute . "=?";
-            $args = array($value);
-        }
-
-        return System::query('SELECT * FROM ' . System::getConfig('tbl_prefix') . 'users WHERE ' . $filter, $args);
+        unset($_SESSION['sidip']);
     }
 
     public static function get($id) 
@@ -153,11 +141,11 @@ class Data_User extends Data_Abstract implements IChangableUser
         return $result->fetchObject(__CLASS__);
     }
 
-    public static function isUsernameOrPasswordInUse($username, $email) 
+    public static function isUsernameOrEmailInUse($username, $email) 
     {
         $query = 'SELECT * FROM ' . System::getConfig('tbl_prefix') . 'users WHERE LOWER(username)=? OR LOWER(email)=?';
         $result = System::query($query, array(strtolower($username), strtolower($email)));
-        return $result->rowCount();
+        return $result->rowCount() > 0;
     } 
 
     public static function login($username, $password)
@@ -182,35 +170,7 @@ class Data_User extends Data_Abstract implements IChangableUser
         $this->save();
     }
     
-    public function save()
-    {
-        if (!$this->validate()) {
-            return false;
-        }
-        if ($this->getId()) {
-            $setvals = $this->getModifications();
-            $setvars = array_keys($setvals);
-            $setvals = array_values($setvals);
-
-            if (empty($setvars)) {
-                return 0;
-            }
-
-            $setvals[] = $this->getId();
-            $query = 'UPDATE ' . System::getConfig('tbl_prefix') . 'users SET ' 
-                   . implode('=?, ', $setvars) . '=? WHERE id=?';
-            System::query($query, $setvals);
-        } else {
-            $query = 'INSERT INTO ' . System::getConfig('tbl_prefix') . 'users (username, password, admin, email) VALUES (?, ?, ?, ?)';
-            $this->setId(System::query($query, array(
-                strtolower($this->getUsername()), 
-                $this->getPassword(), 
-                $this->getAdmin(), 
-                $this->getEmail()
-            )));
-        }
-        return $this;
-    }
+    
 
     static function getPWHash($user, $pass) 
     {
@@ -229,5 +189,32 @@ class Data_User extends Data_Abstract implements IChangableUser
             return false;
         }
         return true;
+    }
+
+    protected static function getTableName() 
+    {
+        return "users";
+    }
+
+    protected function getPrimaryKeyValues()
+    {
+        return array(
+            'id' => $this->getId()
+        );
+    }
+    
+    protected function prepareValues($values)
+    {
+        $values = parent::prepareValues($values);
+        if (array_key_exists('username', $values)) {
+            $values['username'] = strtolower($values['username']);
+        }
+        return $values;
+    }
+    
+    protected function insert($setvals)
+    {
+        parent::insert($setvals);
+        $this->setId(System::lastInsertId());
     }
 }

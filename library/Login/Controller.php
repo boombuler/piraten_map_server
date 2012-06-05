@@ -4,6 +4,13 @@ require_once('includes.php');
 
 class Login_Controller extends Controller
 {
+    private $message;
+    
+    function __construct()
+    {
+        $this->view = 'Login_View_Json';
+    }
+    
     public function index()
     {
         //currently redirect to login, but in future, this should display the login dialogue
@@ -37,9 +44,8 @@ class Login_Controller extends Controller
     {
         $username = $this->getGetParameter('username');
         $email = $this->getGetParameter('email');
-        if (Data_User::isUsernameOrPasswordInUse($username, $email)) {
+        if (Data_User::isUsernameOrEmailInUse($username, $email)) {
             $this->displayMessage("Benutzername oder EMail-Adresse wird bereits verwendet", false);
-            return;
         }
         $user = new Data_User;
         $user->setUsername($username);
@@ -49,10 +55,10 @@ class Login_Controller extends Controller
 
         if (!EMail::sendPasswordMail($user, $plain_password, false)) {
             $this->displayMessage("Email konnte nicht gesendet werden!", false);
-            return;
+        } else {
+            $user->save();
+            $this->displayMessage("Ihr Passwort wurde ihnen zugesandt", true);
         }
-        $user->save();
-        $this->displayMessage("Ihr Passwort wurde ihnen zugesandt", true);
     }
 
     public function resetpwd()
@@ -92,11 +98,18 @@ class Login_Controller extends Controller
         }
     }
 
+    public function getMessage()
+    {
+        return $this->message;
+    }
+    
     private function displayMessage($msg, $success, $data = null)
     {
         $message = array('message' => $msg, 'success' => $success);
         if ($data != null)
             $message = array_merge($message, $data);
-        print json_encode($message);
+        $this->message = $message;
+        $this->display();
+        die();
     }
 }

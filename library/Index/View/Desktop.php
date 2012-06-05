@@ -90,12 +90,11 @@
             </div>
             <div class="modal-body">
                 <ul class="unstyled">
-                    <?php if ($loginok==0) { ?>
-                    <li>Plakate werden erst nachdem Login editierbar.</li>
-                    <li>Lokaler oder Wiki Login m�glich!</li>
-                    <? } else {   ?>
-                    <li>STRG+Mausklick: neuer Marker</li>
-                    <?php } ?>
+                    <li class="depLogout">Plakate werden erst nachdem Login editierbar.</li>
+                    <li class="depLogout">Lokaler oder Wiki Login möglich!</li>
+
+                    <li class="depLogin">STRG+Mausklick: neuer Marker</li>
+
                     <li>
                         <ul>
                         <?php foreach ($this->getPosterFlags() as $key=>$value) {

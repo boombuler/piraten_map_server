@@ -20,7 +20,6 @@ abstract class Controller
         if (System::getConfig('debug')) {
             print '<h1>' . $e->getMessage() . '</h1>';
             print '<p>File: ' . $e->getFile() . ' Line: ' . $e->getLine() . '</p>';
-            print '<p>Query: ' . System::getLastRequest() . '</p>';
             print '<h3>Trace:</h3><pre>' . $e->getTraceAsString() . '</pre>';
         }
     }
