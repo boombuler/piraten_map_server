@@ -106,7 +106,7 @@ var auth = {
 
   logout: function() {
     $.ajax({
-      type: "GET",
+      type: "POST",
       url: "login.php",
       data: "action=logout",
       dataType: 'json',
@@ -124,7 +124,7 @@ var auth = {
 
   getForm: function(id) {
     $.ajax({
-      type: "GET",
+      type: "POST",
       url: "login.php",
       data: $(id).serialize(),
       dataType: 'json',

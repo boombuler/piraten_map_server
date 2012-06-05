@@ -63,8 +63,9 @@ function request_location($lon, $lat) {
 }
 
 function map_add($lon, $lat, $typ, $resolveAdr) {
-    global $_SESSION;
-
+    $user = User::current();
+    if (!$user)
+        return;
     $city = "null";
     $street = "null";
     if ($resolveAdr) {
@@ -84,34 +85,42 @@ function map_add($lon, $lat, $typ, $resolveAdr) {
 
     $sql->bindValue("lon", $lon);
     $sql->bindValue("lat", $lat);
-    $sql->bindValue("user", $_SESSION['siduser']);
+    $sql->bindValue("user", $user->getUsername());
     $sql->bindValue("city", $city);
     $sql->bindValue("street", $street);
     $sql->execute();
     $id = System::lastInsertId();
 
-    System::query("INSERT INTO ".$tbl_prefix."plakat (actual_id, del) VALUES (?, false)", array($id));
+    $plakat = new Data_Plakat;
+    $plakat->setActualId($id)->setDeleted(false)->save();
 
-    $pid = System::lastInsertId();
+    System::query("UPDATE ".$tbl_prefix."felder SET plakat_id = ? WHERE id = ?", array($plakat->getId(), $id));
 
-    System::query("UPDATE ".$tbl_prefix."felder SET plakat_id = ? WHERE id = ?", array($pid, $id));
-
-    System::query("INSERT INTO ".$tbl_prefix."log (plakat_id, user, subject) VALUES(?, ?, ?)", array($pid, $_SESSION['siduser'], "add"));
+    Data_Log::add($id, Data_Log::SUBJECT_ADD);
 
     return $pid;
 }
 
 function map_del($id) {
-    global $tbl_prefix, $_SESSION;
-    $tbl_prefix = System::getConfig('tbl_prefix');
+    $user = User::current();
+    if (!$user)
+        return;
 
-    System::query("UPDATE ".$tbl_prefix."plakat SET del = true where id = ?", array($id));
-
-    System::query("INSERT INTO ".$tbl_prefix."log (plakat_id, user, subject) VALUES (?,?,?)", array($id, $_SESSION['siduser'], "del"));
+    $plakat = Data_Plakat::get($id);
+    if ($plakat) {
+        $plakat->setDeleted(true)->save();
+        Data_Log::add($plakat->getId(), Data_Log::SUBJECT_DEL);
+    }
 }
 
 function map_change($id, $type, $comment, $city, $street, $imageurl) {
-    global $_SESSION;
+    $user = User::current();
+    if (!$user)
+        return;
+
+    $plakat = Data_Plakat::get($id);
+    if (!$plakat)
+        return;
 
     $tbl_prefix = System::getConfig('tbl_prefix');
 
@@ -149,29 +158,8 @@ function map_change($id, $type, $comment, $city, $street, $imageurl) {
 
     $newid = System::lastInsertId();
 
-    System::query("INSERT INTO ".$tbl_prefix."log (plakat_id, user, subject, what) VALUES (?, ?, ?, ?)", array($id, $_SESSION['siduser'], 'change', 'Type: '.$type));
-
-    System::query("UPDATE ".$tbl_prefix."plakat SET actual_id = ? where id = ?", array($newid, $id));
-}
-
-function getPWHash($user, $pass) {
-    return md5(strtolower($user).":".$pass);
-}
-
-function errorMsgHeader($msg) {
-	return "Location: ./?error=".urlencode($msg);
-}
-
-function infoMsgHeader($msg) {
-	return "Location: ./?message=".urlencode($msg);
-}
-
-function isAdmin() 
-{
-    $user = User::current();
-    if ($user)
-        return $user->getAdmin();
-    return false;
+    $plakat->setActualId($newid)->save();
+    Data_Log::add($id, Data_Log::SUBJECT_CHANGE, 'Type: '.$type);
 }
 
 ?>

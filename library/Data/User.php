@@ -155,7 +155,7 @@ class Data_User extends Data_Table implements IChangableUser
         }
         $username = strtolower($username);
         $password = Data_User::getPWHash($username, $password);
-        
+
         $query = 'SELECT * FROM ' . System::getConfig('tbl_prefix') . 'users WHERE LOWER(username)=? AND password=?';
         $result = System::query($query, array($username, $password));
         $user = $result->fetchObject(__CLASS__);
@@ -169,8 +169,6 @@ class Data_User extends Data_Table implements IChangableUser
     {
         $this->save();
     }
-    
-    
 
     static function getPWHash($user, $pass) 
     {
@@ -191,7 +189,7 @@ class Data_User extends Data_Table implements IChangableUser
         return true;
     }
 
-    protected static function getTableName() 
+    protected static function getTableName()
     {
         return "users";
     }
@@ -202,7 +200,7 @@ class Data_User extends Data_Table implements IChangableUser
             'id' => $this->getId()
         );
     }
-    
+
     protected function prepareValues($values)
     {
         $values = parent::prepareValues($values);
@@ -211,7 +209,7 @@ class Data_User extends Data_Table implements IChangableUser
         }
         return $values;
     }
-    
+
     protected function insert($setvals)
     {
         parent::insert($setvals);

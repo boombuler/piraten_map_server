@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 abstract class Data_Table extends Data_Abstract
 {
@@ -14,7 +14,7 @@ abstract class Data_Table extends Data_Abstract
     {
         return System::getConfig('tbl_prefix') . static::getTableName();
     }
-    
+
     public static function find($attribute, $value)
     {
         if (is_array($attribute) && is_array($value)) {
@@ -53,7 +53,7 @@ abstract class Data_Table extends Data_Abstract
         } else {
             $this->update($this->prepareValues($this->getModifications()));
         }
-        
+
         $this->modifications = array();
         return $this;
     }
@@ -62,15 +62,15 @@ abstract class Data_Table extends Data_Abstract
     {
         return $values;
     }
-    
+
     protected function insert($setvals)
     {
         $setvars = array_keys($setvals);
         $setvals = array_values($setvals);
-        
+
         $params = implode(str_split(str_repeat('?', count($setvars))), ', ');
         $fields = implode($setvars, ', ');
-        
+
         $query = 'INSERT INTO ' . static::tableName() . ' (' . $fields . ') VALUES (' . $params . ')';
         System::query($query, $setvals);
     }
@@ -87,7 +87,7 @@ abstract class Data_Table extends Data_Abstract
         $pkvalues = $this->getPrimaryKeyValues();
         $pknames = array_keys($pkvalues);
         $pkvalues = array_values($pkvalues);
-        
+
         $setvals = array_merge($setvals, $pkvalues);
         $query = 'UPDATE ' . static::tableName() . ' SET ' 
                . implode('=?, ', $setvars) . '=? WHERE ' . implode('=?, ', $pknames) . '=?';
