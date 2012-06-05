@@ -5,12 +5,12 @@ require_once('includes.php');
 class Login_Controller extends Controller
 {
     private $message;
-    
+
     function __construct()
     {
         $this->view = 'Login_View_Json';
     }
-    
+
     public function index()
     {
         //currently redirect to login, but in future, this should display the login dialogue
@@ -25,8 +25,8 @@ class Login_Controller extends Controller
 
     public function login()
     {
-        $username = $this->getPostParameter('username');
-        $password = $this->getPostParameter('password');
+        $username = $this->getParameter('username');
+        $password = $this->getParameter('password');
 
         $user = User::login($username, $password);
 
@@ -42,8 +42,8 @@ class Login_Controller extends Controller
 
     public function register()
     {
-        $username = $this->getGetParameter('username');
-        $email = $this->getGetParameter('email');
+        $username = $this->getParameter('username');
+        $email = $this->getParameter('email');
         if (Data_User::isUsernameOrEmailInUse($username, $email)) {
             $this->displayMessage("Benutzername oder EMail-Adresse wird bereits verwendet", false);
         }
@@ -63,8 +63,8 @@ class Login_Controller extends Controller
 
     public function resetpwd()
     {
-        $username = strtolower($this->getGetParameter('username'));
-        $email = strtolower($this->getGetParameter('email'));
+        $username = strtolower($this->getParameter('username'));
+        $email = strtolower($this->getParameter('email'));
         $query = Data_User::find(array('LOWER(username)', "LOWER(email)"), array($username, $email));
         $user = $query->fetchObject('Data_User');
         if ($user) {
@@ -82,8 +82,8 @@ class Login_Controller extends Controller
 
     public function changepwd()
     {
-        $newpass = $this->getGetParameter('newpass');
-        $confirm = $this->getGetParameter('passconfirm');
+        $newpass = $this->getParameter('newpass');
+        $confirm = $this->getParameter('passconfirm');
 
         $user = User::current();
         if (!($user instanceof IChangableUser))
@@ -102,7 +102,7 @@ class Login_Controller extends Controller
     {
         return $this->message;
     }
-    
+
     private function displayMessage($msg, $success, $data = null)
     {
         $message = array('message' => $msg, 'success' => $success);
@@ -110,6 +110,5 @@ class Login_Controller extends Controller
             $message = array_merge($message, $data);
         $this->message = $message;
         $this->display();
-        die();
     }
 }

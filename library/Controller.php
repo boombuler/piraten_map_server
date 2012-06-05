@@ -3,13 +3,16 @@
 abstract class Controller
 {
     protected $view;
+
+    protected $isPostRequest = false;
+
     public function __invoke()
     {
         try {
-            if (!is_callable(array($this, $this->getGetParameter('action')))) {
+            if (!is_callable(array($this, $this->getParameter('action')))) {
                 return $this->index();
             }
-            return call_user_func(array($this, $this->getGetParameter('action')));
+            return call_user_func(array($this, $this->getParameter('action')));
         } catch (Exception $e) {
             $this->handleException($e);
         }
@@ -25,6 +28,20 @@ abstract class Controller
     }
 
     abstract public function index();
+
+    protected function isGetRequest()
+    {
+        return $_SERVER['REQUEST_METHOD'] == 'GET';
+    }
+
+    protected function getParameter($parameter, $type = FILTER_SANITIZE_STRING)
+    {
+        if ($this->isGetRequest()) {
+            return $this->getGetParameter($parameter, $type);
+        } else {
+            return $this->getPostParameter($parameter, $type);
+        }
+    }
 
     protected function getGetParameter($parameter, $type = FILTER_SANITIZE_STRING)
     {

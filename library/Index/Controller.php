@@ -25,7 +25,7 @@ class Index_Controller extends Controller
         else
             return null;
     }
-  
+
   public function getInitialPosition()
   {
     $result = array('lat'   => $_SESSION['deflat'] ? $_SESSION['deflat'] : System::getConfig('start_lat'),
