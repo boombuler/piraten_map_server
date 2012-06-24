@@ -25,20 +25,20 @@ $user = User::current();
 if (!$user and !System::getConfig('allow_view_public'))
     exit();
 
-if ($user) 
+if ($user)
 {
     switch ($_GET['action'])
     {
     case 'add':
         map_add(preg_replace("/,/",".",get_float('lon')),
             preg_replace("/,/",".",get_float('lat')),
-            get_typ('typ'), true);
+            Data_Poster::getTypes($_GET['typ']), true);
         break;
     case 'del':
         map_del(get_int('id'));
         break;
     case 'change':
-        map_change(get_int('id'), get_typ('type'), null, null);
+        map_change(get_int('id'), Data_Poster::getTypes($_GET['type']), null, null);
         break;
     case 'addcomment':
         map_change(get_int('id'), null, $_GET['comment'], $_GET['image']);

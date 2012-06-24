@@ -22,22 +22,22 @@ require_once('library/System.php');
 require("includes.php");
 require("gps.php");
 
-if ($loginok==0)
+if (User::validateSession())
 	exit();
 
 if ($_REQUEST[completed] == 1) {
 	$name = uniqid("");
 	move_uploaded_file($_FILES['image']['tmp_name'], "uploads/plakat_$name.jpg");
-	
+
 	$latlon = read_latlon("uploads/plakat_$name.jpg");
 	if ($latlon!=-1)
 	{
 		$lat = preg_replace("/,/",".",$latlon[0]);
 		$lon = preg_replace("/,/",".",$latlon[1]);
 
-		$id = map_add($lat, $lon, $image_upload_typ);
+		$id = map_add($lat, $lon, 'plakat_ok');
 		map_change($id, null, null, "getimg.php?id=".$name);
-	
+
 		$msg = "Plakat wurde komplett eingetragen!";
 		header("Location: ./?message=".$msg."&lat=".$lat."&lon=".$lon."&zoom=16");
 	}
@@ -46,7 +46,7 @@ if ($_REQUEST[completed] == 1) {
 		$msg = "URL: <a href=./getimg.php?id=$name>getimg.php?id=$name</a>";
 		header("Location: ./?message=".$msg);
 	}
-} 
+}
 exit();
 ?>
 

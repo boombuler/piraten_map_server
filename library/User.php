@@ -2,6 +2,9 @@
 
 class User
 {
+    /**
+     * @return IUser
+     */
     public static function current()
     {
         if (isset($_SESSION['user']))
@@ -9,14 +12,23 @@ class User
         return null;
     }
 
-    public static function setCurrent($user)
+    /**
+     * @param IUser $user
+     */
+    public static function setCurrent(IUser $user)
     {
-        if ($user instanceof IUser)
+        if ($user)
             $_SESSION['user'] = serialize($user);
         else
             unset($_SESSION['user']);
     }
 
+    /**
+     *
+     * @param string $username
+     * @param string $password
+     * @return IUser
+     */
     public static function login($username, $password)
     {
         $user = Data_User::login($username, $password);
@@ -36,6 +48,9 @@ class User
         self::setCurrent(null);
     }
 
+    /**
+     * @return bool
+     */
     public static function validateSession()
     {
         $user = self::current();
@@ -48,6 +63,9 @@ class User
         return false;
     }
 
+    /**
+     * @return bool
+     */
     public static function isAdmin()
     {
         $user = self::current();

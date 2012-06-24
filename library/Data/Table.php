@@ -8,8 +8,6 @@ abstract class Data_Table extends Data_Abstract
 
     abstract public function validate();
 
-
-
     private static function tableName()
     {
         return System::getConfig('tbl_prefix') . static::getTableName();
@@ -25,7 +23,7 @@ abstract class Data_Table extends Data_Abstract
             $args = array($value);
         }
 
-        return System::query('SELECT * FROM ' . self::tableName() . 'users WHERE ' . $filter, $args);
+        return System::query('SELECT * FROM ' . self::tableName() . ' WHERE ' . $filter, $args);
     }
 
     protected function isNew()
@@ -89,7 +87,7 @@ abstract class Data_Table extends Data_Abstract
         $pkvalues = array_values($pkvalues);
 
         $setvals = array_merge($setvals, $pkvalues);
-        $query = 'UPDATE ' . static::tableName() . ' SET ' 
+        $query = 'UPDATE ' . static::tableName() . ' SET '
                . implode('=?, ', $setvars) . '=? WHERE ' . implode('=?, ', $pknames) . '=?';
         System::query($query, $setvals);
     }

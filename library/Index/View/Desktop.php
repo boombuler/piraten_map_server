@@ -15,7 +15,7 @@
   <script type="text/javascript">
 //<![CDATA[
     var startPos = <?php print json_encode($this->getInitialPosition()); ?>;
-    var posterFlags = <?php print json_encode($this->getPosterFlags()); ?>;
+    var posterFlags = <?php print json_encode(Data_Poster::getTypes()); ?>;
     var loginData = <?php print json_encode($this->getUserData()); ?>;
 
     function onPageLoaded() {
@@ -69,7 +69,7 @@
         </div>
     </div>
     <div style="display:none;" id="dlgBag">
-    <?php 
+    <?php
         include('dialogs/loginform.php');
         include('dialogs/uploadimg.php');
         include('dialogs/exportCity.php');
@@ -97,7 +97,7 @@
 
                     <li>
                         <ul>
-                        <?php foreach ($this->getPosterFlags() as $key=>$value) {
+                        <?php foreach (Data_Poster::getTypes() as $key=>$value) {
                             if ($value!="") { ?>
                             <li><img  style="vertical-align:text-top;" src="./images/markers/<?php echo $key?>.png" width="20" alt="<?php echo $key?>" />=<?php echo $value?></li>
                         <?php

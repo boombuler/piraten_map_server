@@ -1,5 +1,8 @@
 <?php
-
+/**
+ *
+ * @deprecated
+ */
 class Data_Plakat extends Data_Table
 {
     protected $id;
@@ -67,7 +70,7 @@ class Data_Plakat extends Data_Table
         );
     }
 
-    public function validate() 
+    public function validate()
     {
         if (!$this->getActualId()) {
             return false;

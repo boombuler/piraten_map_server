@@ -40,11 +40,6 @@ class Index_Controller extends Controller
     return $result;
   }
 
-  public function getPosterFlags()
-  {
-    return System::getPosterFlags();
-  }
-
   public function getMessage() {
      return $this->getGetParameter('message');
   }

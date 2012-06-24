@@ -30,7 +30,7 @@ if ($user) {
 		case 'add':
 			map_add(preg_replace("/,/",".",get_float('lon')),
 				preg_replace("/,/",".",get_float('lat')),
-				get_typ('typ'), true);
+				Data_Poster::getTypes($_GET['typ']), true);
 			return;
 		case 'del':
 			map_del(get_int('id'));
@@ -41,12 +41,12 @@ if ($user) {
 			$city = "".$_GET['city'];
 			$street = "".$_GET['street'];
 			$image = "".$_GET['image'];
-			map_change($id, get_typ('type'), $comment, $city, $street, $image);
+			map_change($id, Data_Poster::getTypes($_GET['type']), $comment, $city, $street, $image);
 			return;
 	}
 }
 
-$filter    = get_typ('filter');
+$filter    = Data_Poster::getTypes($_GET['filter']);
 
 $dom = new DOMDocument('1.0', 'UTF-8');
 $nodeKml = $dom->appendChild($dom->createElementNS('http://www.opengis.net/kml/2.2', 'kml'));
@@ -59,7 +59,7 @@ $nodeDoc->appendChild($dom->createElement('description'))->appendChild($dom->cre
 // Define the styles
 $styles = array();
 $i = 0;
-foreach(System::getConfig('poster_flags') as $key=>$value) {
+foreach(Data_Poster::getTypes() as $key=>$value) {
 	$styleKey = "s$i";
 	$i++;
 	$styles[$key] = $styleKey;
@@ -138,7 +138,7 @@ foreach($result as $obj) {
         $dom->createCDATASection(json_encode(array(
             'id'=>$id,
             't'=>$type,
-            'tb'=>System::getPosterFlags($type),
+            'tb'=>Data_Poster::getTypes($type),
             'i'=>htmlspecialchars($image),
             'c'=>htmlspecialchars($comment),
             'ci'=>htmlspecialchars($city),
@@ -146,7 +146,7 @@ foreach($result as $obj) {
             'u'=>htmlspecialchars($user),
             'd'=>date('d.m.y H:i', strtotime($time))
         ))));
-    if (System::getPosterFlags($type))
+    if (Data_Poster::getTypes($type))
         $place->appendChild($dom->createElement('styleUrl', '#'.$styles[$type]));
     $place->appendChild($dom->createElement('Point'))->appendChild($dom->createElement('coordinates', "$lon,$lat"));
 }

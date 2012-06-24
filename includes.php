@@ -19,19 +19,14 @@
 */
 require_once('library/System.php');
 
-$image_upload_typ = 'plakat_ok';
-
-$loginok = User::validateSession() ? 1 : 0;
-
-
-function get_inner_html( $node ) { 
+function get_inner_html( $node ) {
     $innerHTML= '';
-    $children = $node->childNodes; 
-    foreach ($children as $child) { 
-        $innerHTML .= $child->ownerDocument->saveXML( $child ); 
+    $children = $node->childNodes;
+    foreach ($children as $child) {
+        $innerHTML .= $child->ownerDocument->saveXML( $child );
     }
-    return $innerHTML; 
-} 
+    return $innerHTML;
+}
 
 function get_float($name) {
   return filter_input(INPUT_GET, $name, FILTER_VALIDATE_FLOAT);
@@ -39,17 +34,6 @@ function get_float($name) {
 
 function get_int($name) {
   return filter_input(INPUT_GET, $name, FILTER_VALIDATE_INT);
-}
-
-function get_typ($typ) {
-	$t = $_GET[$typ];
-	if (!($t))
-		return null;
-	foreach(System::getPosterFlags() as $key=>$value) {
-		if ($t == $key) {
-			return $t;
-		}
-	}
 }
 
 function request_location($lon, $lat) {
@@ -66,39 +50,29 @@ function map_add($lon, $lat, $typ, $resolveAdr) {
     $user = User::current();
     if (!$user)
         return;
-    $city = "null";
-    $street = "null";
+
+    $marker = new Data_Marker();
+    $marker->setLat($lat)
+           ->setLon($lon);
     if ($resolveAdr) {
         $location = request_location($lon, $lat);
-        $city = "'".$location["city"]."'";
-        $street = "'".$location["street"]."'";
+        $marker->setCity($location["city"]);
+        $marker->setStreet($location["street"]);
     }
 
-    $tbl_prefix = System::getConfig('tbl_prefix');
+    $poster = new Data_Poster();
+    $poster->setMarker($marker);
 
     if ($typ != '') {
-        $sql = System::prepare("INSERT INTO ".$tbl_prefix."felder (lon, lat, user, type, city, street) VALUES (:lon, :lat, :user, :type, :city, :street)");
-        $sql->bindValue("type", $typ);
-    } else {
-        $sql = System::prepare("INSERT INTO ".$tbl_prefix."felder (lon, lat, user, city, street) VALUES (:lon, :lat, :user, :city, :street)");
+        $poster->setType($typ);
     }
+    $poster->setUsername($user->getUsername());
 
-    $sql->bindValue("lon", $lon);
-    $sql->bindValue("lat", $lat);
-    $sql->bindValue("user", $user->getUsername());
-    $sql->bindValue("city", $city);
-    $sql->bindValue("street", $street);
-    $sql->execute();
-    $id = System::lastInsertId();
+    $poster->save();
 
-    $plakat = new Data_Plakat;
-    $plakat->setActualId($id)->setDeleted(false)->save();
+    Data_Log::add($poster->getMarker()->getId(), Data_Log::SUBJECT_ADD);
 
-    System::query("UPDATE ".$tbl_prefix."felder SET plakat_id = ? WHERE id = ?", array($plakat->getId(), $id));
-
-    Data_Log::add($id, Data_Log::SUBJECT_ADD);
-
-    return $pid;
+    return $poster->getId();
 }
 
 function map_del($id) {
@@ -106,60 +80,38 @@ function map_del($id) {
     if (!$user)
         return;
 
-    $plakat = Data_Plakat::get($id);
-    if ($plakat) {
-        $plakat->setDeleted(true)->save();
-        Data_Log::add($plakat->getId(), Data_Log::SUBJECT_DEL);
+    $poster = Data_Poster::get($id);
+    if ($poster) {
+        $poster->setType('removed')->save();
+        Data_Log::add($poster->getId(), Data_Log::SUBJECT_DEL);
     }
 }
 
-function map_change($id, $type, $comment, $city, $street, $imageurl) {
+function map_change($id, $type, $comment, $imageurl) {
     $user = User::current();
     if (!$user)
         return;
 
-    $plakat = Data_Plakat::get($id);
-    if (!$plakat)
+    $poster = Data_Poster::get($id);
+    if (!$poster)
         return;
 
-    $tbl_prefix = System::getConfig('tbl_prefix');
+    $newposter = new Data_Poster();
+    $newposter->setMarker($poster->getMarker())
+              ->setType($poster->getType())
+              ->setUsername($user->getUsername());
 
-    $query = "INSERT INTO ".$tbl_prefix."felder (plakat_id, lon, lat, user, type, comment, city, street, image) " .
-             "SELECT :pid as plakat_id, lon, lat, :user as user, ";
-    $params = array(
-        'pid' => $id,
-        'user' => $_SESSION['siduser']
-    );
-
-    if(System::getPosterFlags($type)) {
-        $params['type'] = $type;
-        $query .= ":type as type, ";
-    } else $query .= "type, ";
-    if ($comment !== null) {
-        $params['comment'] = $comment;
-        $query .= ":comment as comment, ";
-    } else $query .= "comment, ";
-    if($city !== null) {
-        $params['city'] = $city;
-        $query .= ":city as city, ";
-    } else $query .= "city, ";
-    if($street !== null) {
-        $params['street'] = $street;
-        $query .= ":street as street, ";
-    } else $query .= "street, ";
+    if($type) {
+        $newposter->setType($type);
+    }
+    if ($comment) {
+        $newposter->setComment($comment);
+    }
     if($imageurl !== null) {
-        $params['img'] = $imageurl;
-        $query .= ":img as image ";
-    } else $query .= "image ";
+        $newposter->setImage($imageurl);
+    }
 
-    $query .= " FROM ".$tbl_prefix."felder WHERE id in (SELECT actual_id from ".$tbl_prefix."plakat where id = :pid)";
+    $newposter->save();
 
-    System::query($query, $params);
-
-    $newid = System::lastInsertId();
-
-    $plakat->setActualId($newid)->save();
-    Data_Log::add($id, Data_Log::SUBJECT_CHANGE, 'Type: '.$type);
+    Data_Log::add($newposter->getId(), Data_Log::SUBJECT_CHANGE, 'Type: '.$type);
 }
-
-?>

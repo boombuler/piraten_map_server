@@ -1,10 +1,7 @@
 <?php
 ob_start("ob_gzhandler");
 header('Content-Type: text/javascript');
-
-
 ?>
-
 function createPopup(infos) {
 	infos = jQuery.parseJSON(infos);
 	result  = '<div class="modal" style="position: relative; top: auto; left: auto; margin: 0 auto; z-index: 9001">';
@@ -23,18 +20,18 @@ function createPopup(infos) {
 		result += '			</div>';
 	}
 
-	<?php if ($loginok!=0) { ?>
+	<?php if (User::validateSession()) { ?>
 	result += '				<div class="clearfix">';
 	result += '					<label for="typ['+infos.id+']">Marker</label>';
 	result += '					<div class="input">';
 	result += '						<select class="xlarge" id="typ['+infos.id+']" name="typ['+infos.id+']">';
-	<?php foreach (System::getPosterFlags() as $key=>$value) {
-			if ($key != 'default') {  ?>
-				result += '							<option value="<?php echo $key?>"';
-				if (infos.t == '<?php echo $key ?>')
-					result += ' selected="selected"';
-				result += '><?php echo $value?></option>';
-	<?php 	}}?>
+	for (var key in posterFlags) {
+	  result += '				      <option value="' + key + '"';
+	  if (infos.t == key) {
+		result += ' selected="selected"';
+	  }
+		result += '>' + posterFlags[key] + '</option>';
+	}
 	result += '						</select>';
 	result += '					</div>';
 	result += '				</div>';
@@ -57,10 +54,8 @@ function createPopup(infos) {
 	result += '						<textarea rows="3" cols="30" class="xlarge" name="comment['+infos.id+']" id="comment['+infos.id+']">'+infos.c+'</textarea>';
 	result += '					</div>';
 	result += '				</div>';
-	<?php if ($loginok!=0) { ?>
-	url = infos.i;
-	if (url == null)
-		url = '';
+	<?php if (User::validateSession()) { ?>
+	url = infos.i || '';
 	result += '				<div class="clearfix">';
 	result += '					<label for="image['+infos.id+']">Bild URL</label>';
 	result += '						<div class="input">';
@@ -75,7 +70,7 @@ function createPopup(infos) {
 	result += '				</div>';
 	result += '			</form>';
 	result += '		</div>';
-	<?php if ($loginok!=0) { ?>
+	<?php if (User::validateSession()) { ?>
 	result += '		<div class="modal-footer">';
 	result += '			<input type="button" value="Speichern" class="btn primary" onclick="javascript:change('+infos.id+')">';
 	result += '			<input type="button" value="L&ouml;schen" class="btn danger" onclick="javascript:delid('+infos.id+')">';

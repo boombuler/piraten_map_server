@@ -49,12 +49,3 @@ $tbl_prefix = "plakate_";
 $start_lat = 53.37;
 $start_lon = 10.39;
 $start_zoom = 6;
-
-$poster_flags = array("default"=>"",
-    "plakat_ok"=>'Plakat hängt',
-    "plakat_a0"=>'A0-Plakat steht',
-    "plakat_dieb"=>'Plakat wurde gestohlen',
-    "plakat_niceplace"=>'Gute Stelle für ein Plakat',
-    "plakat_wrecked"=>'Plakat beschädigt',
-    "wand"=>'Plakatwand der Gemeinde',
-    "wand_ok"=>'Plakat an der Plakatwand');

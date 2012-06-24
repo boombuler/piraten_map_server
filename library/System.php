@@ -38,17 +38,17 @@ class System
 
         include_once($path);
     }
-  
-    private static function getDB() 
+
+    private static function getDB()
     {
         static $dbh = null;
         if ($dbh == null) {
             try {
                 $server = self::getConfig('mysql_server');
                 $database = self::getConfig('mysql_database');
-                $dbh = new PDO("mysql:host=$server;dbname=$database", 
-                    self::getConfig('mysql_user'), 
-                    self::getConfig('mysql_password'), 
+                $dbh = new PDO("mysql:host=$server;dbname=$database",
+                    self::getConfig('mysql_user'),
+                    self::getConfig('mysql_password'),
                     array(
                         PDO::ATTR_PERSISTENT => true,
                         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_OBJ,
@@ -79,7 +79,13 @@ class System
         return self::$configuration[$varname];
     }
 
-    public static function query($query, $arguments = null)
+    /**
+     *
+     * @param string $query
+     * @param array $arguments
+     * @return PDOStatement
+     */
+    public static function query($query, array $arguments = null)
     {
         try {
             $db = self::getDB();
@@ -104,17 +110,7 @@ class System
         return self::getDB()->lastInsertId();
     }
 
-    public static function getPosterFlags($key = null) 
-    {
-        $flags = self::getConfig('poster_flags');
-        if ($key == null) {
-            return $flags;
-        } else {
-            return $flags[$key];
-        }
-    }
-
-    public static function canSendMails() 
+    public static function canSendMails()
     {
         return self::getConfig('send_mail_adr') != '';
     }

@@ -6,7 +6,7 @@
   <meta charset="UTF-8" />
   <meta http-equiv="content-type" content="text/html; charset=utf-8" />
   <meta http-equiv="imagetoolbar" content="no" />
-  <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;" /> 
+  <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;" />
   <meta name="robots" content="NOINDEX,NOFOLLOW" />
 
   <script type="text/javascript" src="js/PanoJS.min.js"></script>
@@ -28,9 +28,9 @@
   <script type="text/javascript" src="js/map-mobile.js"></script>
   <script type="text/javascript">
     var isLoggedIn = <?php print User::current() ? 'true': 'false'; ?>;
-    var posterFlags = <?php print json_encode($this->getPosterFlags()); ?>;
+    var posterFlags = <?php print json_encode(Data_Poster::getTypes()); ?>;
     var startPos = <?php print json_encode($this->getInitialPosition()); ?>;
-  </script> 
+  </script>
 </head>
 <body>
 
@@ -41,7 +41,7 @@
   <div id="viewer">
     <div class="well"><!-- --></div>
     <div class="surface" id="touchArea"><!-- --></div>
-    <div class="marker" id="markers"></div> 
+    <div class="marker" id="markers"></div>
     <p class="controls">
       <span class="zoomIn" title="Zoom In">+</span>
       <span class="zoomOut" title="Zoom Out">-</span>
@@ -57,7 +57,7 @@
   </div>
   <ul data-role="listview" data-inset="true" data-theme="c" data-dividertheme="b">
     <?php
-foreach ($this->getPosterFlags() as $key=>$value)
+foreach (Data_Poster::getTypes() as $key=>$value)
 {
     if ($value != '') { ?>
       <li><a href="#home" onclick="setMarker('<?php echo $key; ?>');"><?php echo $value; ?></a></li>
