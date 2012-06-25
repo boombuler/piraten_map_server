@@ -210,7 +210,7 @@ class Data_Poster extends Data_Table
             $this->marker_id = $this->getMarker()->getId();
             $this->logModification('marker_id');
         }
-        $this->setTimestamp(gmmktime());
+        $this->setTimestamp(mktime());
         parent::save();
     }
 
@@ -222,7 +222,7 @@ class Data_Poster extends Data_Table
 
 	public static function get($id)
     {
-        $result = Data_Plakat::find('poster_id', $id);
+        $result = self::find('poster_id', $id);
         return $result->fetchObject(__CLASS__);
     }
 

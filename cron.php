@@ -26,14 +26,14 @@ User::setCurrent(CronUser::login('', ''));
 $query = 'SELECT p.id, f.lon, f.lat '
        . ' FROM ' . System::getConfig('tbl_prefix') . 'felder f JOIN '
        . System::getConfig('tbl_prefix') . 'plakat p on p.actual_id = f.id'
-       . ' WHERE p.del != true and f.street is null and f.city is null LIMIT 0, ' 
+       . ' WHERE p.del != true and f.street is null and f.city is null LIMIT 0, '
        . System::getConfig('max_resolve_count');
 
 $result = System::query($query)->fetchAll();
 
 foreach ($result as $obj) {
 {
-    $location = request_location($obj->lon, $obj->lat);
+    $location = request_location($obj->lat, $obj->lon);
 
     $city = $location["city"];
     $street = $location["street"];

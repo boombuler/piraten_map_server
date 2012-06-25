@@ -36,7 +36,7 @@ function get_int($name) {
   return filter_input(INPUT_GET, $name, FILTER_VALIDATE_INT);
 }
 
-function request_location($lon, $lat) {
+function request_location($lat, $lon) {
         $src = new DOMDocument('1.0', 'utf-8');
         $src->formatOutput = true;
         $src->preserveWhiteSpace = false;
@@ -46,72 +46,3 @@ function request_location($lon, $lat) {
         return array( "city" => $city, "street" =>  $street);
 }
 
-function map_add($lon, $lat, $typ, $resolveAdr) {
-    $user = User::current();
-    if (!$user)
-        return;
-
-    $marker = new Data_Marker();
-    $marker->setLat($lat)
-           ->setLon($lon);
-    if ($resolveAdr) {
-        $location = request_location($lon, $lat);
-        $marker->setCity($location["city"]);
-        $marker->setStreet($location["street"]);
-    }
-
-    $poster = new Data_Poster();
-    $poster->setMarker($marker);
-
-    if ($typ != '') {
-        $poster->setType($typ);
-    }
-    $poster->setUsername($user->getUsername());
-
-    $poster->save();
-
-    Data_Log::add($poster->getMarker()->getId(), Data_Log::SUBJECT_ADD);
-
-    return $poster->getId();
-}
-
-function map_del($id) {
-    $user = User::current();
-    if (!$user)
-        return;
-
-    $poster = Data_Poster::get($id);
-    if ($poster) {
-        $poster->setType('removed')->save();
-        Data_Log::add($poster->getId(), Data_Log::SUBJECT_DEL);
-    }
-}
-
-function map_change($id, $type, $comment, $imageurl) {
-    $user = User::current();
-    if (!$user)
-        return;
-
-    $poster = Data_Poster::get($id);
-    if (!$poster)
-        return;
-
-    $newposter = new Data_Poster();
-    $newposter->setMarker($poster->getMarker())
-              ->setType($poster->getType())
-              ->setUsername($user->getUsername());
-
-    if($type) {
-        $newposter->setType($type);
-    }
-    if ($comment) {
-        $newposter->setComment($comment);
-    }
-    if($imageurl !== null) {
-        $newposter->setImage($imageurl);
-    }
-
-    $newposter->save();
-
-    Data_Log::add($newposter->getId(), Data_Log::SUBJECT_CHANGE, 'Type: '.$type);
-}

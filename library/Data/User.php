@@ -53,15 +53,15 @@ class Data_User extends Data_Table implements IChangableUser
         return $this;
     }
 
-    public function setRandomPassword() 
+    public function setRandomPassword()
     {
         $chars = "abcdefghijkmnopqrstuvwxyz-_~!+%&§@<()>?ABCDEFGHIJKLMNOPQRSTUVWXYZ023456789";
         $len = rand(7, 10);
-        $pass = ""; 
+        $pass = "";
 
         while (strlen($pass) <= $len) {
             $num = rand(0, strlen($chars));
-            $pass = $pass . substr($chars, $num, 1); 
+            $pass = $pass . substr($chars, $num, 1);
         }
         $this->setPassword($pass);
         return $pass;
@@ -82,7 +82,7 @@ class Data_User extends Data_Table implements IChangableUser
         return $this;
     }
 
-    public function getAdmin() 
+    public function getAdmin()
     {
         $val = $this->admin;
         if ($val === 0 || $val === '0')
@@ -92,7 +92,7 @@ class Data_User extends Data_Table implements IChangableUser
         return $val;
     }
 
-    public function setAdmin($admin) 
+    public function setAdmin($admin)
     {
         if ($admin !== true && $admin !== false)
             throw new Exception('This is not a valid admin value');
@@ -108,7 +108,7 @@ class Data_User extends Data_Table implements IChangableUser
     {
         return 'local';
     }
-    
+
     /**
      * Checks if the user is still valid.
      * @return bool
@@ -130,23 +130,23 @@ class Data_User extends Data_Table implements IChangableUser
         );
     }
 
-    public function logout() 
+    public function logout()
     {
         unset($_SESSION['sidip']);
     }
 
-    public static function get($id) 
+    public static function get($id)
     {
-        $result = Data_User::find("id", $id);
+        $result = self::find("id", $id);
         return $result->fetchObject(__CLASS__);
     }
 
-    public static function isUsernameOrEmailInUse($username, $email) 
+    public static function isUsernameOrEmailInUse($username, $email)
     {
         $query = 'SELECT * FROM ' . System::getConfig('tbl_prefix') . 'users WHERE LOWER(username)=? OR LOWER(email)=?';
         $result = System::query($query, array(strtolower($username), strtolower($email)));
         return $result->rowCount() > 0;
-    } 
+    }
 
     public static function login($username, $password)
     {
@@ -170,12 +170,12 @@ class Data_User extends Data_Table implements IChangableUser
         $this->save();
     }
 
-    static function getPWHash($user, $pass) 
+    static function getPWHash($user, $pass)
     {
         return md5(strtolower($user).":".$pass);
     }
 
-    public function validate() 
+    public function validate()
     {
         if (!$this->getUsername()) {
             return false;
