@@ -6,22 +6,22 @@ class CronUser implements IUser
     {
         return 'CRONJOB';
     }
-    
+
     public function getAdmin()
     {
         return false;
     }
-    
+
     public function getType()
     {
         return 'cron';
     }
-    
+
     public function isSessionValid()
     {
         return true;
     }
-    
+
     public function getInitialPosition()
     {
         return array(
@@ -30,12 +30,12 @@ class CronUser implements IUser
             'zoom' => System::getConfig('start_zoom'),
         );
     }
-    
+
     public function logout()
     {
     }
 
-    public static function login($username, $password)
+    public static function login($username = '', $password = '')
     {
         return new CronUser();
     }

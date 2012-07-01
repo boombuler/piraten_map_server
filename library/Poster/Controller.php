@@ -46,7 +46,7 @@ class Poster_Controller extends Controller
         $marker->setLat($this->getGetParameter('lat', FILTER_SANITIZE_NUMBER_FLOAT))
                ->setLon($this->getGetParameter('lon', FILTER_SANITIZE_NUMBER_FLOAT));
         //if ($resolveAdr) {
-            $location = request_location($marker->getLat(), $marker->getLon());
+            $location = Nominatim::requestByCoordinates($marker->getLat(), $marker->getLon());
             $marker->setCity($location["city"]);
             $marker->setStreet($location["street"]);
         //}
