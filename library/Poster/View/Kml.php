@@ -30,35 +30,31 @@ foreach(Data_Poster::getTypes() as $key=>$value) {
 	}
 }
 
-foreach($this->getPosters() as $obj) {
-    $lon = $obj->lon;
-    $arr = preg_split("/\./", $lon);
+foreach($this->getPosters() as $row) {
+    $arr = preg_split("/\./", $row['lon']);
     $ar2 = str_split($arr[1],6);
     $lon = $arr[0].".".$ar2[0];
 
-    $lat = $obj->lat;
-    $arr = preg_split("/\./", $lat);
+    $arr = preg_split("/\./", $row['lat']);
     $ar2 = str_split($arr[1],6);
     $lat = $arr[0].".".$ar2[0];
 
-    $time= $obj->timestamp;
-
     $place = $nodeDoc->appendChild($dom->createElement('Placemark'));
-    $place->appendChild($dom->createElement('name', $obj->marker_id));
+    $place->appendChild($dom->createElement('name', $row['marker_id']));
     $place->appendChild($dom->createElement('description'))->appendChild(
         $dom->createCDATASection(json_encode(array(
-            'id'=>$obj->marker_id,
-            't'=>$obj->type,
-            'tb'=>Data_Poster::getTypes($obj->type),
-            'i'=>htmlspecialchars((string) $obj->image),
-            'c'=>htmlspecialchars((string) $obj->comment),
-            'ci'=>htmlspecialchars((string) $obj->city),
-            's'=>htmlspecialchars((string) $obj->street),
-            'u'=>htmlspecialchars($obj->user),
-            'd'=>date('d.m.y H:i', strtotime($time))
+            'id' => $row['marker_id'],
+            't'  => $row['type'],
+            'tb' => Data_Poster::getTypes($row['type']),
+            'i'  => htmlspecialchars((string) $row['image']),
+            'c'  => htmlspecialchars((string) $row['comment']),
+            'ci' => htmlspecialchars((string) $row['city']),
+            's'  => htmlspecialchars((string) $row['street']),
+            'u'  => htmlspecialchars($row['user']),
+            'd'  => date('d.m.y H:i', strtotime($row['timestamp']))
         ))));
-    if (Data_Poster::getTypes($type))
-        $place->appendChild($dom->createElement('styleUrl', '#'.$styles[$type]));
+    if (Data_Poster::getTypes($row['type']))
+        $place->appendChild($dom->createElement('styleUrl', '#'.$styles[$row['type']]));
     $place->appendChild($dom->createElement('Point'))->appendChild($dom->createElement('coordinates', "$lon,$lat"));
 }
 echo $dom->saveXML();

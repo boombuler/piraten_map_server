@@ -56,12 +56,16 @@ abstract class Controller
     protected function display()
     {
         ob_start("ob_gzhandler");
-        if ($this->view) {
+        if ($this->getView()) {
             $path = dirname(__FILE__) . '/' . str_replace('_', '/', $this->view) . '.php';
             if (file_exists) {
                 include(dirname(__FILE__) . '/' . str_replace('_', '/', $this->view) . '.php');
             }
         }
     }
+
+    protected function getView()
+    {
+        return $this->view;
+    }
 }
-?>

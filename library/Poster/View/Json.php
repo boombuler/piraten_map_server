@@ -1,11 +1,10 @@
 <?php
-foreach($this->getPosters() as $obj) {
-    $obj->user    = htmlspecialchars($obj->user);
-    $obj->comment = htmlspecialchars($obj->comment);
-    $obj->city    = htmlspecialchars($obj->city);
-    $obj->street  = htmlspecialchars($obj->street);
-    $obj->image   = htmlspecialchars($obj->image);
-    $arr[] = $obj;
+$arr = array();
+foreach($this->getPosters() as $row) {
+    foreach ($row as $field => $value) {
+        $row[$field] = htmlspecialchars($value);
+    }
+    $arr[] = $row;
 }
 
 print json_encode($arr);

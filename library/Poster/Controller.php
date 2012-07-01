@@ -9,15 +9,6 @@ class Poster_Controller extends Controller
             return;
         }
 
-        switch ($this->getGetParameter('format')) {
-            case 'kml':
-                $this->view = 'Poster_View_Kml';
-            case 'csv':
-                $this->view = 'Poster_View_Csv';
-            case 'json':
-            default:
-                $this->view = 'Poster_View_Json';
-        }
         $filterstr = "";
         $params = array();
 
@@ -40,7 +31,7 @@ class Poster_Controller extends Controller
         $query = "SELECT m.marker_id, m.lon, m.lat, p.type, p.user, p.timestamp, p.comment, m.city, m.street, p.image "
               . " FROM ".$tbl_prefix."markers m JOIN ".$tbl_prefix."posters p on p.marker_id = m.marker_id"
               . " WHERE type != 'removed' ".$filterstr . ' GROUP BY m.marker_id ORDER BY p.timestamp DESC';
-        $this->posters = System::query($query, $params)->fetchAll();
+        $this->posters = System::query($query, $params)->fetchAll(PDO::FETCH_ASSOC);
 
         $this->display();
     }
@@ -118,8 +109,31 @@ class Poster_Controller extends Controller
         $this->index();
     }
 
+    public function listPostersInCity()
+    {
+        $this->posters = System::query('SELECT COUNT(p.id) plakate, street, type, comment '
+                      . 'FROM ' . System::getConfig('tbl_prefix') . 'felder f '
+                      . 'JOIN ' . System::getConfig('tbl_prefix') . 'plakat p ON '
+                      . 'p.actual_id=f.id WHERE p.del !=1 AND f.city LIKE ? '
+                      . 'GROUP BY street, type, comment', array($this->getGetParameter('city')))->fetchAll(PDO::FETCH_ASSOC);
+        $this->display();
+    }
+
     public function getPosters()
     {
         return $this->posters;
+    }
+
+    protected function getView()
+    {
+        switch ($this->getGetParameter('format')) {
+            case 'kml':
+                return 'Poster_View_Kml';
+            case 'csv':
+                return 'Poster_View_Csv';
+            case 'json':
+            default:
+                return 'Poster_View_Json';
+        }
     }
 }
