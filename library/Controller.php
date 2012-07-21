@@ -57,11 +57,16 @@ abstract class Controller
     {
         ob_start("ob_gzhandler");
         if ($this->getView()) {
-            $path = dirname(__FILE__) . '/' . str_replace('_', '/', $this->view) . '.php';
+            $path = dirname(__FILE__) . '/' . str_replace('_', '/', $this->getView()) . '.php';
             if (file_exists) {
-                include(dirname(__FILE__) . '/' . str_replace('_', '/', $this->view) . '.php');
+                include(dirname(__FILE__) . '/' . str_replace('_', '/', $this->getView()) . '.php');
             }
         }
+    }
+
+    protected function displayMessage($msg, $success = true, $data = null)
+    {
+        print json_encode(array('message' => $msg, 'success' => $success, 'data' => $data));
     }
 
     protected function getView()

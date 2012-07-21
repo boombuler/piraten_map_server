@@ -1,6 +1,3 @@
-<?php
-ob_start("ob_gzhandler");
-header('Content-Type: text/javascript');
 /*
 
   OpenLayers.js -- OpenLayers Map Viewer Library
@@ -126,7 +123,7 @@ header('Content-Type: text/javascript');
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
  * POSSIBILITY OF SUCH DAMAGE.
  */
-?>(function(){if(window.google&&google.gears){return;}
+(function(){if(window.google&&google.gears){return;}
 var factory=null;if(typeof GearsFactory!='undefined'){factory=new GearsFactory();}else{try{factory=new ActiveXObject('Gears.Factory');if(factory.getBuildInfo().indexOf('ie_mobile')!=-1){factory.privateSetGlobalObject(this);}}catch(e){if((typeof navigator.mimeTypes!='undefined')&&navigator.mimeTypes["application/x-googlegears"]){factory=document.createElement("object");factory.style.display="none";factory.width=0;factory.height=0;factory.type="application/x-googlegears";document.documentElement.appendChild(factory);}}}
 if(!factory){return;}
 if(!window.google){google={};}

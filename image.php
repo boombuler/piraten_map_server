@@ -19,7 +19,6 @@
 */
 
 require_once('library/System.php');
-require("includes.php");
 require("gps.php");
 
 if (User::validateSession())
@@ -35,6 +34,7 @@ if ($_REQUEST[completed] == 1) {
 		$lat = preg_replace("/,/",".",$latlon[0]);
 		$lon = preg_replace("/,/",".",$latlon[1]);
 
+		// FIXME - these functions no longer exist
 		$id = map_add($lat, $lon, 'plakat_ok');
 		map_change($id, null, null, "getimg.php?id=".$name);
 

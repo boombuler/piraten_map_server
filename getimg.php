@@ -18,7 +18,6 @@
        under the License.
 */
 require_once('library/System.php');
-require("includes.php");
 
 if (!User::current())
 {
@@ -46,7 +45,7 @@ function resizeToWidth($width, $img) {
 function resize($width,$height,$img) {
 	$new_image = imagecreatetruecolor($width, $height);
 	imagecopyresampled($new_image, $img, 0, 0, 0, 0, $width, $height, imagesx($img), imagesy($img));
-	return $new_image;   
+	return $new_image;
 }
 
 

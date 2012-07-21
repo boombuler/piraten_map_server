@@ -30,6 +30,7 @@
     var isLoggedIn = <?php print User::current() ? 'true': 'false'; ?>;
     var posterFlags = <?php print json_encode(Data_Poster::getTypes()); ?>;
     var startPos = <?php print json_encode($this->getInitialPosition()); ?>;
+    var loginData = <?php print json_encode($this->getUserData()); ?>;
   </script>
 </head>
 <body>

@@ -9,9 +9,9 @@
   <link rel="stylesheet" href="bootstrap-1.1.0.min.css" />
   <link rel="stylesheet" href="style-desktop.css" />
   <script type="text/javascript" src="http://code.jquery.com/jquery-1.5.2.min.js"></script>
-  <script type="text/javascript" src="js/OpenLayers.php"></script>
+  <script type="text/javascript" src="js/OpenLayers.js"></script>
   <script type="text/javascript" src="js/map-desktop.js"></script>
-  <script type="text/javascript" src="js/popups.php"></script>
+  <script type="text/javascript" src="js/popups.js"></script>
   <script type="text/javascript">
 //<![CDATA[
     var startPos = <?php print json_encode($this->getInitialPosition()); ?>;

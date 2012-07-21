@@ -1,5 +1,4 @@
 <?php
-require_once('includes.php');
 class Index_Controller extends Controller
 {
   public function index()

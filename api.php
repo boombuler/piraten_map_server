@@ -19,7 +19,6 @@
 */
 require_once('library/System.php');
 
-require_once(dirname(__FILE__). "/includes.php");
 // first include pb_message
 require_once(dirname(__FILE__). '/protobuf/pb_message.php');
 require_once(dirname(__FILE__). '/protobuf/pb_proto_api.php');
@@ -43,6 +42,7 @@ if ($user instanceof IUser) {
                 $comment = null;
             if (!$image)
                 $image = null;
+            // FIXME - these functions no longer exist
             if ($comment != null || $image != null)
                 map_change($id, null, $comment, $image);
                 $addedCount += 1;
@@ -63,6 +63,7 @@ if ($user instanceof IUser) {
             $image = $change->ImageUrl();
             if (!$image)
                 $image = null;
+            // FIXME - these functions no longer exist
             map_change($id, $type, $comment, null, null, $image);
             $changesCount += 1;
         }

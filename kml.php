@@ -1,6 +1,5 @@
 <?php
 require_once('library/System.php');
-require_once('includes.php');
 
 $user = User::current();
 

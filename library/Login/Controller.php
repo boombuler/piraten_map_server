@@ -1,14 +1,9 @@
 <?php
-require_once('library/System.php');
-require_once('includes.php');
-
 class Login_Controller extends Controller
 {
-    private $message;
-
     function __construct()
     {
-        $this->view = 'Login_View_Json';
+        $this->view = 'GlobalView_Json';
     }
 
     public function index()
@@ -98,17 +93,10 @@ class Login_Controller extends Controller
         }
     }
 
-    public function getMessage()
-    {
-        return $this->message;
-    }
-
-    private function displayMessage($msg, $success, $data = null)
+    protected function displayMessage($msg, $success)
     {
         $message = array('message' => $msg, 'success' => $success);
-        if ($data != null)
-            $message = array_merge($message, $data);
         $this->message = $message;
-        $this->display();
+        $this->displayMessageJson();
     }
 }

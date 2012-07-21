@@ -18,28 +18,24 @@
        under the License.
 */
 require_once('library/System.php');
-require("includes.php");
 
-User::setCurrent(CronUser::login('', ''));
+User::setCurrent(CronUser::login());
 
-
-$query = 'SELECT p.id, f.lon, f.lat '
-       . ' FROM ' . System::getConfig('tbl_prefix') . 'felder f JOIN '
-       . System::getConfig('tbl_prefix') . 'plakat p on p.actual_id = f.id'
-       . ' WHERE p.del != true and f.street is null and f.city is null LIMIT 0, '
+$query = 'SELECT * '
+       . ' FROM ' . System::getConfig('tbl_prefix') . 'marker '
+       . ' WHERE f.street is null and f.city is null LIMIT 0, '
        . System::getConfig('max_resolve_count');
 
-$result = System::query($query)->fetchAll();
+$result = System::query($query)->fetchAll(PDO::FETCH_CLASS, 'Data_Marker');
 
 foreach ($result as $obj) {
 {
-    $location = request_location($obj->lat, $obj->lon);
+    $location = Nominatim::requestByCoordinates($obj->getLat(), $obj->getLon());
 
-    $city = $location["city"];
-    $street = $location["street"];
+    $obj->setCity($location["city"]);
+    $obj->setStreet($location["road"]);
 
-    map_change($obj->id, null, null, $city, $street, null);
+    $obj->save();
 }
 
 User::logout();
-?>

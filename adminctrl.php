@@ -3,16 +3,16 @@
 
     if (!User::isAdmin()) {
         echo json_encode(array(
-            'status' => 'error', 
+            'status' => 'error',
             'message' => 'Keine Berechtigung'
         ));
     } else {
         $action = $_GET['action'];
 
         if ($action == 'add') {
-            $zoom = get_int('zoom');
-            $lat = get_float('lat');
-            $lon = get_float('lon');
+            $zoom = filter_input(INPUT_GET, 'zoom', FILTER_VALIDATE_INT);
+            $lat = filter_input(INPUT_GET, 'lat', FILTER_VALIDATE_FLOAT);
+            $lon = filter_input(INPUT_GET, 'lon', FILTER_VALIDATE_FLOAT);
             $name = $_GET['name'];
             if ($zoom && $lat && $lon && $name) {
 
@@ -43,7 +43,7 @@
                 ));
             }
         } else if ($action == 'drop') {
-            $id = get_int('id');
+            $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
             if ($id) {
                 if (System::query("DELETE FROM ".System::getConfig('tbl_prefix')."regions WHERE id = ?", array($id))) {
                     echo json_encode(array(
