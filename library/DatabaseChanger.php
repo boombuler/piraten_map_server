@@ -74,8 +74,8 @@ class DatabaseChanger
     } catch (Exception $e) {
       //tk: assume that the table does not exist so far, and continue with all tasks.
     }
-
-    foreach (array_diff(array_walk($todo, array($this, 'fixName')), $this->succeeded) as $id) {
+	array_walk($todo, array($this, 'fixName'));
+    foreach (array_diff($todo, $this->succeeded) as $id) {
       $classname = self::CHANGER_CLASS_PREFIX . $id;
       $this->todo[$id] = new $classname();
     }

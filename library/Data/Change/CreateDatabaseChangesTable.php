@@ -17,5 +17,10 @@ class Data_Change_CreateDatabaseChangesTable extends Data_Change
     $this->setStatus(true);
     return true;
   }
+  
+  public function getDependencies()
+  {
+    return array();
+  }
 }
 ?>
