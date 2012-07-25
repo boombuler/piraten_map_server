@@ -30,7 +30,8 @@ class System
 										'max_resolve_count' => 5, 
 										'start_zoom' => 6,
 										'start_lat' => 53.37, 
-										'start_lon' => 10.39);
+										'start_lon' => 10.39,
+										'language' => 'de_DE');
 
 									 
     private static $alltables = null;
@@ -42,9 +43,9 @@ class System
         }
 
         session_start();
-        spl_autoload_register('System::autoload');
-        setlocale(LC_ALL, 'de_DE.UTF-8');
+        spl_autoload_register('System::autoload');        
         self::readConfiguration();
+		self::setLanguage(self::getConfig('language'));
         self::$initiated = true;
     }
 
@@ -89,7 +90,7 @@ class System
     private static function readConfiguration()
     {
 		self::$configuration = self::$defaultconf;
-		$path = dirname(dirname(__FILE__)) . 'settings.php';
+		$path = dirname(dirname(__FILE__)) . '/settings.php';
 		if (file_exists($path)) {
 			include $path;
 			self::$configuration = array_merge(self::$defaultconf, get_defined_vars());
@@ -111,7 +112,7 @@ class System
 			foreach (self::$configuration as $key => $value) {
 				$outStr .= '$' . $key . ' = ' . var_export($value) . ';\n';
 			}
-			$path = dirname(dirname(__FILE__)) . 'settings.php';
+			$path = dirname(dirname(__FILE__)) . '/settings.php';
 			file_put_contents($path, $outStr);
 		}
 	}
@@ -161,6 +162,17 @@ class System
     {
         return self::getConfig('send_mail_adr') != '';
     }
+	
+	public static function setLanguage($language)
+	{
+		$domain = "messages";
+
+		putenv("LANG=" . $language);
+		setlocale(LC_ALL, $language . '.UTF-8');
+		bindtextdomain($domain, dirname(dirname(__FILE__)) . '/locale');
+		bind_textdomain_codeset($domain, 'UTF-8');
+		textdomain($domain);
+	}
 }
 
 System::init();

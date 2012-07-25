@@ -1,0 +1,86 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: Florian Sundermann <develop@boombuler.de>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=iso-8859-1\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Admin Interface"
+msgstr "Administrationsoberfläche"
+
+msgid "Wiki Categories"
+msgstr "Wiki-Kategorien"
+
+msgid "Users"
+msgstr "Benutzer"
+
+msgid "NotYetImplemented"
+msgstr "Noch nicht implementiert"
+
+msgid "Existing Entries"
+msgstr "Vorhandene Einträge"
+
+msgid "Name"
+msgstr "Name"
+
+msgid "Latitude"
+msgstr "Breitengrad"
+
+msgid "Longitude"
+msgstr "Längengrad"
+
+msgid "Zoom"
+msgstr "Zoom"
+
+msgid "Add New"
+msgstr "Neuer Eintrag"
+
+msgid "Category"
+msgstr "Kategorie"
+
+msgid "Save"
+msgstr "Speichern"
+
+msgid "Change Password"
+msgstr "Passwort ändern"
+
+msgid "New Password"
+msgstr "Neues Passwort"
+
+msgid "Repeat New Password"
+msgstr "Neues Passwort wiederholen"
+
+msgid "Accept New Password"
+msgstr "Passwort ändern"
+
+msgid "Cancel"
+msgstr "Abbrechen"
+
+msgid "Export Markers"
+msgstr "Plakate exportieren"
+
+msgid "Select City"
+msgstr "Welche Stadt?"
+
+msgid "Download"
+msgstr "Herunterladen"
+
+msgid "Login"
+msgstr "Anmelden"
+
+msgid "Username"
+msgstr "Benutzer"
+
+msgid "Password"
+msgstr "Passwort"
+
+msgid "Send New Password"
+msgstr "Passwort vergessen?"
+
+msgid "Send New Password Hint"
+msgstr "(Nur für nicht Wiki-Benutzer)"
+
