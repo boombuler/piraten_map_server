@@ -4,7 +4,7 @@
         <a href="#" class="close" onclick="javascript:closeModalDlg(false);">&times;</a>
     </div>
     <div class="modal-body">
-        <form id="formregister" action="<?php echo System::getConfig('url')?>login.php">
+        <form id="formregister" action="login.php">
             <input type="hidden" name="action" value="register" />
             <div class="clearfix">
                 <label for="username">Benutzer</label>

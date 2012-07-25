@@ -4,11 +4,11 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" >
     <head>
         <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
-        <title>OpenStreetMap Piraten Karte - Admin Interface</title>
+		<title><?php echo _('Admin Interface'); ?></title>
         <link rel="stylesheet" href="bootstrap-1.1.0.min.css"></link>
-        <script src="http://code.jquery.com/jquery-1.5.2.min.js"></script>
-        <script type="text/javascript" src="./js/jquery.validate.min.js"></script>
-        <script src="./js/jquery.tablesorter.min.js"></script>
+        <script src="js/jquery-1.5.2.min.js"></script>
+        <script type="text/javascript" src="js/jquery.validate.min.js"></script>
+        <script src="js/jquery.tablesorter.min.js"></script>
 
         <script language="JavaScript" src="./js/admin.js"></script>
     </head>
@@ -19,23 +19,23 @@
         </div>
         <div class="container" id="tabcontrol">
             <ul class="tabs" style="margin-top: 5px;">
-                <li id="tabHeadCategories"><a href="#" onclick="selectTab('Categories');">Wiki-Kategorien</a></li>
-                <li id="tabHeadUsers"><a href="#" onclick="selectTab('Users');">Benutzer</a></li>
+				<li id="tabHeadCategories"><a href="#" onclick="selectTab('Categories');"><?php echo _('Wiki Categories'); ?></a></li>
+				<li id="tabHeadUsers"><a href="#" onclick="selectTab('Users');"><?php echo _('Users'); ?></a></li>
             </ul>
             <div id="tabUsers">
-                Todo
+				<?php echo _('NotYetImplemented'); ?>
             </div>
             <div id="tabCategories">
                 <div class="row">
                     <div class="span9 columns">
-                        <h3>Vorhandene Einträge</h3>
+						<h3><?php echo _('Existing Entries'); ?></h3>
                         <table class="common-table zebra-striped" id="tableCategories">
                             <thead>
                                 <tr>
-                                    <th>Name</th>
-                                    <th>Latitude</th>
-                                    <th>Longitude</th>
-                                    <th>Zoom</th>
+									<th><?php echo _('Name'); ?></th>
+                                    <th><?php echo _('Latitude'); ?></th>
+                                    <th><?php echo _('Longitude'); ?></th>
+                                    <th><?php echo _('Zoom'); ?></th>
                                     <th></th>
                                 </tr>
                             </thead>
@@ -51,37 +51,37 @@
                         </table>
                     </div>
                     <div class="span7 columns">
-                        <h3>Neuer Eintrag</h3>
+						<h3><?php echo _('Add New'); ?></h3>
                         <form id="postwikicat" action="" method="GET">
                             <fieldset>
                                 <input type="hidden" name="action" value="add" />
                                 <div class="clearfix">
-                                    <label>Kategorie</label>
+									<label><?php echo _('Category'); ?></label>
                                     <div class="input">
                                         <input type="text" name="name" />
                                     </div>
                                 </div>
                                 <div class="clearfix">
-                                    <label>Latitude</label>
+                                    <label><?php echo _('Latitude'); ?></label>
                                     <div class="input">
                                         <input type="text" name="lat"/>
                                     </div>
                                 </div>
                                 <div class="clearfix">
-                                    <label>Longitude</label>
+                                    <label><?php echo _('Longitude'); ?></label>
                                     <div class="input">
                                         <input type="text" name="lon"/>
                                     </div>
                                 </div>
                                 <div class="clearfix">
-                                    <label>Zoom</label>
+                                    <label><?php echo _('Zoom'); ?></label>
                                     <div class="input">
                                         <input type="text" name="zoom"/>
                                     </div>
                                 </div>
                                 <div class="clearfix">
                                     <div class="input">
-                                        <button type="submit" class="btn primary">Speichern</button>
+										<button type="submit" class="btn primary"><?php echo _('Save'); ?></button>
                                     </div>
                                 </div>
                             </fieldset>

@@ -38,7 +38,7 @@ abstract class Data_Change
    */
   public function getDependencies()
   {
-    return array();
+	return array('CreateDatabaseChangesTable', 'CreateDatabase');
   }
 
   abstract public function __invoke();

@@ -15,7 +15,7 @@ class Data_Change_MigratePlakateToMarkers extends Data_Change
      */
     public function __invoke ()
     {
-        $this->checkIfNeedToMigrate();
+        $this->checkNecessarySteps();
         if ($this->doStep1) {
             $this->step1CreateMarkersTable();
         }
@@ -31,11 +31,9 @@ class Data_Change_MigratePlakateToMarkers extends Data_Change
     }
 
     private function checkNecessarySteps() {
-        $res = System::query('SHOW TABLES');
-        $tables = $res->fetchAll(PDO::FETCH_COLUMN, 0);
-        $this->doStep1 = !in_array(System::getConfig('tbl_prefix') . 'markers', $tables);
-        $this->doStep2 = !in_array(System::getConfig('tbl_prefix') . 'posters', $tables);
-        $this->doStep3and4 = in_array(System::getConfig('tbl_prefix') . 'felder', $tables) || in_array(System::getConfig('tbl_prefix') . 'plakat', $tables);
+        $this->doStep1 = !System::tableExists('markers');
+        $this->doStep2 = !System::tableExists('posters');
+        $this->doStep3and4 = System::tableExists('felder') || System::tableExists('plakat');
     }
 
     private function step1CreateMarkersTable()
@@ -71,16 +69,16 @@ class Data_Change_MigratePlakateToMarkers extends Data_Change
     {
         $markers = System::query('INSERT IGNORE INTO ' . System::getConfig('tbl_prefix') . 'markers (lat, lon, city, street) '
                                . 'SELECT lat, lon, city, street FROM ' . System::getConfig('tbl_prefix') . 'felder f '
-                               . 'JOIN ' . System::getConfig('tbl_prefix') . 'plakat p ON p.id=f.plakat_id WHERE p.del!=1 GROUP BY p.plakat_id');
-        $rows = System::getDb()->affected_rows;
+                               . 'JOIN ' . System::getConfig('tbl_prefix') . 'plakat p ON p.id=f.plakat_id WHERE p.del!=1 GROUP BY p.id');
+		$rows = $markers->rowCount();
         $check = System::query('SELECT COUNT(id) amount FROM ' . System::getConfig('tbl_prefix') . 'plakat WHERE del!=1');
-        $check = $check->fetch_assoc();
-        if ($rows != $check['amount']) {
-          throw new Exception('Copying Data failed.');
-        }
+        $check = $check->fetch(PDO::FETCH_ASSOC);
+        /*if ($rows != $check['amount']) {
+          throw new Exception('Copying Data failed. (Inserted ' . $rows . ' rows but expected ' . $check['amount'] . ' rows');
+        }*/
 
-        return System::query('INSERT IGNORE INTO ' . System::getConfig('tbl_prefix') . 'posters (marker_id, user_id, timestamp, type, comment, image) '
-                           . 'SELECT m.marker_id, f.username, f.timestamp, f.type, f.comment, f.image '
+        return System::query('INSERT IGNORE INTO ' . System::getConfig('tbl_prefix') . 'posters (marker_id, username, timestamp, type, comment, image) '
+                           . 'SELECT m.marker_id, f.user, f.timestamp, f.type, f.comment, f.image '
                            . 'FROM ' . System::getConfig('tbl_prefix') . 'felder f '
                            . 'JOIN ' . System::getConfig('tbl_prefix') . 'markers m ON m.lat=f.lat AND m.lon=f.lon '
                            . 'WHERE f.user != ""');

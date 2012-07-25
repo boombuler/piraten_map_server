@@ -228,7 +228,7 @@ class Data_Poster extends Data_Table
 
     public static function getTypes($type = '')
     {
-        if (in_array($type, self::$types)) {
+		if ($type != '' && in_array($type, self::$types)) {
             return self::$types[$type];
         }
         return self::$types;
