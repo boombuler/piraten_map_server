@@ -29,7 +29,6 @@ $query = 'SELECT * '
 $result = System::query($query)->fetchAll(PDO::FETCH_CLASS, 'Data_Marker');
 
 foreach ($result as $obj) {
-{
     $location = Nominatim::requestByCoordinates($obj->getLat(), $obj->getLon());
 
     $obj->setCity($location["city"]);

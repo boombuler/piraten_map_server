@@ -52,7 +52,7 @@
                     </div>
                     <div class="span7 columns">
 						<h3><?php echo _('Add New'); ?></h3>
-                        <form id="postwikicat" action="" method="GET">
+                        <form id="postwikicat" action="" method="get">
                             <fieldset>
                                 <input type="hidden" name="action" value="add" />
                                 <div class="clearfix">
