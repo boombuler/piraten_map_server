@@ -84,3 +84,20 @@ msgstr "Passwort vergessen?"
 msgid "Send New Password Hint"
 msgstr "(Nur für nicht Wiki-Benutzer)"
 
+msgid "Reset Password"
+msgstr "Passwort zurŸcksetzten"
+
+msgid "E-Mail Address"
+msgstr "E-Mail Adresse"
+
+msgid "Register"
+msgstr "Registrieren"
+
+msgid "Upload Image"
+msgstr "Bild hochladen"
+
+msgid "Image"
+msgstr "Bild"
+
+msgid "Upload"
+msgstr "Hochladen"
