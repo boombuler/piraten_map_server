@@ -92,11 +92,4 @@ class Login_Controller extends Controller
             $this->displayMessage("Passwort wurde geändert", true);
         }
     }
-
-    protected function displayMessage($msg, $success)
-    {
-        $message = array('message' => $msg, 'success' => $success);
-        $this->message = $message;
-        $this->displayMessageJson();
-    }
 }

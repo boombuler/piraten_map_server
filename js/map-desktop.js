@@ -95,7 +95,7 @@ var auth = {
       success: function(data) {
         if (data.success) {
           displaymessage('success', data.message);
-          auth.goToLoggedInState(data);
+          auth.goToLoggedInState(data.data);
         } else {
           displaymessage('error', data.message);
         }
@@ -272,8 +272,9 @@ function gmlreload(){
 
 //Initialise the 'map' object
 function init() {
-    OpenLayers.ImgPath = "./theme/default/";
+    OpenLayers.ImgPath = "../theme/default/";
     var options = {
+			theme: "../theme/default/style.css",
             controls:[
                     new OpenLayers.Control.Navigation(),
                     new OpenLayers.Control.PanZoomBar(),
@@ -290,7 +291,7 @@ function init() {
             displayProjection: new OpenLayers.Projection("EPSG:4326")
     };
 
-    map = new OpenLayers.Map ("map",  options );
+    map = new OpenLayers.Map ("map",  options );	
     layerMapnik = new OpenLayers.Layer.OSM.Mapnik("Mapnik");
     map.addLayer(layerMapnik);
     layerTilesAtHome = new OpenLayers.Layer.OSM.Osmarender("Osmarender");

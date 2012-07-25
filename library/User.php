@@ -15,7 +15,7 @@ class User
     /**
      * @param IUser $user
      */
-    public static function setCurrent(IUser $user)
+	public static function setCurrent(IUser $user = null)
     {
         if ($user)
             $_SESSION['user'] = serialize($user);
@@ -34,8 +34,7 @@ class User
         $user = Data_User::login($username, $password);
         if (!($user instanceof IUser))
             $user = Wiki_User::login($username, $password);
-
-        self::setCurrent($user);
+		self::setCurrent($user);
 
         return $user;
     }

@@ -9,7 +9,7 @@
                 <label for="image">Welche Stadt?</label>
                 <div class="input">
                     <select id="city" name="city"><?php
-$cities = System::query("SELECT DISTINCT city FROM " . System::getConfig('tbl_prefix') . "felder WHERE city is not null and city <> ''");
+$cities = System::query("SELECT DISTINCT city FROM " . System::getConfig('tbl_prefix') . "markers WHERE city is not null and city <> ''");
 if ($cities) {
 while ($row = $cities->fetch())
     print '<option>' . $row->city . '</option>';
