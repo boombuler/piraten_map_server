@@ -48,7 +48,7 @@ class Data_User extends Data_Table implements IChangableUser
 
     public function setPassword($password)
     {
-        $this->password = Data_User::getPWHash($this->getUsername(), $password);
+        $this->password = Data_User::getPWHash($password);
         $this->logModification('password');
         return $this;
     }
@@ -154,11 +154,24 @@ class Data_User extends Data_Table implements IChangableUser
             return null;
         }
         $username = strtolower($username);
-        $password = Data_User::getPWHash($username, $password);
 
-        $query = 'SELECT * FROM ' . System::getConfig('tbl_prefix') . 'users WHERE LOWER(username)=? AND password=?';
-        $result = System::query($query, array($username, $password));
+        $query = 'SELECT * FROM ' . System::getConfig('tbl_prefix') . 'users WHERE LOWER(username)=?';
+        $result = System::query($query, array($username));
         $user = $result->fetchObject(__CLASS__);
+
+        $dbpwd = $user->getPassword();
+        if (strlen($dbpwd) == 32) {
+            // Old MD5 Password
+            if (Data_User::getObsoletePWHash($username, $password) == $dbpwd) {
+                // Password is correct --> Update the Database Value!
+                $user->setPassword($password)->save();
+            } else {
+                return null;
+            }
+        } elseif (crypt($password, $dbpwd) != $dbpwd) {
+            return null;
+        }
+
         if (!$user)
             return null;
         $_SESSION['sidip'] = $_SERVER["REMOTE_ADDR"];
@@ -170,9 +183,15 @@ class Data_User extends Data_Table implements IChangableUser
         $this->save();
     }
 
-    static function getPWHash($user, $pass)
+    static function getObsoletePWHash($user, $pass)
     {
         return md5(strtolower($user).":".$pass);
+    }
+
+    static function getPWHash($pass)
+    {
+        $salt = substr(str_shuffle( './0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'), 0, 22);
+        return crypt($pass, '$2a$10$' . $salt);
     }
 
     public function validate()
