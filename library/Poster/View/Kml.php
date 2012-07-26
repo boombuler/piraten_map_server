@@ -9,14 +9,15 @@ $nodeDoc->appendChild($dom->createElement('name', 'PIRATEN'));
 $nodeDoc->appendChild($dom->createElement('description'))->appendChild($dom->createCDATASection('Piraten Plakate'));
 
 // Define the styles
-$filter  = Data_Poster::getTypes($_GET['filter']);
+$filter  = $this->getGetParameter('filter');
+$validFilter = Data_Poster::isValidType($filter);
 $styles = array();
 $i = 0;
 foreach(Data_Poster::getTypes() as $key=>$value) {
 	$styleKey = "s$i";
 	$i++;
 	$styles[$key] = $styleKey;
-	if (!($filter) || ($filter == $key)) {
+	if (!($validFilter) || ($filter == $key)) {
 		$nStyle = $nodeDoc->appendChild($dom->createElement('Style'));
 		$nStyle->setAttribute('id', $styleKey);
 		$nIconS = $nStyle->appendChild($dom->createElement('IconStyle'));
@@ -50,10 +51,10 @@ foreach($this->getPosters() as $row) {
             'c'  => htmlspecialchars((string) $row['comment']),
             'ci' => htmlspecialchars((string) $row['city']),
             's'  => htmlspecialchars((string) $row['street']),
-            'u'  => htmlspecialchars($row['user']),
+            'u'  => htmlspecialchars($row['username']),
             'd'  => date('d.m.y H:i', strtotime($row['timestamp']))
         ))));
-    if (Data_Poster::getTypes($row['type']))
+    if (Data_Poster::isValidType($row['type']))
         $place->appendChild($dom->createElement('styleUrl', '#'.$styles[$row['type']]));
     $place->appendChild($dom->createElement('Point'))->appendChild($dom->createElement('coordinates', "$lon,$lat"));
 }

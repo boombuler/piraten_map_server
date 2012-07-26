@@ -2,6 +2,16 @@
 class Poster_Controller extends Controller
 {
     private $posters;
+	
+	private $format;
+	
+	public function Poster_Controller($format = null)
+	{
+		if ($format)
+			$this->format = $format;
+		else
+			$this->format = $this->getGetParameter('format');
+	}
 
     public function index()
     {
@@ -12,9 +22,9 @@ class Poster_Controller extends Controller
         $filterstr = "";
         $params = array();
 
-        if (Data_Poster::getTypes($this->getGetParameter('filter'))) {
+		if (Data_Poster::isValidType($this->getGetParameter('filter'))) {
           $filterstr = " AND type = :type";
-          $params['type'] = Data_Poster::getTypes($this->getGetParameter('filter'));
+          $params['type'] = $this->getGetParameter('filter');
         }
 
         $bbox = $this->getGetParameter('bbox');
@@ -28,11 +38,11 @@ class Poster_Controller extends Controller
         }
 
         $tbl_prefix = System::getConfig('tbl_prefix');
-        $query = "SELECT m.marker_id, m.lon, m.lat, p.type, p.user, p.timestamp, p.comment, m.city, m.street, p.image "
+        $query = "SELECT m.marker_id, m.lon, m.lat, p.type, p.username, p.timestamp, p.comment, m.city, m.street, p.image "
               . " FROM ".$tbl_prefix."markers m JOIN ".$tbl_prefix."posters p on p.marker_id = m.marker_id"
               . " WHERE type != 'removed' ".$filterstr . ' GROUP BY m.marker_id ORDER BY p.timestamp DESC';
         $this->posters = System::query($query, $params)->fetchAll(PDO::FETCH_ASSOC);
-
+		
         $this->display();
     }
 
@@ -126,7 +136,7 @@ class Poster_Controller extends Controller
 
     protected function getView()
     {
-        switch ($this->getGetParameter('format')) {
+        switch ($this->format) {
             case 'kml':
                 return 'Poster_View_Kml';
             case 'csv':

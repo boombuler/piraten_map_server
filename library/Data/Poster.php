@@ -226,11 +226,20 @@ class Data_Poster extends Data_Table
         return $result->fetchObject(__CLASS__);
     }
 
-    public static function getTypes($type = '')
+	public static function isValidType($type)
+	{
+		return array_key_exists($type, self::$types);
+	}
+	
+	public static function getTypeDescription($type)
+	{
+		if (array_key_exists($type, self::$types))
+			return self::$types[$type];
+		return null;
+	}
+	
+    public static function getTypes()
     {
-		if ($type != '' && in_array($type, self::$types)) {
-            return self::$types[$type];
-        }
         return self::$types;
     }
 }
