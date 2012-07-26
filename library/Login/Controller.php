@@ -3,7 +3,7 @@ class Login_Controller extends Controller
 {
     function __construct()
     {
-        $this->view = 'GlobalView_Json';
+        $this->view = '';
     }
 
     public function index()

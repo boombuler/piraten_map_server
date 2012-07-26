@@ -101,3 +101,49 @@ msgstr "Bild"
 
 msgid "Upload"
 msgstr "Hochladen"
+
+msgid "OSM Pirate Map"
+msgstr "OpenStreetMap Piraten Karte"
+
+msgid "Logout"
+msgstr "Abmelden"
+
+msgid "Administration"
+msgstr "Administration"
+
+msgid "Help"
+msgstr "Legende / Hilfe"
+
+msgid "Legend"
+msgstr "Legende"
+
+msgid "Ctrl+Mouseclick: new mark"
+msgstr "STRG+Mausklick: neuer Marker"
+
+msgid "Marks will be editable after login"
+msgstr "Plakate werden erst nachdem Login editierbar."
+
+msgid "Use local or wiki login"
+msgstr "Lokaler oder Wiki Login möglich!"
+
+msgid "No Authorization"
+msgstr "Keine Berechtigung"
+
+msgid "%s$1 added"
+msgstr "%s$1 hinzugefügt."
+
+msgid "Could not add category"
+msgstr "Kategorie konnte nicht hinzugefügt werden."
+
+msgid "Invalid input"
+msgstr "Fehlerhafte Eingabe."
+
+msgid "Category deleted"
+msgstr "Kategorie gelöscht."
+
+msgid "Could not delete category"
+msgstr "Kategorie konnte nicht gelöscht werden."
+
+msgid "Unknown action"
+msgstr "Unbekannte Aktion."
+

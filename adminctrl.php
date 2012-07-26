@@ -4,7 +4,7 @@
     if (!User::isAdmin()) {
         echo json_encode(array(
             'status' => 'error',
-            'message' => 'Keine Berechtigung'
+            'message' => _('No Authorization')
         ));
     } else {
         $action = $_GET['action'];
@@ -20,7 +20,7 @@
                     $id = System::lastInsertId();
                     $result = array(
                         'status' => 'success',
-                        'message' => "'$name' hinzugefügt.",
+						'message' => _f('%s$1 added', $name),
                         'data' => array(
                             'id' => $id,
                             'name' => $name,
@@ -33,13 +33,13 @@
                 } else {
                     echo json_encode(array(
                         'status' => 'error',
-                        'message' => 'Kategorie konnte nicht hinzugefügt werden.'
+						'message' => _('Could not add category')
                     ));
                 }
             } else {
                 echo json_encode(array(
                     'status' => 'error',
-                    'message' => 'Fehlerhafte Eingabe.'
+                    'message' => _('Invalid input')
                 ));
             }
         } else if ($action == 'drop') {
@@ -48,24 +48,24 @@
                 if (System::query("DELETE FROM ".System::getConfig('tbl_prefix')."regions WHERE id = ?", array($id))) {
                     echo json_encode(array(
                         'status' => 'success',
-                        'message'=> 'Kategorie gelöscht.'
+                        'message'=> _('Category deleted')
                     ));
                 } else {
                     echo json_encode(array(
                         'status' => 'error',
-                        'message'=> 'Kategorie konnte nicht gelöscht werden.'
+                        'message'=> _('Could not delete category')
                     ));
                 }
             } else {
                 echo json_encode(array(
                     'status' => 'error',
-                    'message'=> 'Fehlerhafte Eingabe.'
+                    'message'=> _('Invalid input')
                 ));
             }
         } else {
             echo json_encode(array(
                 'status' => 'error',
-                'message' => 'Unbekannte Aktion.'
+				'message' => _('Unknown action')
             ));
         }
     }

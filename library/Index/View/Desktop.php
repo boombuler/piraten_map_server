@@ -5,7 +5,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
   <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
-  <title>OpenStreetMap Piraten Karte</title>
+  <title><?php echo _('OSM Pirate Map'); ?></title>
   <link rel="stylesheet" href="bootstrap-1.1.0.min.css" />
   <link rel="stylesheet" href="style-desktop.css" />
   <script type="text/javascript" src="js/jquery-1.5.2.min.js"></script>
@@ -36,34 +36,34 @@
     <div class="topbar">
         <div class="fill">
             <div class="container">
-                <h3><a href="#">Plakat Karte</a></h3>
+                <h3><a href="#"><?php echo _('OSM Pirate Map'); ?></a></h3>
                 <ul>
-                    <li class="depUsrWiki"><a href="#" onclick="auth.logout();">Abmelden</a></li>
+                    <li class="depUsrWiki"><a href="#" onclick="auth.logout();"><?php echo _('Logout'); ?></a></li>
 
                     <li class="menu depUsrLocal">
                         <a href="#" class="menu" id="menuusername"></a>
                         <ul class="menu-dropdown">
 
-                            <li class="depAdmin"><a href="admin.php" target="_blank">Administration</a></li>
+							<li class="depAdmin"><a href="admin.php" target="_blank"><?php echo _('Administration'); ?></a></li>
                             <li class="divider depAdmin" />
 
                             <?php if (System::canSendMails()) { ?>
-                            <li><a href="#" onclick="javascript:showModalId('chpwform');">Passwort ändern</a></li>
+							<li><a href="#" onclick="javascript:showModalId('chpwform');"><?php echo _('Change Password'); ?></a></li>
                             <li class="divider" />
                             <?php } ?>
-                            <li><a href="#" onclick="auth.logout();">Abmelden</a></li>
+                            <li><a href="#" onclick="auth.logout();"><?php echo _('Logout'); ?></a></li>
                         </ul>
                     </li>
 
 
-                    <li class="depLogin"><a href="#" onclick="javascript:showModalId('uploadimg');">Bild hochladen</a></li>
-                    <li class="depLogin"><a href="#" onclick="showModalId('exportCity');">Export</a></li>
+                    <li class="depLogin"><a href="#" onclick="javascript:showModalId('uploadimg');"><?php echo _('Upload Image'); ?></a></li>
+					<li class="depLogin"><a href="#" onclick="showModalId('exportCity');"><?php _('Export Markers'); ?></a></li>
 
-                    <li class="depLogout"><a href="#" onclick="javascript:showModalId('loginform');">Anmelden</a></li>
+                    <li class="depLogout"><a href="#" onclick="javascript:showModalId('loginform');"><?php echo _('Login'); ?></a></li>
                     <?php if (System::canSendMails()) { ?>
-                    <li class="depLogout"><a href="#" onclick="javascript:showModalId('registerform');">Registrieren</a></li>
+					<li class="depLogout"><a href="#" onclick="javascript:showModalId('registerform');"><?php echo _('Register'); ?></a></li>
                     <?php } /* canSendMails */ ?>
-                    <li><a href="#" onclick="togglemapkey();">Legende / Hilfe</a></li>
+					<li><a href="#" onclick="togglemapkey();"><?php echo _('Help'); ?></a></li>
                 </ul>
             </div>
         </div>
@@ -85,15 +85,15 @@
     <div id="mapkey">
         <div class="modal">
             <div class="modal-header">
-                <h3>Legende</h3>
+				<h3><?php echo _('Legend'); ?></h3>
                 <a href="#" onclick="javascript:togglemapkey();" class="close">&times;</a>
             </div>
             <div class="modal-body">
                 <ul class="unstyled">
-                    <li class="depLogout">Plakate werden erst nachdem Login editierbar.</li>
-                    <li class="depLogout">Lokaler oder Wiki Login möglich!</li>
+					<li class="depLogout"><?php echo _('Marks will be editable after login'); ?></li>
+					<li class="depLogout"><?php echo _('Use local or wiki login'); ?></li>
 
-                    <li class="depLogin">STRG+Mausklick: neuer Marker</li>
+					<li class="depLogin"><?php echo _('Ctrl+Mouseclick: new mark'); ?></li>
 
                     <li>
                         <ul>

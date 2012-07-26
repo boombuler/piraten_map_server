@@ -73,9 +73,9 @@ class Data_Change_MigratePlakateToMarkers extends Data_Change
 		$rows = $markers->rowCount();
         $check = System::query('SELECT COUNT(id) amount FROM ' . System::getConfig('tbl_prefix') . 'plakat WHERE del!=1');
         $check = $check->fetch(PDO::FETCH_ASSOC);
-        /*if ($rows != $check['amount']) {
+        if ($rows != $check['amount']) {
           throw new Exception('Copying Data failed. (Inserted ' . $rows . ' rows but expected ' . $check['amount'] . ' rows');
-        }*/
+        }
 
         return System::query('INSERT IGNORE INTO ' . System::getConfig('tbl_prefix') . 'posters (marker_id, username, timestamp, type, comment, image) '
                            . 'SELECT m.marker_id, f.user, f.timestamp, f.type, f.comment, f.image '

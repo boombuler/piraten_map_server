@@ -175,4 +175,10 @@ class System
 	}
 }
 
+function _f($id)
+{
+	// vsprintf with l10n support
+	return vsprintf(gettext($id), array_slice(func_get_args(), 1));
+}
+
 System::init();
