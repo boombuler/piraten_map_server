@@ -46,7 +46,7 @@ foreach($this->getPosters() as $row) {
         $dom->createCDATASection(json_encode(array(
             'id' => $row['marker_id'],
             't'  => $row['type'],
-            'tb' => Data_Poster::getTypes($row['type']),
+            'tb' => Data_Poster::getTypeDescription($row['type']),
             'i'  => htmlspecialchars((string) $row['image']),
             'c'  => htmlspecialchars((string) $row['comment']),
             'ci' => htmlspecialchars((string) $row['city']),

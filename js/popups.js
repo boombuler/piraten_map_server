@@ -15,7 +15,7 @@ function createPopup(infos) {
 		result += '				</div>';
 		result += '			</div>';
 	}
-    if (loginData) {
+    if (auth.isLoggedIn) {
 		result += '				<div class="clearfix">';
 		result += '					<label for="typ['+infos.id+']">Marker</label>';
 		result += '					<div class="input">';
@@ -50,7 +50,7 @@ function createPopup(infos) {
 	result += '					</div>';
 	result += '				</div>';
 	url = infos.i || '';
-	if (loginData) {
+	if (auth.isLoggedIn) {
 		result += '				<div class="clearfix">';
 		result += '					<label for="image['+infos.id+']">Bild URL</label>';
 		result += '						<div class="input">';
@@ -65,7 +65,7 @@ function createPopup(infos) {
 	result += '				</div>';
 	result += '			</form>';
 	result += '		</div>';
-	if (loginData) {
+	if (auth.isLoggedIn) {
 		result += '		<div class="modal-footer">';
 		result += '			<input type="button" value="Speichern" class="btn primary" onclick="javascript:change('+infos.id+')">';
 		result += '			<input type="button" value="L&ouml;schen" class="btn danger" onclick="javascript:delid('+infos.id+')">';
