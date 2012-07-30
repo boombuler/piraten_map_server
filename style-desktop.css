@@ -57,6 +57,10 @@
   margin-bottom: 5px;
 }
 
+form .input select.xlarge {
+  width: 280px;
+}
+
 .depLogin { display: none; }
 .depAdmin { display: none; }
 .depUsrWiki { display: none; }

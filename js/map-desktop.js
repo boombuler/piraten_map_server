@@ -237,7 +237,10 @@ function onFeatureUnselect(feature) {
 
 function onFeatureSelect(feature) {
     selectedFeature = feature;
-    showModal(createPopup(feature.attributes.description));
+	data = jQuery.parseJSON(feature.attributes.description);
+	data.loginOK = auth.isLoggedIn;
+	data.posterFlags = posterFlags;
+	showModal($.render.markerTemplate(data));
 }
 
 function delid(id){
@@ -337,9 +340,23 @@ function init() {
     map.setCenter (lonLat, startPos.zoom);
 }
 
+function initTemplates() {
+	// Add "fields" tag
+	$.views.tags( 'fields', function(data) {
+		result = '';
+		for(var key in data) {
+			result += this.renderContent({ key: key, value: data[key] });
+		}
+		return result;
+	});
+
+	$.templates( { markerTemplate: $('#markerTemplate').text() });
+}
+
 
 $(document).ready(function(e) {
     init();
+	initTemplates();
 
     if (loginData != null)
         auth.goToLoggedInState(loginData);

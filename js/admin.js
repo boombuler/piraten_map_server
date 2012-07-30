@@ -20,7 +20,7 @@ function displayPostResult(fn) {
         result = jQuery.parseJSON(data);
         if (result.success && result.message) {
             msgdiv = jQuery('<div/>', {
-                class: 'alert-message '+ result.success ? 'success' : 'error'
+                class: 'alert-message '+ (result.success ? 'success' : 'error')
             });
             closelink = jQuery('<a />', {
                 class: 'close',
@@ -42,11 +42,11 @@ function displayPostResult(fn) {
 }
 
 function dropwikicat(id) {
-    $.get('adminctrl.php', {
+    $.get('admin.php', {
         'action': 'drop',
         'id' : id
     }, displayPostResult(function(d) {
-        if (d.status == 'success') {
+        if (d.success) {
             tableRow = $('#trwikicat'+id);
             tableRow.hide('slow', function(){ tableRow.remove(); });
         }
@@ -84,14 +84,14 @@ $(document).ready(function(e) {
             }
         },
         submitHandler: function(form) {
-            $.get('adminctrl.php', $('#postwikicat').serialize(), displayPostResult(function(data) {
-                if (data.status == 'success') {
+            $.get('admin.php', $('#postwikicat').serialize(), displayPostResult(function(data) {
+                if (data.success) {
                     cat = data.data;
                     row = "<tr id=\"trwikicat"+cat.id+"\"><td>"+cat.name+"</td><td>"
                         + cat.lat + "</td><td>" + cat.lon + "</td><td>" + cat.zoom + "</td><td>"
                         + "<a class=\"close\" onclick=\"javascript:dropwikicat("
-                        + cat.id+");\">&times;</a></td></tr>";
-                    $('#tableCategories tbody').append(row);
+                        + cat.id+");\">&#215;</a></td></tr>";
+					$("#tableCategories > tbody").append(row);
                     $('#tableCategories').trigger("update");
                     $('#postwikicat')[0].reset();
                 }

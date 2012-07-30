@@ -5,20 +5,22 @@
     </div>
     <div class="modal-body">
         <form id="formregister" action="login.php">
-            <input type="hidden" name="action" value="register" />
-            <div class="clearfix">
-                <label for="username"><?php echo _('Username'); ?></label>
-                <div class="input">
-                    <input type="text" size="30" class="xlarge" name="username" />
-                </div>
-            </div>
+			<fieldset>
+				<input type="hidden" name="action" value="register" />
+				<div class="clearfix">
+					<label for="username"><?php echo _('Username'); ?></label>
+					<div class="input">
+						<input type="text" size="30" class="xlarge" name="username" />
+					</div>
+				</div>
 
-            <div class="clearfix">
-                <label for="password"><?php echo _('E-Mail Address'); ?></label>
-                <div class="input">
-                    <input type="text" size="30" class="xlarge" name="email"/>
-                </div>
-            </div>
+				<div class="clearfix">
+					<label for="password"><?php echo _('E-Mail Address'); ?></label>
+					<div class="input">
+						<input type="text" size="30" class="xlarge" name="email"/>
+					</div>
+				</div>
+			</fieldset>
         </form>
     </div>
     <div class="modal-footer">

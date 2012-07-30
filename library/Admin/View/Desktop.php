@@ -1,16 +1,20 @@
+﻿<?php 
+	header("Content-type: application/xhtml+xml");
+	echo '<?xml version="1.0" encoding="UTF-8"?>';
+?>
 <!DOCTYPE html
      PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" >
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
     <head>
         <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
 		<title><?php echo _('Admin Interface'); ?></title>
         <link rel="stylesheet" href="bootstrap-1.1.0.min.css"></link>
-        <script src="js/jquery-1.5.2.min.js"></script>
+		<script type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
         <script type="text/javascript" src="js/jquery.validate.min.js"></script>
-        <script src="js/jquery.tablesorter.min.js"></script>
+		<script type="text/javascript" src="js/jquery.tablesorter.min.js"></script>
 
-        <script language="JavaScript" src="./js/admin.js"></script>
+        <script type="text/javascript" src="js/admin.js"></script>
     </head>
 
 
@@ -87,7 +91,7 @@
                             </fieldset>
                         </form>
                     </div>
-                <div>
+                </div>
             </div>
         </div>
     </body>

@@ -129,8 +129,8 @@ msgstr "Lokaler oder Wiki Login möglich!"
 msgid "No Authorization"
 msgstr "Keine Berechtigung"
 
-msgid "%s$1 added"
-msgstr "%s$1 hinzugefügt."
+msgid "%1$s added"
+msgstr "%1$s hinzugefügt."
 
 msgid "Could not add category"
 msgstr "Kategorie konnte nicht hinzugefügt werden."

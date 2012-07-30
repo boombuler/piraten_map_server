@@ -5,21 +5,23 @@
     </div>
     <div class="modal-body">
         <form id="formchpw" action="login.php">
-            <input type="hidden" name="action" value="changepwd" />
+			<fieldset>
+				<input type="hidden" name="action" value="changepwd" />
 
-            <div class="clearfix">
-				<label for="password"><?php echo _('New Password'); ?></label>
-                <div class="input">
-                    <input type="password" size="30" class="xlarge" name="newpass" />
-                </div>
-            </div>
+				<div class="clearfix">
+					<label for="password"><?php echo _('New Password'); ?></label>
+					<div class="input">
+						<input type="password" size="30" class="xlarge" name="newpass" />
+					</div>
+				</div>
 
-            <div class="clearfix">
-				<label for="password"><?php echo _('Repeat New Password'); ?></label>
-                <div class="input">
-                    <input type="password" size="30" class="xlarge" name="passconfirm" />
-                </div>
-            </div>
+				<div class="clearfix">
+					<label for="password"><?php echo _('Repeat New Password'); ?></label>
+					<div class="input">
+						<input type="password" size="30" class="xlarge" name="passconfirm" />
+					</div>
+				</div>
+			</fieldset>
         </form>
     </div>
     <div class="modal-footer">

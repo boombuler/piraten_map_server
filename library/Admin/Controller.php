@@ -11,6 +11,7 @@ Class Admin_Controller extends Controller
 
         $this->view = 'Admin_View_Desktop';
         $this->categories = System::query("SELECT * FROM  ".System::getConfig('tbl_prefix')."regions")->fetchAll();
+
         $this->display();
     }
 
@@ -31,7 +32,7 @@ Class Admin_Controller extends Controller
             return $this->displayMessage(_('Could not add category'), false);
         }
 
-		return $this->displayMessage(_f('%s$1 added', $name), true, array(
+		return $this->displayMessage(_f('%1$s added', $name), true, array(
                 'id' => System::lastInsertId(),
                 'name' => $name,
                 'lat' => $lat,

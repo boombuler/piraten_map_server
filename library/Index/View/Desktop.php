@@ -1,4 +1,7 @@
-<?php echo '<?xml version="1.0" ?>';?>
+<?php 
+	header("Content-type: application/xhtml+xml");
+	echo '<?xml version="1.0" encoding="UTF-8"?>';
+?>
 <!DOCTYPE html
      PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -8,10 +11,11 @@
   <title><?php echo _('OSM Pirate Map'); ?></title>
   <link rel="stylesheet" href="bootstrap-1.1.0.min.css" />
   <link rel="stylesheet" href="style-desktop.css" />
-  <script type="text/javascript" src="js/jquery-1.5.2.min.js"></script>
+  <script type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
   <script type="text/javascript" src="js/OpenLayers.js"></script>
   <script type="text/javascript" src="js/map-desktop.js"></script>
-  <script type="text/javascript" src="js/popups.js"></script>
+  
+  <script type="text/javascript" src="js/jsrender.js"></script>
   <script type="text/javascript">
 //<![CDATA[
     var startPos = <?php print json_encode($this->getInitialPosition()); ?>;
@@ -29,6 +33,7 @@
     }
 //]]>
   </script>
+  <?php include('dialogs/markerdetail.php'); ?>
 </head>
 
 <body>
@@ -44,7 +49,7 @@
                         <a href="#" class="menu" id="menuusername"></a>
                         <ul class="menu-dropdown">
 
-							<li class="depAdmin"><a href="admin.php" target="_blank"><?php echo _('Administration'); ?></a></li>
+							<li class="depAdmin"><a href="admin.php" onclick="window.open(this.href); return false;"><?php echo _('Administration'); ?></a></li>
                             <li class="divider depAdmin" />
 
                             <?php if (System::canSendMails()) { ?>

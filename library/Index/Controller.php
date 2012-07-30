@@ -47,11 +47,6 @@ class Index_Controller extends Controller
      return $this->getGetParameter('error');
   }
 
-  protected function sendHeaders()
-  {
-    header('content-type: text/html; charset=utf-8');
-  }
-
   private function isMobileDevice()
   {
     if ($this->getGetParameter('mobile'))
