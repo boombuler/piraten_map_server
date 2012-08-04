@@ -37,7 +37,7 @@ class Data_Poster extends Data_Table
 
     public function getId()
     {
-        return $this->id;
+        return $this->poster_id;
     }
 
     private function setId($id)
@@ -126,7 +126,7 @@ class Data_Poster extends Data_Table
     /**
      * @return the $type
      */
-    public function getType ()
+    public function getType()
     {
         return $this->type;
     }
@@ -210,7 +210,6 @@ class Data_Poster extends Data_Table
             $this->marker_id = $this->getMarker()->getId();
             $this->logModification('marker_id');
         }
-        $this->setTimestamp(mktime());
         parent::save();
     }
 
@@ -220,24 +219,30 @@ class Data_Poster extends Data_Table
         $this->setId(System::lastInsertId());
     }
 
-	public static function get($id)
+    public static function get($id)
     {
         $result = self::find('poster_id', $id);
         return $result->fetchObject(__CLASS__);
     }
 
-	public static function isValidType($type)
-	{
-		return array_key_exists($type, self::$types);
-	}
-	
-	public static function getTypeDescription($type)
-	{
-		if (array_key_exists($type, self::$types))
-			return self::$types[$type];
-		return null;
-	}
-	
+    public static function getByMarkerId($id)
+    {
+        $result = System::query('SELECT * FROM ' . self::tableName() . ' WHERE marker_id=? ORDER BY timestamp DESC LIMIT 1', array($id));
+        return $result->fetchObject(__CLASS__);
+    }
+
+    public static function isValidType($type)
+    {
+        return array_key_exists($type, self::$types);
+    }
+    
+    public static function getTypeDescription($type)
+    {
+        if (array_key_exists($type, self::$types))
+            return self::$types[$type];
+        return null;
+    }
+    
     public static function getTypes()
     {
         return self::$types;

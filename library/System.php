@@ -15,25 +15,25 @@ class System
      * @static
      */
     private static $configuration = array();
-	
-	private static $defaultconf = array('url' => '', 
-							   		    'send_mail_adr' => '', 
-									    'curl_path' => '/usr/bin/curl', 
-									    'mysql_server' => 'localhost', 
-									    'mysql_user' => '', 
-									    'mysql_password' => '', 
-									    'mysql_database' => '',
-									    'tbl_prefix' => 'plakate_',
-										'use_ssl' => true, 
-									    'allow_view_public' => true, 
-									    'debug' => false,
-										'max_resolve_count' => 5, 
-										'start_zoom' => 6,
-										'start_lat' => 53.37, 
-										'start_lon' => 10.39,
-										'language' => 'de_DE');
+    
+    private static $defaultconf = array('url' => '', 
+                                        'send_mail_adr' => '', 
+                                        'curl_path' => '/usr/bin/curl', 
+                                        'mysql_server' => 'localhost', 
+                                        'mysql_user' => '', 
+                                        'mysql_password' => '', 
+                                        'mysql_database' => '',
+                                        'tbl_prefix' => 'plakate_',
+                                        'use_ssl' => true, 
+                                        'allow_view_public' => true, 
+                                        'debug' => false,
+                                        'max_resolve_count' => 5, 
+                                        'start_zoom' => 6,
+                                        'start_lat' => 53.37, 
+                                        'start_lon' => 10.39,
+                                        'language' => 'de_DE');
 
-									 
+                                     
     private static $alltables = null;
 
     public static function init()
@@ -45,7 +45,7 @@ class System
         session_start();
         spl_autoload_register('System::autoload');        
         self::readConfiguration();
-		self::setLanguage(self::getConfig('language'));
+        self::setLanguage(self::getConfig('language'));
         self::$initiated = true;
     }
 
@@ -89,33 +89,33 @@ class System
 
     private static function readConfiguration()
     {
-		self::$configuration = self::$defaultconf;
-		$path = dirname(dirname(__FILE__)) . '/settings.php';
-		if (file_exists($path)) {
-			include $path;
-			self::$configuration = array_merge(self::$defaultconf, get_defined_vars());
-		}
+        self::$configuration = self::$defaultconf;
+        $path = dirname(dirname(__FILE__)) . '/settings.php';
+        if (file_exists($path)) {
+            include $path;
+            self::$configuration = array_merge(self::$defaultconf, get_defined_vars());
+        }
     }
 
     public static function getConfig($varname)
     {
         return self::$configuration[$varname];
     }
-	
-	public static function setConfig($varname, $value)
-	{
-		// Check if the varname is a valid config name.
-		if (array_key_exists($varname, self::$defaultconf)) {
-			self::$configuration[$varname];
-			// Write the configuration:
-			$outStr = '<?php\n';
-			foreach (self::$configuration as $key => $value) {
-				$outStr .= '$' . $key . ' = ' . var_export($value) . ';\n';
-			}
-			$path = dirname(dirname(__FILE__)) . '/settings.php';
-			file_put_contents($path, $outStr);
-		}
-	}
+    
+    public static function setConfig($varname, $value)
+    {
+        // Check if the varname is a valid config name.
+        if (array_key_exists($varname, self::$defaultconf)) {
+            self::$configuration[$varname];
+            // Write the configuration:
+            $outStr = '<?php\n';
+            foreach (self::$configuration as $key => $value) {
+                $outStr .= '$' . $key . ' = ' . var_export($value) . ';\n';
+            }
+            $path = dirname(dirname(__FILE__)) . '/settings.php';
+            file_put_contents($path, $outStr);
+        }
+    }
 
     /**
      *
@@ -162,23 +162,23 @@ class System
     {
         return self::getConfig('send_mail_adr') != '';
     }
-	
-	public static function setLanguage($language)
-	{
-		$domain = "messages";
+    
+    public static function setLanguage($language)
+    {
+        $domain = "messages";
 
-		putenv("LANG=" . $language);
-		setlocale(LC_ALL, $language . '.UTF-8');
-		bindtextdomain($domain, dirname(dirname(__FILE__)) . '/locale');
-		bind_textdomain_codeset($domain, 'UTF-8');
-		textdomain($domain);
-	}
+        putenv("LANG=" . $language);
+        setlocale(LC_ALL, $language . '.UTF-8');
+        bindtextdomain($domain, dirname(dirname(__FILE__)) . '/locale');
+        bind_textdomain_codeset($domain, 'UTF-8');
+        textdomain($domain);
+    }
 }
 
 function _f($id)
 {
-	// vsprintf with l10n support
-	return vsprintf(gettext($id), array_slice(func_get_args(), 1));
+    // vsprintf with l10n support
+    return vsprintf(gettext($id), array_slice(func_get_args(), 1));
 }
 
 System::init();

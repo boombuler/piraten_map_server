@@ -2,16 +2,16 @@
 class Poster_Controller extends Controller
 {
     private $posters;
-	
-	private $format;
-	
-	public function Poster_Controller($format = null)
-	{
-		if ($format)
-			$this->format = $format;
-		else
-			$this->format = $this->getGetParameter('format');
-	}
+    
+    private $format;
+    
+    public function Poster_Controller($format = null)
+    {
+        if ($format)
+            $this->format = $format;
+        else
+            $this->format = $this->getGetParameter('format');
+    }
 
     public function index()
     {
@@ -22,7 +22,7 @@ class Poster_Controller extends Controller
         $filterstr = "";
         $params = array();
 
-		if (Data_Poster::isValidType($this->getGetParameter('filter'))) {
+        if (Data_Poster::isValidType($this->getGetParameter('filter'))) {
           $filterstr = " AND type = :type";
           $params['type'] = $this->getGetParameter('filter');
         }
@@ -32,17 +32,17 @@ class Poster_Controller extends Controller
             list($bbe, $bbn, $bbw, $bbs) = split(",", $bbox);
             $params['bbe'] = $bbe;
             $params['bbw'] = $bbw;
-            $params['bbs'] = $bbs;
             $params['bbn'] = $bbn;
+            $params['bbs'] = $bbs;
             $filterstr .= " AND (lon >= :bbe) AND (lon <= :bbw) AND (lat >= :bbn) AND (lat <= :bbs)";
         }
 
         $tbl_prefix = System::getConfig('tbl_prefix');
         $query = "SELECT m.marker_id, m.lon, m.lat, p.type, p.username, p.timestamp, p.comment, m.city, m.street, p.image "
-              . " FROM ".$tbl_prefix."markers m JOIN ".$tbl_prefix."posters p on p.marker_id = m.marker_id"
-              . " WHERE type != 'removed' ".$filterstr . ' GROUP BY m.marker_id ORDER BY p.timestamp DESC';
+              . " FROM ".$tbl_prefix."markers m JOIN ".$tbl_prefix."posters p ON p.marker_id = m.marker_id AND p.timestamp=(SELECT MAX(timestamp) FROM ".$tbl_prefix."posters p1 WHERE p1.marker_id=m.marker_id) "
+              . " WHERE type != 'removed' ".$filterstr;
         $this->posters = System::query($query, $params)->fetchAll(PDO::FETCH_ASSOC);
-		
+        
         $this->display();
     }
 
@@ -53,16 +53,16 @@ class Poster_Controller extends Controller
             return;
 
         $marker = new Data_Marker();
-        $marker->setLat($this->getGetParameter('lat', FILTER_SANITIZE_NUMBER_FLOAT))
-               ->setLon($this->getGetParameter('lon', FILTER_SANITIZE_NUMBER_FLOAT));
-        //if ($resolveAdr) {
-            $location = Nominatim::requestByCoordinates($marker->getLat(), $marker->getLon());
-            $marker->setCity($location["city"]);
-            $marker->setStreet($location["road"]);
-        //}
+        $marker->setLat($this->getGetParameter('lat', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION))
+               ->setLon($this->getGetParameter('lon', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION));
+
+        $location = Nominatim::requestByCoordinates($marker->getLat(), $marker->getLon());
+        $marker->setCity($location["city"]);
+        $marker->setStreet($location["road"]);
 
         $poster = new Data_Poster();
         $poster->setMarker($marker);
+        $poster->setType('plakat_niceplace');
         if ($typ != '') {
             $poster->setType($this->getGetParameter('typ'));
         }
@@ -94,7 +94,7 @@ class Poster_Controller extends Controller
         if (!$user)
             return;
 
-        $poster = Data_Poster::get($this->getGetParameter('id', FILTER_SANITIZE_NUMBER_INT));
+        $poster = Data_Poster::getByMarkerId($this->getGetParameter('id', FILTER_SANITIZE_NUMBER_INT));
         if (!$poster)
             return;
 
@@ -112,7 +112,6 @@ class Poster_Controller extends Controller
         if($this->getGetParameter('imageurl')) {
             $newposter->setImage($this->getGetParameter('imageurl'));
         }
-
         $newposter->save();
 
         Data_Log::add($newposter->getId(), Data_Log::SUBJECT_CHANGE, 'Type: '.$type);

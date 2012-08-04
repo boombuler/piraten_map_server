@@ -76,6 +76,7 @@ var auth = {
         $('.depUsrLocal').show();
     $('.depLogin').show();
     this.isLoggedIn = true;
+    gmlreload();
   },
 
   goToLoggedOutState: function()

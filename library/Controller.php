@@ -43,14 +43,14 @@ abstract class Controller
         }
     }
 
-    protected function getGetParameter($parameter, $type = FILTER_SANITIZE_STRING)
+    protected function getGetParameter($parameter, $type = FILTER_SANITIZE_STRING, $options = 0)
     {
-        return filter_input(INPUT_GET, $parameter, $type);
+        return filter_input(INPUT_GET, $parameter, $type, $options);
     }
 
-    protected function getPostParameter($parameter, $type = FILTER_SANITIZE_STRING)
+    protected function getPostParameter($parameter, $type = FILTER_SANITIZE_STRING, $options = 0)
     {
-        return filter_input(INPUT_POST, $parameter, $type);
+        return filter_input(INPUT_POST, $parameter, $type, $options);
     }
 
     protected function display()

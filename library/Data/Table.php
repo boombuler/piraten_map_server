@@ -8,7 +8,7 @@ abstract class Data_Table extends Data_Abstract
 
     abstract public function validate();
 
-    private static function tableName()
+    protected static function tableName()
     {
         return System::getConfig('tbl_prefix') . static::getTableName();
     }

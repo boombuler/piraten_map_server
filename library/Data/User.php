@@ -158,6 +158,9 @@ class Data_User extends Data_Table implements IChangableUser
         $query = 'SELECT * FROM ' . System::getConfig('tbl_prefix') . 'users WHERE LOWER(username)=?';
         $result = System::query($query, array($username));
         $user = $result->fetchObject(__CLASS__);
+        if (__CLASS__ != get_class($user)) {
+            return null;
+        }
 
         $dbpwd = $user->getPassword();
         if (strlen($dbpwd) == 32) {
