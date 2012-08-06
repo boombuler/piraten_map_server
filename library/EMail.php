@@ -3,8 +3,8 @@
 class EMail {
   private static function getMailSubject($reset) {
     if ($reset)
-      return "Plakat Karte: Neues Passwort";
-    return "Plakat Karte: Ihre Anmeldung";
+      return _('Map: Your new password');
+    return _('Map: Your regestration');
   }
 
   private static function getMailBody($duser, $pass, $reset ) {
@@ -21,7 +21,7 @@ class EMail {
 
   private static function getMailHeader() {
     $send_mail_adr = System::getConfig('send_mail_adr');
-    return "From: Plakat Karte <$send_mail_adr>\n" .
+	return "From: " . _('OSM Pirate Map') . " <$send_mail_adr>\n" .
            "Reply-To: $send_mail_adr\n" .
            "X-Mailer: PHP/" . phpversion();
   }

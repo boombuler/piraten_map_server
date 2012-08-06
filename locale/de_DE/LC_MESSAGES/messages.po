@@ -147,3 +147,29 @@ msgstr "Kategorie konnte nicht gelöscht werden."
 msgid "Unknown action"
 msgstr "Unbekannte Aktion."
 
+msgid "Marker"
+msgstr "Marker"
+
+msgid "City"
+msgstr "Stadt"
+
+msgid "Street"
+msgstr "Straße"
+
+msgid "Description"
+msgstr "Beschreibung"
+
+msgid "Image URL"
+msgstr "Bild URL"
+
+msgid "Delete"
+msgstr "Löschen"
+
+msgid "Last changed by %1$s<br />on %2$s"
+msgstr "Zuletzt geändert von %1$s<br />am %2$s"
+
+msgid "Map: Your regestration"
+msgstr "Plakat Karte: Ihre Anmeldung"
+
+msgid "Map: Your new password"
+msgstr "Plakat Karte: Neues Passwort"

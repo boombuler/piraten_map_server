@@ -10,7 +10,7 @@
 				<fieldset>
 					{{if i}}
 						<div class="clearfix">
-							<label>Bild</label>
+							<label><?php echo _('Image'); ?></label>
 							<div class="input">
 								<a target="_blank" href="{{:i}}"><img class="photo" src="{{:i}}" /></a>
 							</div>
@@ -18,7 +18,7 @@
 					{{/if}}
 					{{if loginOK}}
 						<div class="clearfix">
-							<label for="typ[{{:id}}]">Marker</label>
+							<label for="typ[{{:id}}]"><?php echo _('Marker'); ?></label>
 							<div class="input">
 								<select class="xlarge" id="typ[{{:id}}]" name="typ[{{:id}}]">
 								{{fields posterFlags}}
@@ -34,27 +34,27 @@
 							</div>
 						</div>
 						<div class="clearfix">
-							<label for="city[{{:id}}]">Stadt</label>
+							<label for="city[{{:id}}]"><?php echo _('City'); ?></label>
 							<div class="input">
 								<input type="text" size="30" class="xlarge" name="city[{{:id}}]" id="city[{{:id}}]" value="{{:ci}}" />
 							</div>
 						</div>
 						<div class="clearfix">
-							<label for="street[{{:id}}]">Stra&#223;e</label>
+							<label for="street[{{:id}}]"><?php echo _('Street'); ?></label>
 							<div class="input">
 								<input type="text" size="30" class="xlarge" name="street[{{:id}}]" id="street[{{:id}}]" value="{{:s}}" />
 							</div>
 						</div>
 					{{/if}}
 					<div class="clearfix">
-						<label for="comment[{{:id}}]">Beschreibung</label>
+						<label for="comment[{{:id}}]"><?php echo _('Description'); ?></label>
 						<div class="input">
 							<textarea rows="3" cols="30" class="xlarge" name="comment[{{:id}}]" id="comment[{{:id}}]">{{:c}}</textarea>
 						</div>
 					</div>
 					{{if loginOK}}
 						<div class="clearfix">
-							<label for="image[{{:id}}]">Bild URL</label>
+							<label for="image[{{:id}}]"><?php echo _('Image URL'); ?></label>
 							<div class="input">
 								<input type="text" size="30" class="xlarge" name="image[{{:id}}]" id="image[{{:id}}]" value="{{:i}}" />
 							</div>
@@ -62,7 +62,7 @@
 					{{/if}}
 					<div class="clearfix">
 						<div class="input">
-							<small>Zuletzt ge&#228;ndert von <b>{{:u}}</b><br />am <b>{{:d}}</b></small>
+							<small><?php echo _f('Last changed by %1$s<br />on %2$s', '<b>{{:u}}</b>', '<b>{{:d}}</b>'); ?></small>
 						</div>
 					</div>
 				</fieldset>
@@ -70,8 +70,8 @@
 		</div>
 		{{if loginOK}}
 		<div class="modal-footer">
-			<input type="button" value="Speichern" class="btn primary" onclick="javascript:change({{:id}})" />
-			<input type="button" value="L&#246;schen" class="btn danger" onclick="javascript:delid({{:id}})" />
+			<input type="button" value="<?php echo _('Save'); ?>" class="btn primary" onclick="javascript:change({{:id}})" />
+			<input type="button" value="<?php echo _('Delete'); ?>" class="btn danger" onclick="javascript:delid({{:id}})" />
 		</div>
 		{{/if}}
 	</div>
