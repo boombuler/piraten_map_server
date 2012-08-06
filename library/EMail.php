@@ -13,15 +13,15 @@ class EMail {
 
     $body = "";
     if ($reset)
-      $body = "Hallo $user,\nwir haben dein Passwort für $url zurück gesetzt.\nUm dich einzuloggen benutzte folgendes Passwort: $pass\nDu kannst dein Passwort dort ändern!\n\nViel Erfolg beim Plakatieren ;-)";
+      $body = _f("Reset Password Mail", $user, $url, $pass);
     else
-      $body = "Hallo $user,\nvielen Dank für deine Anmeldung auf $url.\nUm dich einzuloggen benutzte folgendes Passwort: $pass\nDu kannst dein Passwort dort ändern!\n\nViel Erfolg beim Plakatieren ;-)";
+      $body = _f("New User Mail",$user, $url, $pass);
     return wordwrap($body, 70);
   }
 
   private static function getMailHeader() {
     $send_mail_adr = System::getConfig('send_mail_adr');
-	return "From: " . _('OSM Pirate Map') . " <$send_mail_adr>\n" .
+    return "From: " . _('OSM Pirate Map') . " <$send_mail_adr>\n" .
            "Reply-To: $send_mail_adr\n" .
            "X-Mailer: PHP/" . phpversion();
   }
@@ -36,5 +36,3 @@ class EMail {
 
 
 }
-
-?>

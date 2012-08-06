@@ -6,7 +6,7 @@ if (!User::current()) {
     die;
 }
 if (!filter_input(INPUT_GET, 'city', FILTER_SANITIZE_STRING))
-    die('Bitte gib eine Stadt ein.');
+    die(_('Invalid City'));
 $_GET['format'] = 'csv';
 $controller = new Poster_Controller();
 $controller->listPostersInCity();

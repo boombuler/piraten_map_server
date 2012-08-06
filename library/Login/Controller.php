@@ -15,7 +15,7 @@ class Login_Controller extends Controller
     public function logout()
     {
         User::logout();
-        $this->displayMessage("Logout OK", true);
+        $this->displayMessage(_('Logout OK'), true);
     }
 
     public function login()
@@ -26,13 +26,13 @@ class Login_Controller extends Controller
         $user = User::login($username, $password);
 
         if ($user)
-            $this->displayMessage("Login OK", true, array(
+            $this->displayMessage(_('Login OK'), true, array(
                 'username' => $user->getUsername(),
                 'usertype' => $user->getType(),
                 'admin' => $user->getAdmin()
             ));
         else
-            $this->displayMessage("Login fehlgeschlagen", false);
+            $this->displayMessage(_('Login failed'), false);
     }
 
     public function register()
@@ -40,7 +40,7 @@ class Login_Controller extends Controller
         $username = $this->getParameter('username');
         $email = $this->getParameter('email');
         if (Data_User::isUsernameOrEmailInUse($username, $email)) {
-            $this->displayMessage("Benutzername oder EMail-Adresse wird bereits verwendet", false);
+            $this->displayMessage(_('Username or password alread in use'), false);
         }
         $user = new Data_User;
         $user->setUsername($username);
@@ -49,10 +49,10 @@ class Login_Controller extends Controller
         $plain_password = $user->setRandomPassword();
 
         if (!EMail::sendPasswordMail($user, $plain_password, false)) {
-            $this->displayMessage("Email konnte nicht gesendet werden!", false);
+            $this->displayMessage(_('Could not send email'), false);
         } else {
             $user->save();
-            $this->displayMessage("Ihr Passwort wurde ihnen zugesandt", true);
+            $this->displayMessage(_('We just send you an email with your new password'), true);
         }
     }
 
@@ -65,13 +65,13 @@ class Login_Controller extends Controller
         if ($user) {
             $plain_password = $user->setRandomPassword();
             if (!EMail::sendPasswordMail($user, $plain_password, true)) {
-                $this->displayMessage("Fehler beim versenden der EMail!", false);
+                $this->displayMessage(_('Could not send email'), false);
             } else {
                 $user->save();
-                $this->displayMessage("Neues Passwort per EMail versand", true);
+                $this->displayMessage(_('We just send you a new password'), true);
             }
         } else {
-            $this->$this->displayMessage("Unbekannter Benutzer!", false);
+            $this->$this->displayMessage(_('Invalid User'), false);
         }
     }
 
@@ -82,14 +82,14 @@ class Login_Controller extends Controller
 
         $user = User::current();
         if (!($user instanceof IChangableUser))
-            $this->displayMessage("Passwort konnte nicht geändert werden", false);
+            $this->displayMessage(_('Password could not be changed'), false);
         else if ($newpass != $confirm)
-            $this->displayMessage("Passwörter stimmen nicht überein", false);
+            $this->displayMessage(_('The passwords do not match'), false);
         else {
             $user->setPassword($newpass);
             $user->save();
 
-            $this->displayMessage("Passwort wurde geändert", true);
+            $this->displayMessage(_('Password successfully changed'), true);
         }
     }
 }

@@ -173,3 +173,65 @@ msgstr "Plakat Karte: Ihre Anmeldung"
 
 msgid "Map: Your new password"
 msgstr "Plakat Karte: Neues Passwort"
+
+msgid "Reset Password Mail"
+msgstr ""
+"Hallo %1$s,\n"
+"\n"
+"wir haben dein Passwort für %2$s zurück gesetzt.\n"
+"Um dich einzuloggen benutzte folgendes Passwort: %3$s\n"
+"Du kannst dein Passwort dort ändern!\n"
+"\n"
+"Viel Erfolg beim Plakatieren ;-)"
+
+msgid "New User Mail"
+msgstr ""
+"Hallo %1$s\n"
+"vielen Dank für deine Anmeldung auf %2$s.\n"
+"Um dich einzuloggen benutzte folgendes Passwort: %3$s\n"
+"Du kannst dein Passwort dort ändern!\n"
+"\n"
+"Viel Erfolg beim Plakatieren ;-)"
+
+msgid "Invalid City"
+msgstr "Bitte geben Sie eine Stadt an"
+
+msgid "markers.csv"
+msgstr "plakate.csv"
+
+msgid "Count"
+msgstr "Anzahl"
+
+msgid "Logout OK"
+msgstr "Abmelden erfolgreich"
+
+msgid "Login OK"
+msgstr "Anmelden erfolgreich"
+
+msgid "Login failed"
+msgstr "Login fehlgeschlagen"
+
+msgid "Username or password alread in use"
+msgstr "Benutzername oder EMail-Adresse wird bereits verwendet"
+
+msgid "Could not send email"
+msgstr "Email konnte nicht gesendet werden!"
+
+msgid "We just send you an email with your new password"
+msgstr "Ihr Passwort wurde ihnen zugesandt"
+
+msgid "We just send you a new password"
+msgstr "Neues Passwort per EMail versand"
+
+msgid "Invalid User"
+msgstr "Unbekannter Benutzer"
+
+msgid "Password could not be changed"
+msgstr "Passwort konnte nicht geändert werden"
+
+msgid "The passwords do not match"
+msgstr "Passwörter stimmen nicht überein"
+
+msgid "Password successfully changed"
+msgstr "Passwort wurde geändert"
+

@@ -5,7 +5,7 @@ if (!$file)
   die('could not open file');
 
 //header
-fputcsv($file, array('Anzahl', 'street', 'type', 'comment'), ';');
+fputcsv($file, array(_('Count'), _('Street'), _('Marker'), _('Description')), ';');
 
 //content
 foreach($this->getPosters() as $row) {
@@ -16,7 +16,7 @@ fclose($file);
 
 header('Content-Description: File Transfer');
 header('Content-Type: text/plain');
-header('Content-Disposition: attachment; filename=plakate.csv');
+header('Content-Disposition: attachment; filename=' . _('markers.csv'));
 header('Expires: 0');
 header('Cache-Control: must-revalidate');
 header('Content-Length: ' . filesize($filename));

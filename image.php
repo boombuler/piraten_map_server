@@ -49,22 +49,3 @@ if ($_REQUEST[completed] == 1) {
 }
 exit();
 ?>
-
-<html>
-  <head><title>Upload page</title></head>
-  <body>
-    <h1>Image Uploader</h1>
-    <?php if ($_REQUEST[completed] != 1) { ?>
-      <b>Please upload an image</b><br>
-      <form enctype=multipart/form-data method=post>
-        <input type=hidden name=MAX_FILE_SIZE value=1500000>
-        <input type=hidden name=completed value=1>
-        Choose file to send: <input type=file name=mailfile> and
-        <input type=submit>
-      </form>
-    <?php } else { ?>
-    <b><?php if ($msg) echo $msg ?></b>
-    <?php } ?>
-    <hr>
-  </body>
-</html>
