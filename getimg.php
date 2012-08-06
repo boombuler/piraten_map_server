@@ -19,16 +19,15 @@
 */
 require_once('library/System.php');
 
-if (!User::current())
+if (!User::current() and !System::getConfig('allow_view_public')) 
 {
-	echo "Please Login!";
+	echo _('Please Login!')
 	exit();
 }
 $id = preg_replace("/[^a-zA-Z0-9]+/","",$_GET[id]);
 if (!$id)
 {
-	echo "Please provide ID!";
-	exit();
+	die 'Invalid ID'
 }
 
 header("Content-type: image/jpg");

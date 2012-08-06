@@ -31,7 +31,8 @@ class System
                                         'start_zoom' => 6,
                                         'start_lat' => 53.37, 
                                         'start_lon' => 10.39,
-                                        'language' => 'de_DE');
+                                        'language' => 'de_DE',
+                                        'mapunit' => 'm');
 
                                      
     private static $alltables = null;
@@ -165,9 +166,9 @@ class System
     
     public static function setLanguage($language)
     {
-        $domain = "messages";
+        $domain = 'messages';
 
-        putenv("LANG=" . $language);
+        putenv('LANG=' . $language);
         setlocale(LC_ALL, $language . '.UTF-8');
         bindtextdomain($domain, dirname(dirname(__FILE__)) . '/locale');
         bind_textdomain_codeset($domain, 'UTF-8');

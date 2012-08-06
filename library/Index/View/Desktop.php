@@ -21,7 +21,11 @@
     var startPos = <?php print json_encode($this->getInitialPosition()); ?>;
     var posterFlags = <?php print json_encode(Data_Poster::getTypes()); ?>;
     var loginData = <?php print json_encode($this->getUserData()); ?>;
-
+	var mapDefaults = {
+		'rawlabel': <?php echo _('Raw'); ?>,
+		'unit': <?php echo System::getConfig('mapunit'); ?>
+	}
+	
     function onPageLoaded() {
         <?php
         if ($this->getMessage()) {

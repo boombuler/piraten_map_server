@@ -1,5 +1,4 @@
 touchMapLite.prototype.TileUrlProviderOSM = function(baseUri, prefix, extension) {
-        //var uris = ['http://a.tile.openstreetmap.org', 'http://b.tile.openstreetmap.org', 'http://c.tile.openstreetmap.org'];
 		var uris = ['http://tile.openstreetmap.org'];
 	if (baseUri)
 	    uris = [baseUri];

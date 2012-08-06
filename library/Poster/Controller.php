@@ -23,7 +23,7 @@ class Poster_Controller extends Controller
         $params = array();
 
         if (Data_Poster::isValidType($this->getGetParameter('filter'))) {
-          $filterstr = " AND type = :type";
+          $filterstr = ' AND type = :type';
           $params['type'] = $this->getGetParameter('filter');
         }
 
@@ -34,7 +34,7 @@ class Poster_Controller extends Controller
             $params['bbw'] = $bbw;
             $params['bbn'] = $bbn;
             $params['bbs'] = $bbs;
-            $filterstr .= " AND (lon >= :bbe) AND (lon <= :bbw) AND (lat >= :bbn) AND (lat <= :bbs)";
+            $filterstr .= ' AND (lon >= :bbe) AND (lon <= :bbw) AND (lat >= :bbn) AND (lat <= :bbs)';
         }
 
         $tbl_prefix = System::getConfig('tbl_prefix');

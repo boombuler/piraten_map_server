@@ -235,3 +235,9 @@ msgstr "Passwörter stimmen nicht überein"
 msgid "Password successfully changed"
 msgstr "Passwort wurde geändert"
 
+msgid "Raw"
+msgstr "Unbearbeitet"
+
+msgid "Please Login!"
+msgstr "Bitte anmelden!"
+

@@ -21,7 +21,7 @@
 require_once('library/System.php');
 require("gps.php");
 
-if (User::validateSession())
+if (!User::current())
 	exit();
 
 if ($_REQUEST[completed] == 1) {
@@ -47,5 +47,4 @@ if ($_REQUEST[completed] == 1) {
 		header("Location: ./?message=".$msg);
 	}
 }
-exit();
 ?>

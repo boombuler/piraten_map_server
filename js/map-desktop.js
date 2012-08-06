@@ -209,7 +209,7 @@ function showModalId(id) {
 
 function getGML(filter, display) {
     if (!display)
-        display = "Unbearbeitet";
+        display = mapDefaults.rawlabel;
 
     var filterurl = "./kml.php?filter="+filter;
 
@@ -290,7 +290,7 @@ function init() {
             maxResolution: 156543.0399,
             maxExtent: new OpenLayers.Bounds(-2037508.34,-2037508.34,2037508.34,2037508.34),
             numZoomLevels: 19,
-            units: 'm',
+            units: mapDefaults.unit,
             projection: new OpenLayers.Projection("EPSG:900913"),
             displayProjection: new OpenLayers.Projection("EPSG:4326")
     };

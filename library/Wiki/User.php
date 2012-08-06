@@ -48,9 +48,9 @@ class Wiki_User implements IUser
     {
         if ($this->initposition == null) {
             $categories = Wiki_Connection::getUserCategories($this->session, $this->username);
-            $filter = "category = ?";
+            $filter = 'category = ?';
             for ($i = 1; $i < count($categories); $i++) 
-                $filter .= " OR category = ?";
+                $filter .= ' OR category = ?';
             $query = 'SELECT lat, lon, zoom FROM ' 
                    . System::getConfig('tbl_prefix') . 'regions'
                    . ' WHERE ' . $filter . 'order by zoom desc limit 1';
