@@ -64,8 +64,6 @@
                         </ul>
                     </li>
 
-
-                    <li class="depLogin"><a href="#" onclick="javascript:showModalId('uploadimg');"><?php echo _('Upload Image'); ?></a></li>
 					<li class="depLogin"><a href="#" onclick="showModalId('exportCity');"><?php _('Export Markers'); ?></a></li>
 
                     <li class="depLogout"><a href="#" onclick="javascript:showModalId('loginform');"><?php echo _('Login'); ?></a></li>
@@ -80,7 +78,6 @@
     <div style="display:none;" id="dlgBag">
     <?php
         include('dialogs/loginform.php');
-        include('dialogs/uploadimg.php');
         include('dialogs/exportCity.php');
         if (System::canSendMails()) {
             include('dialogs/newpassform.php');
