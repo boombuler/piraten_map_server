@@ -167,7 +167,7 @@ else
 	
 	<div id="home" data-role="page">
 		<div data-role="header">			
-			<h1>Karte</h1>
+			<h1>Plakate-Karte</h1>
 		</div>
 		<div id="viewer">
 			<div class="well"><!-- --></div>
