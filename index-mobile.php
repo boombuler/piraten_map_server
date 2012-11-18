@@ -166,9 +166,25 @@ else
 <body>
 	
 	<div id="home" data-role="page">
-		<div data-role="header">			
+		<div data-role="header">
 			<h1>Plakate-Karte</h1>
 		</div>
+<?php if(isset($_GET["error"])) { ?>
+		<div id="errors" class="ui-bar ui-bar-e">
+			<div style="float:right; text-align:right;">
+				<a href="#home" onclick="$('#errors').hide();" data-role="button" data-icon="delete" data-iconpos="notext" data-shadow="false" title="Schließen">&nbsp;</a>
+			</div>
+			<p style="font-size:85%;"><?php echo $_GET["error"]; ?></p>
+		</div>
+<?php } ?>
+<?php if(isset($_GET["message"])) { ?>
+		<div id="messages" class="ui-bar ui-bar-d">
+			<div style="float:right; text-align:right;">
+				<a href="#home" onclick="$('#messages').hide();" data-role="button" data-icon="delete" data-iconpos="notext" data-shadow="false" title="Schließen">&nbsp;</a>
+			</div>
+			<p style="font-size:85%;"><?php echo $_GET["message"]; ?></p>
+		</div>
+<?php } ?>
 		<div id="viewer">
 			<div class="well"><!-- --></div>
 			<div class="surface" id="touchArea"><!-- --></div>
