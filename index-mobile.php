@@ -215,6 +215,7 @@ foreach ($options as $key=>$value)
 					<li data-role="list-divider">Zugang</li>
 						
 <?php if ($loginok==0) { ?>
+					<li><a href="#register">Registrieren</a></li>
 					<li data-role="fieldcontain">
 						<label for="username">Benutzername:</label>
 						<input type="text" name="username" id="username" />
@@ -243,6 +244,28 @@ foreach ($options as $key=>$value)
 		</div>
     </div>
 
+	<div id="register" data-role="page">
+		<div data-role="header">
+			<a href="#" data-role="button" data-rel="back" data-icon="back" data-iconpos="notext"></a>
+			<h1>Registrieren</h1>
+		</div>
+		<div data-role="content">
+		<form action="<?php echo $url?>register.php" method="post" class="dialog" id="registerfrm" name="registerfrm">
+			<input type="hidden" name="action" value="register" />
+			<ul data-role="listview" data-theme="c" data-dividertheme="b">
+				<li data-role="list-divider">Account registrieren</li>
+				<li data-role="fieldcontain">
+					<label for="username">Benutzername:</label>
+					<input type="text" name="username" id="username" />
+				</li>
+				<li data-role="fieldcontain">
+					<label for="email">E-Mail-Adresse:</label>
+					<input type="email" name="email" id="email" />
+				</li>
+				<li><a href="#home" onclick="document.forms['registerfrm'].submit();">Registrieren</a></li>
+			</ul>
+		</form>
+	</div>
 
   <div id="editfrm" title="Details" data-role="page">
   	<div data-role="header">
