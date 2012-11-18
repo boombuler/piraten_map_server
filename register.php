@@ -34,23 +34,23 @@
 
   function getMailSubject($reset) {
     if ($reset)
-      return "Plakat Karte: Neues Passwort";
-    return "Plakat Karte: Ihre Anmeldung";
+      return "Plakat-Karte: Neues Passwort";
+    return "Plakat-Karte: Deine Anmeldung";
   }
 
   function getMailBody($user, $pass, $reset) {
     global $url;
 	$body = "";
     if ($reset)
-      $body = "Hallo $user,\nwir haben dein Passwort für $url zurück gesetzt.\nUm dich einzuloggen benutzte folgendes Passwort: $pass\nDu kannst dein Passwort dort ändern!\n\nViel Erfolg beim Plakatieren ;-)";
+      $body = "Hallo $user,\nwir haben dein Passwort für $url zurück gesetzt.\nUm dich einzuloggen, benutzte folgendes Passwort: $pass\nDu kannst dein Passwort nach dem Login ändern.\n\nViel Erfolg beim Plakatieren ;-)";
 	else
-      $body = "Hallo $user,\nvielen Dank für deine Anmeldung auf $url.\nUm dich einzuloggen benutzte folgendes Passwort: $pass\nDu kannst dein Passwort dort ändern!\n\nViel Erfolg beim Plakatieren ;-)";
+      $body = "Hallo $user,\nvielen Dank für deine Anmeldung auf $url.\nUm dich einzuloggen, benutzte folgendes Passwort: $pass\nDu kannst dein Passwort nach dem Login ändern.\n\nViel Erfolg beim Plakatieren ;-)";
 	return wordwrap($body, 70);
   }
   
   function getMailHeader() {
 	global $send_mail_adr;
-	return "From: Plakat Karte <$send_mail_adr>\n" .
+	return "From: Plakat-Karte <$send_mail_adr>\n" .
 		   "Reply-To: $send_mail_adr\n" .
 		   "X-Mailer: PHP/" . phpversion();
   }
@@ -70,7 +70,7 @@
     $stmt->execute(array($lusername, $email));
     $res = $stmt->fetch();
     if (!$res) {
-      return errorMsgHeader("Benutzername oder EMail-Adresse nicht gefunden!");
+      return errorMsgHeader("Benutzername oder E-Mail-Adresse nicht gefunden!");
     }
     $plain_password = createRandomPassword();
     $pwhash = getPWHash($username, $plain_password);
@@ -79,29 +79,29 @@
 
     $db = null;
     if (!sendPasswordMail($email, $username, $plain_password, true))
-      return errorMsgHeader("Fehler beim versenden der EMail!");
-    return infoMsgHeader("Neues Passwort per EMail versand");
+      return errorMsgHeader("Fehler beim Versenden der E-Mail!");
+    return infoMsgHeader("Neues Passwort wurde per E-Mail verschickt.");
   }
 
   function changePassword($newpass, $confirm) {
     global $tbl_prefix, $_SESSION;
     if (!isset($_SESSION['siduser']) || isset($_SESSION['wikisession']))
-      return errorMsgHeader("Passwort konnte nicht geändert werden");
+      return errorMsgHeader("Passwort konnte nicht geändert werden!");
     if ($newpass != $confirm)
-        return errorMsgHeader("Passwörter stimmen nicht überein");
+        return errorMsgHeader("Passwörter stimmen nicht überein!");
     $lusername = strtolower($_SESSION['siduser']);
     $pwhash = getPWHash($lusername, $newpass);
     $db = openDB();
     $db->prepare("UPDATE ".$tbl_prefix."users SET password = ? WHERE username = ?")
        ->execute(array($pwhash, $lusername));
     $db = null;
-    return infoMsgHeader("Passwort wurde geändert");
+    return infoMsgHeader("Passwort wurde geändert.");
   }
 
   function register($username, $email) {
     global $tbl_prefix;
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-      return errorMsgHeader("Ungültige EMail Adresse");
+      return errorMsgHeader("Ungültige E-Mail Adresse!");
     }
     $lusername = strtolower($username);
     $db = openDB();
@@ -109,7 +109,7 @@
     $stmt->execute(array($lusername, $email));
 
     if ($stmt->rowCount() > 0) {
-      return errorMsgHeader("Benutzername oder EMail-Adresse wird bereits verwendet");
+      return errorMsgHeader("Benutzername oder E-Mail-Adresse wird bereits verwendet!");
     }
     $plain_password = createRandomPassword();
     $pwhash = getPWHash($username, $plain_password);
@@ -117,9 +117,9 @@
        ->execute(array($lusername, $pwhash, $email));
     $db = null;
     if (!sendPasswordMail($email, $username, $plain_password, false)) {
-      return errorMsgHeader("Email konnte nicht gesendet werden!");
+      return errorMsgHeader("E-Mail konnte nicht gesendet werden!");
     }
-    return infoMsgHeader("Ihr Passwort wurde ihnen zugesandt");
+    return infoMsgHeader("Dein Passwort wurde dir zugesandt.");
   }
 
   if ($_POST['action'] == 'register') {

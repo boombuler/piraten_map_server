@@ -22,7 +22,7 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-	<title>OpenStreetMap Piraten Karte</title>
+	<title>Plakate-Karte</title>
     <meta charset="UTF-8" />
  	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
  	<meta http-equiv="imagetoolbar" content="no" />
@@ -233,10 +233,10 @@ foreach ($options as $key=>$value)
 
 					<li><a onclick="touchMap.findLocationHandler();" href="#home">Position suchen</a></li>
 					<li data-role="fieldcontain">
-						<label for="slider">Positionsverfolgung</label>
+						<label for="slider">Positionsverfolgung:</label>
 						<select name="slider" id="slider" data-role="slider" onchange="toggleWatchLocation(this);">
-							<option value="off">Off</option>
-							<option value="on">On</option>
+							<option value="off">Aus</option>
+							<option value="on">An</option>
 						</select> 
 					</li>
 				</ul>

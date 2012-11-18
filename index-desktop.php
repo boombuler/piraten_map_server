@@ -332,7 +332,7 @@ else
 	<div class="topbar">
       <div class="fill">
         <div class="container">
-          <h3><a href="#">Plakat Karte</a></h3>
+          <h3><a href="#">Plakat-Karte</a></h3>
           <ul>
 		<?php if ($loginok != 0) { ?>
 			<form id="formLogout" action="<?php echo $url?>login.php?action=logout" method="post"></form>
@@ -390,7 +390,7 @@ else
 						<input type="password" size="30" class="xlarge" name="password" id="password" />
                                                 <?php if ($canSendMail) { ?>
 						<span class="help-block">
-							<a href="#" onclick="javascript:closeModalDlg(false, function() {showModalId('newpassform');});">Passwort vergessen?</a> (Nur für nicht Wiki-Benutzer)
+							<a href="#" onclick="javascript:closeModalDlg(false, function() {showModalId('newpassform');});">Passwort vergessen?</a> (Nur für Nicht-Wiki-Benutzer)
 						</span>
                                                 <?php } ?>
 					</div>
@@ -413,14 +413,14 @@ else
 			<form id="formnewpass" action="<?php echo $url?>register.php" method="post">
 				<input type="hidden" name="action" value="resetpw" />
 				<div class="clearfix">
-					<label for="username">Benutzer</label>
+					<label for="username">Benutzername:</label>
 					<div class="input">
 						<input type="text" size="30" class="xlarge" name="username" />
 					</div>
 				</div>
 
 				<div class="clearfix">
-					<label for="password">EMail Adresse</label>
+					<label for="password">E-Mail-Adresse:</label>
 					<div class="input">
 						<input type="text" size="30" class="xlarge" name="email"/>
 					</div>
@@ -443,14 +443,14 @@ else
 				<form id="formregister" action="<?php echo $url?>register.php" method="post">
 					<input type="hidden" name="action" value="register" />
 					<div class="clearfix">
-						<label for="username">Benutzer</label>
+						<label for="username">Benutzername:</label>
 						<div class="input">
 							<input type="text" size="30" class="xlarge" name="username" />
 						</div>
 					</div>
 
 					<div class="clearfix">
-						<label for="password">EMail Adresse</label>
+						<label for="email">E-Mail-Adresse:</label>
 						<div class="input">
 							<input type="text" size="30" class="xlarge" name="email"/>
 						</div>
@@ -500,14 +500,14 @@ else
 				<input type="hidden" name="action" value="changepw" />
 				
 				<div class="clearfix">
-					<label for="password">Neues Passwort</label>
+					<label for="password">Neues Passwort:</label>
 					<div class="input">
 						<input type="password" size="30" class="xlarge" name="newpass" />
 					</div>
 				</div>
 
 				<div class="clearfix">
-					<label for="password">Neues Passwort wiederholen</label>
+					<label for="password">Neues Passwort wiederholen:</label>
 					<div class="input">
 						<input type="password" size="30" class="xlarge" name="passconfirm" />
 					</div>
@@ -556,7 +556,7 @@ else
 			<ul class="unstyled">
 			  <?php if ($loginok==0) { ?>
 				<li>Plakate werden erst nachdem Login editierbar.</li>
-				<li>Lokaler oder Wiki Login möglich!</li>
+				<li>Lokaler oder Wiki-Login ist möglich!</li>
 			  <? } else {	?>
 				<li>STRG+Mausklick: neuer Marker</li>
 			  <?php } ?>
