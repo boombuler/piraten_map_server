@@ -22,7 +22,7 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-	<title>OpenStreetMap Piraten Karte</title>
+	<title>Plakate-Karte</title>
     <meta charset="UTF-8" />
  	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
  	<meta http-equiv="imagetoolbar" content="no" />
@@ -166,9 +166,25 @@ else
 <body>
 	
 	<div id="home" data-role="page">
-		<div data-role="header">			
-			<h1>Karte</h1>
+		<div data-role="header">
+			<h1>Plakate-Karte</h1>
 		</div>
+<?php if(isset($_GET["error"])) { ?>
+		<div id="errors" class="ui-bar ui-bar-e">
+			<div style="float:right; text-align:right;">
+				<a href="#home" onclick="$('#errors').hide();" data-role="button" data-icon="delete" data-iconpos="notext" data-shadow="false" title="Schließen">&nbsp;</a>
+			</div>
+			<p style="font-size:85%;"><?php echo $_GET["error"]; ?></p>
+		</div>
+<?php } ?>
+<?php if(isset($_GET["message"])) { ?>
+		<div id="messages" class="ui-bar ui-bar-d">
+			<div style="float:right; text-align:right;">
+				<a href="#home" onclick="$('#messages').hide();" data-role="button" data-icon="delete" data-iconpos="notext" data-shadow="false" title="Schließen">&nbsp;</a>
+			</div>
+			<p style="font-size:85%;"><?php echo $_GET["message"]; ?></p>
+		</div>
+<?php } ?>
 		<div id="viewer">
 			<div class="well"><!-- --></div>
 			<div class="surface" id="touchArea"><!-- --></div>
@@ -215,6 +231,7 @@ foreach ($options as $key=>$value)
 					<li data-role="list-divider">Zugang</li>
 						
 <?php if ($loginok==0) { ?>
+					<li><a href="#register">Registrieren</a></li>
 					<li data-role="fieldcontain">
 						<label for="username">Benutzername:</label>
 						<input type="text" name="username" id="username" />
@@ -232,10 +249,10 @@ foreach ($options as $key=>$value)
 
 					<li><a onclick="touchMap.findLocationHandler();" href="#home">Position suchen</a></li>
 					<li data-role="fieldcontain">
-						<label for="slider">Positionsverfolgung</label>
+						<label for="slider">Positionsverfolgung:</label>
 						<select name="slider" id="slider" data-role="slider" onchange="toggleWatchLocation(this);">
-							<option value="off">Off</option>
-							<option value="on">On</option>
+							<option value="off">Aus</option>
+							<option value="on">An</option>
 						</select> 
 					</li>
 				</ul>
@@ -243,6 +260,28 @@ foreach ($options as $key=>$value)
 		</div>
     </div>
 
+	<div id="register" data-role="page">
+		<div data-role="header">
+			<a href="#" data-role="button" data-rel="back" data-icon="back" data-iconpos="notext"></a>
+			<h1>Registrieren</h1>
+		</div>
+		<div data-role="content">
+		<form action="<?php echo $url?>register.php" method="post" class="dialog" id="registerfrm" name="registerfrm">
+			<input type="hidden" name="action" value="register" />
+			<ul data-role="listview" data-theme="c" data-dividertheme="b">
+				<li data-role="list-divider">Account registrieren</li>
+				<li data-role="fieldcontain">
+					<label for="username">Benutzername:</label>
+					<input type="text" name="username" id="username" />
+				</li>
+				<li data-role="fieldcontain">
+					<label for="email">E-Mail-Adresse:</label>
+					<input type="email" name="email" id="email" />
+				</li>
+				<li><a href="#home" onclick="document.forms['registerfrm'].submit();">Registrieren</a></li>
+			</ul>
+		</form>
+	</div>
 
   <div id="editfrm" title="Details" data-role="page">
   	<div data-role="header">
