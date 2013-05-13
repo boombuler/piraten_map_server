@@ -7,9 +7,9 @@
    to you under the Apache License, Version 2.0 (the
    "License"); you may not use this file except in compliance
    with the License.  You may obtain a copy of the License at
-   
+
    http://www.apache.org/licenses/LICENSE-2.0
-   
+
    Unless required by applicable law or agreed to in writing,
    software distributed under the License is distributed on an
    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -17,19 +17,19 @@
    specific language governing permissions and limitations
    under the License.
    */
-  
+
   require_once("includes.php");
-  
-  function createRandomPassword() { 
+
+  function createRandomPassword() {
     $chars = "abcdefghijkmnopqrstuvwxyz-_~!+%&§@<()>?ABCDEFGHIJKLMNOPQRSTUVWXYZ023456789";
     $len = rand(7, 10);
-    $pass = ""; 
+    $pass = "";
 
-    while (strlen($pass) <= $len) { 
+    while (strlen($pass) <= $len) {
         $num = rand(0, strlen($chars));
-        $pass = $pass . substr($chars, $num, 1); 
+        $pass = $pass . substr($chars, $num, 1);
     }
-    return $pass; 
+    return $pass;
   }
 
   function getMailSubject($reset) {
@@ -47,14 +47,14 @@
       $body = "Hallo $user,\nvielen Dank für deine Anmeldung auf $url.\nUm dich einzuloggen, benutzte folgendes Passwort: $pass\nDu kannst dein Passwort nach dem Login ändern.\n\nViel Erfolg beim Plakatieren ;-)";
 	return wordwrap($body, 70);
   }
-  
+
   function getMailHeader() {
 	global $send_mail_adr;
 	return "From: Plakat-Karte <$send_mail_adr>\n" .
 		   "Reply-To: $send_mail_adr\n" .
 		   "X-Mailer: PHP/" . phpversion();
   }
-  
+
   function sendPasswordMail($email, $user, $pass, $reset) {
 	global $send_mail_adr;
         if ($send_mail_adr != "")
@@ -73,7 +73,7 @@
       return errorMsgHeader("Benutzername oder E-Mail-Adresse nicht gefunden!");
     }
     $plain_password = createRandomPassword();
-    $pwhash = getPWHash($username, $plain_password);
+    $pwhash = getPWHash($plain_password);
     $db->prepare("UPDATE ".$tbl_prefix."users SET password = ? WHERE username = ? AND email = ?")
        ->execute(array($pwhash, $lusername, $email));
 
@@ -90,7 +90,7 @@
     if ($newpass != $confirm)
         return errorMsgHeader("Passwörter stimmen nicht überein!");
     $lusername = strtolower($_SESSION['siduser']);
-    $pwhash = getPWHash($lusername, $newpass);
+    $pwhash = getPWHash($newpass);
     $db = openDB();
     $db->prepare("UPDATE ".$tbl_prefix."users SET password = ? WHERE username = ?")
        ->execute(array($pwhash, $lusername));
@@ -112,7 +112,7 @@
       return errorMsgHeader("Benutzername oder E-Mail-Adresse wird bereits verwendet!");
     }
     $plain_password = createRandomPassword();
-    $pwhash = getPWHash($username, $plain_password);
+    $pwhash = getPWHash($plain_password);
     $db->prepare("INSERT INTO ".$tbl_prefix."users (username, password, email) VALUES(?, ?, ?)")
        ->execute(array($lusername, $pwhash, $email));
     $db = null;
@@ -127,7 +127,7 @@
         header(register($_POST['username'], $_POST['email']));
       }
   } else if ($_POST['action'] == 'changepw') {
-      if (isset($_POST['newpass']) && isset($_POST['passconfirm'])) {	  
+      if (isset($_POST['newpass']) && isset($_POST['passconfirm'])) {
         header(changePassword($_POST['newpass'], $_POST['passconfirm']));
       }
   } else if ($_POST['action'] == 'resetpw') {

@@ -7,9 +7,9 @@
    to you under the Apache License, Version 2.0 (the
    "License"); you may not use this file except in compliance
    with the License.  You may obtain a copy of the License at
-   
+
    http://www.apache.org/licenses/LICENSE-2.0
-   
+
    Unless required by applicable law or agreed to in writing,
    software distributed under the License is distributed on an
    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -40,22 +40,24 @@
   function login($username, $password)
   {
       global $tbl_prefix, $apiPath, $snoopy, $_SESSION;
-      $passwordmd5 = getPWHash($username, $password);
       $db = openDB();
-      $qry = $db->prepare("SELECT username, password, admin FROM " . $tbl_prefix . "users WHERE username = ? AND password = ?");
-      $qry->execute(array($username, $passwordmd5));
+      $qry = $db->prepare("SELECT username, password, admin FROM " . $tbl_prefix . "users WHERE LOWER(username) = ?");
+      $qry->execute(array(strtolower($username)));
 
       $num = $qry->rowCount();
       $result = false;
       $_SESSION['admin'] = false;
       if ($num == 1) {
           $res = $qry->fetch();
-          $_SESSION['siduser'] = $res->username;
-          $_SESSION['sidip'] = $_SERVER["REMOTE_ADDR"];
-          if ($res->admin == 1)
-              $_SESSION['admin'] = true;
-          $result = true;
-      } else {
+
+          if (crypt($password, $res->password) == $res->password) {
+            $_SESSION['siduser'] = $res->username;
+            $_SESSION['sidip'] = $_SERVER["REMOTE_ADDR"];
+            if ($res->admin == 1)
+                $_SESSION['admin'] = true;
+            $result = true;
+          }
+      } else if ($use_wiki) {
           $username = strtoupper(substr($username, 0, 1)) . substr($username, 1, strlen($username) - 1);
 
           $request_vars = array('action' => 'login', 'lgname' => $username, 'lgpassword' => $password, 'format' => 'php');
@@ -85,7 +87,7 @@
       }
 
       // Try to get the users location...
-      if ($_SESSION['siduser']) {
+      if ($_SESSION['siduser'] && $use_wiki) {
           $request_vars = array('action' => 'query', 'prop' => 'categories', 'titles' => 'Benutzer:' . $_SESSION['siduser'], 'format' => 'php');
           if ($snoopy->submit($apiPath, $request_vars)) {
               $array = unserialize($snoopy->results);

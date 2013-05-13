@@ -25,6 +25,7 @@ $send_mail_adr = "no-reply@piratenpartei.de";
 
 // SSL Wiki Verbindung benutzen?
 $use_ssl = true;
+$use_wiki = false;
 $curl_path="/usr/bin/curl";
 $allow_view_public = true;
 

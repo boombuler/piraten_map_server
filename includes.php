@@ -224,8 +224,13 @@ function map_change($id, $type, $comment, $city, $street, $imageurl) {
     $db = null;
 }
 
-function getPWHash($user, $pass) {
-    return md5(strtolower($user).":".$pass);
+function getPWHash($pass) {
+    $salt = "";
+    $salt_chars = array_merge(range('A','Z'), range('a','z'), range(0,9));
+    for($i=0; $i < 22; $i++) {
+      $salt .= $salt_chars[array_rand($salt_chars)];
+    }
+    return crypt($pass, sprintf('$2a$%02d$', 10) . $salt);
 }
 
 function errorMsgHeader($msg) {
