@@ -22,14 +22,14 @@ require_once("Snoopy.class.php");
 require_once("settings.php");
 require_once("dbcon.php");
 
-function get_inner_html( $node ) { 
+function get_inner_html( $node ) {
     $innerHTML= '';
-    $children = $node->childNodes; 
-    foreach ($children as $child) { 
-        $innerHTML .= $child->ownerDocument->saveXML( $child ); 
+    $children = $node->childNodes;
+    foreach ($children as $child) {
+        $innerHTML .= $child->ownerDocument->saveXML( $child );
     }
-    return $innerHTML; 
-} 
+    return $innerHTML;
+}
 
 $snoopy = new Snoopy;
 
@@ -128,8 +128,8 @@ function map_add($lon, $lat, $typ, $resolveAdr) {
     $street = "null";
     if ($resolveAdr) {
         $location = request_location($lon, $lat);
-        $city = "'".$location["city"]."'";
-        $street = "'".$location["street"]."'";
+        $city = $location["city"];
+        $street = $location["street"];
     }
 
     $db = openDB();
