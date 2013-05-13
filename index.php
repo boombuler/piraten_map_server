@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
        Licensed to the Apache Software Foundation (ASF) under one
        or more contributor license agreements.  See the NOTICE file
@@ -18,32 +18,19 @@
        under the License.
 */
 ob_start("ob_gzhandler");
-function detect_ie()
-{
-	if (isset($_SERVER['HTTP_USER_AGENT']) && 
-	(strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE') !== false))
-		return true;
-	else
-		return false;
-}
 header('content-type: text/html; charset=utf-8');
-if (detect_ie()) {
-  echo "<HTML><BODY><H1>IE is not supported!</H1></BODY></HTML>";
-}
-else {
-  require("includes.php");
+require("includes.php");
 
-  $mobile = strpos($_SERVER['HTTP_USER_AGENT'],"iPhone") || strpos($_SERVER['HTTP_USER_AGENT'],"Android") || strpos($_SERVER['HTTP_USER_AGENT'],"iPod") || strpos($_SERVER['HTTP_USER_AGENT'],"iPad")
-		 || strpos($_SERVER['HTTP_USER_AGENT'],"webOS");
+$mobile = strpos($_SERVER['HTTP_USER_AGENT'],"iPhone") || strpos($_SERVER['HTTP_USER_AGENT'],"Android") || strpos($_SERVER['HTTP_USER_AGENT'],"iPod") || strpos($_SERVER['HTTP_USER_AGENT'],"iPad")
+	 || strpos($_SERVER['HTTP_USER_AGENT'],"webOS");
 
-  if($_GET["view"] == "mobile")
-    $mobile = true;
-  if($_GET["view"] == "desktop")
-    $mobile = false;
+if($_GET["view"] == "mobile")
+  $mobile = true;
+if($_GET["view"] == "desktop")
+  $mobile = false;
 
-  if ($mobile)
-	require('index-mobile.php');
-  else
-	require('index-desktop.php');
-}
+if ($mobile)
+  require('index-mobile.php');
+else
+  require('index-desktop.php');
 ?>

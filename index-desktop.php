@@ -18,6 +18,8 @@
        under the License.
     */
 $canSendMail = $send_mail_adr != '';
+$is_mac_os = (isset($_SERVER['HTTP_USER_AGENT']) && (strpos($_SERVER['HTTP_USER_AGENT'], 'Macintosh') !== false));
+
 ?><!DOCTYPE html
 	 PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
 	 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -40,20 +42,20 @@ $canSendMail = $send_mail_adr != '';
 	#mapkey {
 		position:absolute;
 		z-index:3000;
-		bottom:0px; 
-		left:0px; 
+		bottom:0px;
+		left:0px;
 		display:none;
 	}
 	.localmodaldlg {
-		position: relative; 
-		top: auto; 
-		left: auto; 
-		margin: 0 auto; 
+		position: relative;
+		top: auto;
+		left: auto;
+		margin: 0 auto;
 		display:none;
 	}
 	-->
-	
-	
+
+
 	</style>
 	<script src="http://code.jquery.com/jquery-1.5.2.min.js"></script>
 	<script type="text/javascript" src="./js/OpenLayers.php"></script>
@@ -84,7 +86,7 @@ else if ($_SESSION['defzoom'])
 else
 	echo "var zoom = 6;";
 ?>
-		
+
 		var map;
 		var gmlLayers = new Array();
 
@@ -97,7 +99,7 @@ else
 				}
 			});
 		}
-		
+
 		function closeModal() {
 			if (selectedFeature != null) {
 				sf = selectedFeature;
@@ -106,30 +108,30 @@ else
 				selectControl.unselect(sf);
 			}
 		}
-		
+
 		function closeModalDlg(shouldRemove, oncomplete) {
-			$('#mask').fadeTo("fast",0, function() {$(this).css('display', 'none')});  
-			$('body > .modal').fadeOut(function() { 
-				$(this).remove(); 
+			$('#mask').fadeTo("fast",0, function() {$(this).css('display', 'none')});
+			$('body > .modal').fadeOut(function() {
+				$(this).remove();
 				if(!shouldRemove)
 					$('#dlgBag').append($(this));
 				if (oncomplete)
 					oncomplete();
-			}); 
+			});
 		}
-		
+
 		function showModal(content) {
 			var maskHeight = $(window).height();
 			var maskWidth = $(window).width();
-		 
+
 			//Set height and width to mask to fill up the whole screen
 			$('#mask').css({'width':maskWidth,'height':maskHeight});
-			 
-			//transition effect         
-			$('#mask').fadeTo("fast",0.8);  
+
+			//transition effect
+			$('#mask').fadeTo("fast",0.8);
 			//Get the window height and width
 			var winH = $(window).height();
-				   
+
 			$('body').append(content);
 			//Set the popup window to center
 			$('body > .modal')
@@ -137,7 +139,7 @@ else
 				.css('top',  maskHeight/2-$('body > .modal').height()/2)
 				.fadeIn();
 		}
-		
+
 		function showModalId(id) {
 			showModal($('#'+id));
 		}
@@ -149,7 +151,7 @@ else
 				display = "Unbearbeitet";
 
 			var filterurl = "./kml.php?filter="+filter;
-			
+
 			var mygml = new OpenLayers.Layer.Vector(display, {
 				projection: map.displayProjection,
 				strategies: [
@@ -187,8 +189,8 @@ else
 				units: 'm',
 				projection: new OpenLayers.Projection("EPSG:900913"),
 				displayProjection: new OpenLayers.Projection("EPSG:4326")
-			};		
-		
+			};
+
 			map = new OpenLayers.Map ("map",  options );
 			layerMapnik = new OpenLayers.Layer.OSM.Mapnik("Mapnik");
 			map.addLayer(layerMapnik);
@@ -202,7 +204,11 @@ else
 				draw: function () {
 					this.point = new OpenLayers.Handler.Point( control,
 						{"done": this.notice},
+<?php if ($is_mac_os) {?>
+						{keyMask: OpenLayers.Handler.MOD_META});
+<?php } else { ?>
 						{keyMask: OpenLayers.Handler.MOD_CTRL});
+<?php } ?>
 					this.point.activate();
 				},
 				notice: function (point) {
@@ -212,12 +218,12 @@ else
 					makeAJAXrequest("./kml.php", {
 						"action": "add",
 						"lon": lonlat.x,
-						"lat" :lonlat.y 
+						"lat" :lonlat.y
 					});
 				}
 			});
 			map.addControl(control);
-	
+
 			<?php
 			foreach ($options as $key=>$value)
 			{
@@ -229,23 +235,23 @@ else
 
 			selectControl = new OpenLayers.Control.SelectFeature(gmlLayers,
 						{onSelect: onFeatureSelect, onUnselect: onFeatureUnselect});
-		  
+
 			map.addControl(selectControl);
 			selectControl.activate();
 
 			var lonLat = new OpenLayers.LonLat(lon, lat).transform(new OpenLayers.Projection("EPSG:4326"), map.getProjectionObject());
-			map.setCenter (lonLat, zoom); 			
+			map.setCenter (lonLat, zoom);
 		}
-		
+
 	function onFeatureUnselect(feature) {
 		closeModal();
 	}
-		
+
 	function onFeatureSelect(feature) {
 		selectedFeature = feature;
 		showModal(createPopup(feature.attributes.description));
 	}
-	
+
 	function delid(id){
 		selectControl.unselect(selectedFeature);
 		makeAJAXrequest("./kml.php", {"action":"del", "id":id});
@@ -274,7 +280,7 @@ else
 			val.refresh({ force: true, params: { 'random': Math.random()} });
 		}
 	}
-	
+
 	function togglemapkey() {
 		show = $('#mapkey').css('display') == 'none';
 		if (show)
@@ -282,12 +288,12 @@ else
 		else
 		   $('#mapkey').fadeOut(function() { $('#mapkey').css('display', 'none') });
 	}
-	
+
 	function closeMsg() {
 	   $('#message').fadeOut(function() { $(this).remove() });
 	   $('#map').animate({top: '40px'});
 	}
-	
+
 	$(document).ready(function(e) {
 		init();
 		$(window).resize(function() {
@@ -298,7 +304,7 @@ else
 		});<?php if ($_GET['message']) { ?>
 		setTimeout("closeMsg()", 2500);
 		<?php } ?>
-		
+
 		$("body").bind("click", function(e) {
 			$("ul.menu-dropdown").hide();
 			$('a.menu').parent("li").removeClass("open").children("ul.menu-dropdown").hide();
@@ -320,15 +326,15 @@ else
 			$parentSiblings.removeClass("open");
 			return false;
 		});
-	});	
+	});
 //]]>
   </script>
 </head>
 
 <body>
 	<div id="mask"></div>
-	
-	
+
+
 	<div class="topbar">
       <div class="fill">
         <div class="container">
@@ -336,7 +342,7 @@ else
           <ul>
 		<?php if ($loginok != 0) { ?>
 			<form id="formLogout" action="<?php echo $url?>login.php?action=logout" method="post"></form>
-			
+
 			<?php if ($_SESSION['wikisession']) {?>
 			  <li><a href="#" onclick="javascript:document.forms['formLogout'].submit()">Abmelden</a></li>
 			<?php } else { ?>
@@ -402,7 +408,7 @@ else
 			<a href="#" class="btn secondary" onclick="javascript:closeModalDlg(false);">Abbrechen</a>
           </div>
         </div>
-	
+
         <?php if ($canSendMail) { ?>
 		<div class="modal localmodaldlg" id="newpassform">
           <div class="modal-header">
@@ -498,7 +504,7 @@ else
           <div class="modal-body">
 			<form id="formchpw" action="<?php echo $url?>register.php" method="post">
 				<input type="hidden" name="action" value="changepw" />
-				
+
 				<div class="clearfix">
 					<label for="password">Neues Passwort:</label>
 					<div class="input">
@@ -519,7 +525,7 @@ else
 			<a href="#" class="btn secondary" onclick="javascript:closeModalDlg(false);">Abbrechen</a>
           </div>
         </div>
-		
+
 	<?php } /* $canSendMail */
         } ?>
 	</div>
@@ -529,12 +535,12 @@ else
 	?>
 	  <div class="alert-message info" id="message" style="margin-top:43px">
 		<a class="close" href="#" onclick="javascript:closeMsg();">&times;</a>
-        <p><?php echo $_GET['message']?></p>
+        <p><?php echo htmlspecialchars($_GET['message']) ?></p>
       </div>
 	<?php } else if ($_GET['error']) { ?>
 	<div class="alert-message error" id="message" style="margin-top:43px">
 		<a class="close" href="#" onclick="javascript:closeMsg();">&times;</a>
-		<p><?php echo $_GET['error']?></p>
+		<p><?php echo htmlspecialchars($_GET['error']) ?></p>
 	</div>
 	<?php
 	}
@@ -546,7 +552,7 @@ else
 	?>
 	<div style="position:absolute; top:<?php echo $mapmargintop?>px; bottom:0px; left:0px; right:<?php echo $mapmarginright?>px;" id="map" ></div>
 	<div id="mapkey">
-	
+
 		<div class="modal" style="position: relative; top: auto; left: auto; margin: 0 auto; width: 256px;">
           <div class="modal-header">
             <h3>Legende</h3>
@@ -558,7 +564,12 @@ else
 				<li>Plakate werden erst nachdem Login editierbar.</li>
 				<li>Lokaler oder Wiki-Login ist möglich!</li>
 			  <? } else {	?>
-				<li>STRG+Mausklick: neuer Marker</li>
+
+<?php if ($is_mac_os) {?>
+						<li>CMD+Mausklick: neuer Marker</li>
+<?php } else { ?>
+						<li>Strg+Mausklick: neuer Marker</li>
+<?php } ?>
 			  <?php } ?>
 			  <ul>
 <?php foreach ($options as $key=>$value)
