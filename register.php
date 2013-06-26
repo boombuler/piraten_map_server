@@ -52,6 +52,7 @@
 	global $send_mail_adr;
 	return "From: Plakat-Karte <$send_mail_adr>\n" .
 		   "Reply-To: $send_mail_adr\n" .
+		   "Content-Type: text/plain;charset=utf-8\n" .
 		   "X-Mailer: PHP/" . phpversion();
   }
 
