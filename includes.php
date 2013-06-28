@@ -25,8 +25,10 @@ require_once("dbcon.php");
 function get_inner_html( $node ) {
     $innerHTML= '';
     $children = $node->childNodes;
-    foreach ($children as $child) {
-        $innerHTML .= $child->ownerDocument->saveXML( $child );
+    if ($children) {
+      foreach ($children as $child) {
+          $innerHTML .= $child->ownerDocument->saveXML( $child );
+      }
     }
     return $innerHTML;
 }
