@@ -43,7 +43,7 @@
                 if (!$image)
                     $image = null;
                 if ($comment != null || $image != null)
-                    map_change($id, null, $comment, $image);
+                    map_change($id, null, $comment, null, null, $image);
                     $addedCount += 1;
             }
             $response->set_AddedCount($addedCount);
