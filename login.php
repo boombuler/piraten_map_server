@@ -35,15 +35,16 @@
       unset($_SESSION['wikisession']);
       unset($_SESSION['sidip']);
       unset($_SESSION['admin']);
+      unset($_SESSION['sidsrv']);
   }
 
   function login($username, $password)
   {
-      global $tbl_prefix, $apiPath, $snoopy, $_SESSION;
+      global $tbl_prefix, $apiPath, $snoopy, $use_wiki, $url, $_SESSION;
+      logout();
       $db = openDB();
       $qry = $db->prepare("SELECT username, password, admin FROM " . $tbl_prefix . "users WHERE LOWER(username) = ?");
       $qry->execute(array(strtolower($username)));
-
       $num = $qry->rowCount();
       $result = false;
       $_SESSION['admin'] = false;
@@ -53,6 +54,7 @@
           if (crypt($password, $res->password) == $res->password) {
             $_SESSION['siduser'] = $res->username;
             $_SESSION['sidip'] = $_SERVER["REMOTE_ADDR"];
+            $_SESSION['sidsrv'] = $url;
             if ($res->admin == 1)
                 $_SESSION['admin'] = true;
             $result = true;
@@ -82,6 +84,7 @@
               $_SESSION['siduser'] = $username;
               $_SESSION['wikisession'] = $snoopy->cookies;
               $_SESSION['sidip'] = $_SERVER["REMOTE_ADDR"];
+              $_SESSION['sidsrv'] = $url;
               $result = true;
           }
       }

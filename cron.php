@@ -22,6 +22,7 @@ require("includes.php");
 
 $_SESSION['siduser'] = "CRONJOB";
 $_SESSION['sidip'] = $_SERVER["REMOTE_ADDR"];
+$_SESSION['sidsrv'] = $url;
 $_SESSION['admin'] = false;
 
 
@@ -43,4 +44,5 @@ unset($_SESSION['siduser']);
 unset($_SESSION['wikisession']);
 unset($_SESSION['sidip']);
 unset($_SESSION['admin']);
+unset($_SESSION['sidsrv']);
 ?>

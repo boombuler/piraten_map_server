@@ -85,26 +85,30 @@ if ($_SESSION['siduser'] || $_SESSION['sidip']) {
 			die("Snoopy error: {$snoopy->error}");
 		$array = unserialize($snoopy->results);
 
-		if ($_SESSION['siduser'] == $array[query][userinfo][name] && $_SESSION['sidip']==$_SERVER["REMOTE_ADDR"])
+		if ($_SESSION['siduser'] == $array[query][userinfo][name] && $_SESSION['sidip']==$_SERVER["REMOTE_ADDR"] && $_SESSION['sidsrv']== $url)
 			$loginok=1;
 		else
 		{
 			$loginok=0;
-			unset($_SESSION['siduser']);
-			unset($_SESSION['wikisession']);
-			unset($_SESSION['sidip']);
+      unset($_SESSION['siduser']);
+      unset($_SESSION['wikisession']);
+      unset($_SESSION['sidip']);
+      unset($_SESSION['admin']);
+      unset($_SESSION['sidsrv']);
 		}
 	} else {
-		if ($_SESSION['sidip']==$_SERVER["REMOTE_ADDR"])
+		if ($_SESSION['sidip']==$_SERVER["REMOTE_ADDR"] && $_SESSION['sidsrv']==$url)
 			$loginok=1;
 		else
 		{
 			$loginok=0;
-			unset($_SESSION['siduser']);
-			unset($_SESSION['wikisession']);
-			unset($_SESSION['sidip']);
+      unset($_SESSION['siduser']);
+      unset($_SESSION['wikisession']);
+      unset($_SESSION['sidip']);
+      unset($_SESSION['admin']);
+      unset($_SESSION['sidsrv']);
 		}
-       }
+  }
 }
 
 function get_float($name) {
