@@ -35,7 +35,7 @@ if ($_REQUEST[completed] == 1) {
 		$lat = preg_replace("/,/",".",$latlon[0]);
 		$lon = preg_replace("/,/",".",$latlon[1]);
 
-		$id = map_add($lat, $lon, $image_upload_typ);
+		$id = map_add($lon, $lat, $image_upload_typ);
 		map_change($id, null, null, "getimg.php?id=".$name);
 	
 		$msg = "Plakat wurde komplett eingetragen!";
