@@ -360,9 +360,11 @@ else
 					<li><a href="#" onclick="javascript:document.forms['formLogout'].submit()">Abmelden</a></li>
 				</ul>
 			  </li>
-			<?php } ?>
+			<?php }
+				if ($enable_image_upload) { ?>
 			<li><a href="#" onclick="javascript:showModalId('uploadimg');">Bild hochladen</a></li>
-		<?php } else { ?>
+		<?php   }
+			  } else { ?>
 			<li><a href="#" onclick="javascript:showModalId('loginform');">Anmelden</a></li>
                 <?php if ($canSendMail) { ?>
                         <li><a href="#" onclick="javascript:showModalId('registerform');">Registrieren</a></li>
@@ -473,7 +475,8 @@ else
 
 	<?php
             } /* $canSendMail */
-            } else {?>
+            } else {
+            	if ($enable_image_upload) { ?>
 		<div class="modal localmodaldlg" id="uploadimg">
           <div class="modal-header">
 			<h3>Bild hochladen</h3>
@@ -495,7 +498,8 @@ else
 			<a href="#" class="btn secondary" onclick="javascript:closeModalDlg(false);">Abbrechen</a>
           </div>
         </div>
-		<?php if ($canSendMail) { ?>
+		<?php }
+		  if ($canSendMail) { ?>
 		<div class="modal localmodaldlg" id="chpwform">
           <div class="modal-header">
 			<h3>Passwort ändern</h3>

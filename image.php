@@ -22,7 +22,7 @@
 require("includes.php");
 require("gps.php");
 
-if ($loginok==0)
+if ($loginok==0 && $enable_image_upload)
 	exit();
 
 if ($_REQUEST[completed] == 1) {

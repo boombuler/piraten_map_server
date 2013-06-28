@@ -46,3 +46,4 @@ $mysql_database="";
 
 // Tabellen Prefix
 $tbl_prefix = "plakate_";
+$enable_image_upload = false;
