@@ -61,6 +61,20 @@ $image_upload_typ = 'plakat_ok';
 
 setlocale(LC_ALL, 'de_DE.UTF-8');
 
+function ensureSessionVar($var) {
+  if (!isset($_SESSION[$var]))
+    $_SESSION[$var] = false;
+}
+
+ensureSessionVar('sidsrv');
+ensureSessionVar('siduser');
+ensureSessionVar('sidip');
+ensureSessionVar('wikisession');
+ensureSessionVar('admin');
+if (!isset($loginok))
+  $loginok = false;
+
+
 if ($_SESSION['siduser'] || $_SESSION['sidip']) {
 	// Check if the session is still valid.
 	if ($_SESSION['wikisession']) {
